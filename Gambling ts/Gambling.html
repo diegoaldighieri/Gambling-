@@ -7,23 +7,33 @@
     <link rel="stylesheet" href="styles/Gambling.css">
 </head>
 <body>
-<h2 id="caramelle">Caramelle:</h2>
+<div id="main-content">
+    <h2 id="caramelle">Caramelle:</h2>
 
-<div>
-    <button id="Versione1"> Versione 1 </button>
-    <button id="Versione2"> Versione 2 </button>
-    <button id="Versione3"> Versione 3 </button>
-</div>
-
-<button id="start">Comincia la caccia</button>
-
-<div id="grid"></div>
-
-<div id="overlay">
-    <div id="popup">
-        <h2> 💣 BOMBOCLAT HAI PERSO 💣 </h2>
-        <button onclick="closePopup()">Chiudi</button>
+    <div>
+        <button id="Versione1"> Versione 1 </button>
+        <button id="Versione2"> Versione 2 </button>
+        <button id="Versione3"> Versione 3 </button>
     </div>
+
+    <button id="start">Comincia la caccia</button>
+
+    <div id="grid"></div>
+
+    <div id="overlay">
+        <div id="popup">
+            <h2> 💣 BOMBOCLAT HAI PERSO 💣 </h2>
+            <button onclick="closePopup()">Chiudi</button>
+        </div>
+    </div>
+</div>
+<div id="scomm/vinc">
+    <label for="scommessa">Inserisci la tua puntata</label>
+    <input type="number" id="scommessa">
+    <button id="somma5">+5</button>
+    <button id="somma10">+10</button>
+    <button id="somma50">+50</button>
+    <button id="somma100">+100</button>
 </div>
 
 </body>

@@ -7,7 +7,12 @@ let celle= [];
 let tesori = [];
 let cliccata = [];
 let trovati = 0;
-let errori = 0;
+const somma5 = document.getElementById("somma5");
+const somma10 = document.getElementById("somma10");
+const somma50 = document.getElementById("somma50");
+const somma100 = document.getElementById("somma100");
+const scommessa = document.getElementById("scommessa");
+let totalescommessa=0;
 
 document.getElementById("caramelle").innerHTML+=" 500";
 
@@ -33,6 +38,27 @@ v3.addEventListener("click", () => {
     versione=3;
 })
 
+somma5.addEventListener("click", () => {
+    totalescommessa+=5;
+    scommessa.value=totalescommessa;
+
+})
+somma10.addEventListener("click", () => {
+    totalescommessa+=10;
+    scommessa.value=totalescommessa;
+
+})
+somma50.addEventListener("click", () => {
+    totalescommessa+=50;
+    scommessa.value=totalescommessa;
+
+})
+somma100.addEventListener("click", () => {
+    totalescommessa+=100;
+    scommessa.value=totalescommessa;
+})
+
+
 
 
 function generacelle(){
@@ -43,7 +69,6 @@ function generacelle(){
     tesori = [];
     cliccata = [];
     trovati = 0;
-    errori = 0;
 
     if(versione === 1){
         for(let i=0; i<9;i++) {
@@ -112,12 +137,12 @@ function generacelle(){
 
             if (tesori.includes(index)) {
                 cella.innerHTML="💣"
-                trovati++;
+
                 document.getElementById("overlay").style.display = "flex";
 
             } else {
                 cella.innerHTML="💎"
-                errori++;
+                trovati++;
             }
 
         });
@@ -138,5 +163,4 @@ function closePopup(){
     tesori = [];
     cliccata = [];
     trovati = 0;
-    errori = 0;
 }
