@@ -104,8 +104,39 @@ function generacelle(){
     if (versione === 3) grid.style.gridTemplateColumns = "repeat(5, 1fr)";
     let t = Math.floor(Math.random() * celle.length);
     tesori = [t];
+    celle.forEach((cella, index) => {
+        cella.addEventListener("click", () => {
+
+            if (cliccata[index]) return;
+            cliccata[index] = true;
+
+            if (tesori.includes(index)) {
+                cella.innerHTML="💣"
+                trovati++;
+                document.getElementById("overlay").style.display = "flex";
+
+            } else {
+                cella.innerHTML="💎"
+                errori++;
+            }
+
+        });
+    });
+
 }
 
 start.addEventListener("click", () => {
     generacelle();
 })
+
+function closePopup(){
+    document.getElementById("overlay").style.display = "none";
+    for (let i = 0; i < celle.length; i++) {
+        celle[i].remove();
+    }
+    celle = [];
+    tesori = [];
+    cliccata = [];
+    trovati = 0;
+    errori = 0;
+}
