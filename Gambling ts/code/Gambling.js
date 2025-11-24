@@ -2,8 +2,8 @@ const v1 = document.getElementById("Versione1");
 const v2 = document.getElementById("Versione2");
 const v3 = document.getElementById("Versione3");
 const start = document.getElementById("start");
-let versione= 0;
-let celle= [];
+let versione = 0;
+let celle = [];
 let tesori = [];
 let cliccata = [];
 let trovati = 0;
@@ -12,14 +12,15 @@ const somma10 = document.getElementById("somma10");
 const somma50 = document.getElementById("somma50");
 const somma100 = document.getElementById("somma100");
 const scommessa = document.getElementById("scommessa");
-let totalescommessa=0;
+let totalescommessa = 0;
 const caramelle = 500
 
-document.getElementById("caramelle").innerHTML+=" 500";
+document.getElementById("caramelle").innerHTML += " 500";
 
 const versioni = [document.getElementById("Versione1"),
     document.getElementById("Versione2"),
-    document.getElementById("Versione3")];
+    document.getElementById("Versione3")
+];
 
 versioni.forEach(btn => {
     btn.addEventListener("click", () => {
@@ -30,59 +31,59 @@ versioni.forEach(btn => {
 
 
 v1.addEventListener("click", () => {
-    versione=1;
+    versione = 1;
 })
 v2.addEventListener("click", () => {
-    versione=2;
+    versione = 2;
 })
 v3.addEventListener("click", () => {
-    versione=3;
+    versione = 3;
 })
 
 somma5.addEventListener("click", () => {
-    totalescommessa+=5;
-    if(totalescommessa>caramelle){
+    totalescommessa += 5;
+    if (totalescommessa > caramelle) {
         alert("WHY DID YOU REDEEM IT");
-        totalescommessa-=5;
+        totalescommessa -= 5;
         return -1;
-            } else{
-        scommessa.value=totalescommessa;
+    } else {
+        scommessa.value = totalescommessa;
     }
 
 
 })
 somma10.addEventListener("click", () => {
-    totalescommessa+=10;
-    if(totalescommessa>caramelle){
+    totalescommessa += 10;
+    if (totalescommessa > caramelle) {
         alert("WHY DID YOU REDEEM IT");
-        totalescommessa-=10;
+        totalescommessa -= 10;
         return -1;
-    } else{
-        scommessa.value=totalescommessa;
+    } else {
+        scommessa.value = totalescommessa;
     }
 
 
 })
 somma50.addEventListener("click", () => {
-    totalescommessa+=50;
-    if(totalescommessa>caramelle){
-       alert("WHY DID YOU REDEEM IT");
-       totalescommessa-=50;
-       return -1;
-   } else{
-       scommessa.value=totalescommessa;
-   }
+    totalescommessa += 50;
+    if (totalescommessa > caramelle) {
+        alert("WHY DID YOU REDEEM IT");
+        totalescommessa -= 50;
+        return -1;
+    } else {
+        scommessa.value = totalescommessa;
+    }
 
 
 })
 somma100.addEventListener("click", () => {
-    totalescommessa+=100;
-    if(totalescommessa>caramelle){
+    totalescommessa += 100;
+    if (totalescommessa > caramelle) {
         alert("WHY DID YOU REDEEM IT");
-        totalescommessa-=100;
+        totalescommessa -= 100;
         return -1;
-    } else{
-        scommessa.value=totalescommessa;
+    } else {
+        scommessa.value = totalescommessa;
     }
 
 })
@@ -90,7 +91,7 @@ somma100.addEventListener("click", () => {
 
 
 
-function generacelle(){
+function generacelle() {
     for (let i = 0; i < celle.length; i++) {
         celle[i].remove();
     }
@@ -99,8 +100,8 @@ function generacelle(){
     cliccata = [];
     trovati = 0;
 
-    if(versione === 1){
-        for(let i=0; i<9;i++) {
+    if (versione === 1) {
+        for (let i = 0; i < 9; i++) {
             let c = document.createElement("button");
             document.getElementById("grid").appendChild(c);
             c.innerHTML = "";
@@ -113,9 +114,8 @@ function generacelle(){
             cliccata.push(false);
 
         }
-    }
-    else if(versione === 2){
-        for(let i=0; i<16;i++){
+    } else if (versione === 2) {
+        for (let i = 0; i < 16; i++) {
             let c = document.createElement("button");
             document.getElementById("grid").appendChild(c);
             c.innerHTML = "";
@@ -130,9 +130,8 @@ function generacelle(){
 
         }
 
-    }
-    else if (versione === 3){
-        for(let i=0; i<25;i++){
+    } else if (versione === 3) {
+        for (let i = 0; i < 25; i++) {
             let c = document.createElement("button");
             document.getElementById("grid").appendChild(c);
             c.innerHTML = "";
@@ -145,8 +144,7 @@ function generacelle(){
             cliccata.push(false);
 
         }
-    }
-    else {
+    } else {
         return -1;
     }
 
@@ -165,18 +163,16 @@ function generacelle(){
             cliccata[index] = true;
 
             if (tesori.includes(index)) {
-                cella.innerHTML="💣"
+                cella.innerHTML = "💣"
                 document.getElementById("overlay").style.display = "flex";
             } else {
-                cella.innerHTML="💎"
+                cella.innerHTML = "💎"
                 trovati++;
-                if(versione === 1 && trovati === 8) {
+                if (versione === 1 && trovati === 8) {
                     document.getElementById("overlay2").style.display = "flex";
-                }
-                else if (versione === 2 && trovati === 15){
+                } else if (versione === 2 && trovati === 15) {
                     document.getElementById("overlay2").style.display = "flex";
-                }
-                else if ( versione === 3 && trovati ===24){
+                } else if (versione === 3 && trovati === 24) {
                     document.getElementById("overlay2").style.display = "flex";
                 }
             }
@@ -190,7 +186,7 @@ start.addEventListener("click", () => {
     generacelle();
 })
 
-function closePopup(){
+function closePopup() {
     document.getElementById("overlay").style.display = "none";
     document.getElementById("overlay2").style.display = "none";
 
