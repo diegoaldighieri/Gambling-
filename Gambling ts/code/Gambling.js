@@ -13,6 +13,7 @@ const somma50 = document.getElementById("somma50");
 const somma100 = document.getElementById("somma100");
 const scommessa = document.getElementById("scommessa");
 let totalescommessa=0;
+const caramelle = 500
 
 document.getElementById("caramelle").innerHTML+=" 500";
 
@@ -40,22 +41,50 @@ v3.addEventListener("click", () => {
 
 somma5.addEventListener("click", () => {
     totalescommessa+=5;
-    scommessa.value=totalescommessa;
+    if(totalescommessa>caramelle){
+        alert("WHY DID YOU REDEEM IT");
+        totalescommessa-=5;
+        return -1;
+            } else{
+        scommessa.value=totalescommessa;
+    }
+
 
 })
 somma10.addEventListener("click", () => {
     totalescommessa+=10;
-    scommessa.value=totalescommessa;
+    if(totalescommessa>caramelle){
+        alert("WHY DID YOU REDEEM IT");
+        totalescommessa-=10;
+        return -1;
+    } else{
+        scommessa.value=totalescommessa;
+    }
+
 
 })
 somma50.addEventListener("click", () => {
     totalescommessa+=50;
-    scommessa.value=totalescommessa;
+    if(totalescommessa>caramelle){
+       alert("WHY DID YOU REDEEM IT");
+       totalescommessa-=50;
+       return -1;
+   } else{
+       scommessa.value=totalescommessa;
+   }
+
 
 })
 somma100.addEventListener("click", () => {
     totalescommessa+=100;
-    scommessa.value=totalescommessa;
+    if(totalescommessa>caramelle){
+        alert("WHY DID YOU REDEEM IT");
+        totalescommessa-=100;
+        return -1;
+    } else{
+        scommessa.value=totalescommessa;
+    }
+
 })
 
 
@@ -137,12 +166,19 @@ function generacelle(){
 
             if (tesori.includes(index)) {
                 cella.innerHTML="💣"
-
                 document.getElementById("overlay").style.display = "flex";
-
             } else {
                 cella.innerHTML="💎"
                 trovati++;
+                if(versione === 1 && trovati === 8) {
+                    document.getElementById("overlay2").style.display = "flex";
+                }
+                else if (versione === 2 && trovati === 15){
+                    document.getElementById("overlay2").style.display = "flex";
+                }
+                else if ( versione === 3 && trovati ===24){
+                    document.getElementById("overlay2").style.display = "flex";
+                }
             }
 
         });
@@ -156,6 +192,8 @@ start.addEventListener("click", () => {
 
 function closePopup(){
     document.getElementById("overlay").style.display = "none";
+    document.getElementById("overlay2").style.display = "none";
+
     for (let i = 0; i < celle.length; i++) {
         celle[i].remove();
     }

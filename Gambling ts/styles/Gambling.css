@@ -130,3 +130,26 @@ h2 {
     font-size: 20px;
     padding: 8px 12px;
 }
+#overlay2 {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0,0,0,0.3);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* POPUP */
+#popup2 {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    font-size: 24px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
