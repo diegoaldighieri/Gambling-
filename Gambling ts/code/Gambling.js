@@ -50,6 +50,12 @@ function aggiornaMoltiplicatore() {
 // ============================================================================
 const versioni = [v1, v2, v3];
 
+const versionSettings = {
+    1: { safeBoost: 1.03, bonusFinale: 1.10 },
+    2: { safeBoost: 1.05, bonusFinale: 1.25 },
+    3: { safeBoost: 1.08, bonusFinale: 1.50 }
+};
+
 versioni.forEach(btn => {
     btn.addEventListener("click", () => {
         versioni.forEach(b => b.classList.remove("active"));
@@ -181,14 +187,19 @@ function generacelle() {
             cella.innerHTML = "💎";
             trovati++;
 
-            cmoltiplicatore *= 1.10;
+            cmoltiplicatore *= versionSettings[versione].safeBoost;
             aggiornaMoltiplicatore();
 
             // Vittoria totale
             if (trovati === celle.length - 1) {
-                setCaramelle(getCaramelle());
+
+                const bonus = versionSettings[versione].bonusFinale;
+                const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
+
+                setCaramelle(getCaramelle() + premio);
                 document.getElementById("overlay2").style.display = "flex";
             }
+
         });
 
     });
@@ -226,10 +237,9 @@ function closePopup() {
 //  ACCONTENTATI (CASHOUT)
 // ============================================================================
 accontentati.addEventListener("click", () => {
-
-    const vincita = Math.floor(totalescommessa * cmoltiplicatore) - totalescommessa;
-
-    setCaramelle(getCaramelle() + vincita);
+    const premio = Math.floor(totalescommessa * cmoltiplicatore);
+    setCaramelle(getCaramelle() + premio);
 
     document.getElementById("overlay3").style.display = "flex";
 });
+
