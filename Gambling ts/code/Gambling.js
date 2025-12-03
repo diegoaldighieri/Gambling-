@@ -52,8 +52,8 @@ const versioni = [v1, v2, v3];
 
 const versionSettings = {
     1: { safeBoost: 1.03, bonusFinale: 1.10 },
-    2: { safeBoost: 1.05, bonusFinale: 1.25 },
-    3: { safeBoost: 1.08, bonusFinale: 1.50 }
+    2: { safeBoost: 1.04, bonusFinale: 1.25 },
+    3: { safeBoost: 1.06, bonusFinale: 1.50 }
 };
 
 versioni.forEach(btn => {
@@ -135,7 +135,9 @@ function generacelle() {
     if (count === 0) {
         alert("Scegli una versione pls");
         return;
+
     }
+    
 
     // Set colonne griglia
     grid.style.gridTemplateColumns =
@@ -228,7 +230,7 @@ function closePopup() {
     tesori = [];
     cliccata = [];
     trovati = 0;
-
+    cmoltiplicatore = 1;
     aggiornaMoltiplicatore();
 }
 
@@ -238,7 +240,7 @@ function closePopup() {
 // ============================================================================
 accontentati.addEventListener("click", () => {
     const premio = Math.floor(totalescommessa * cmoltiplicatore);
-    setCaramelle(getCaramelle() + premio);
+    setCaramelle(getCaramelle() + premio - totalescommessa);
 
     document.getElementById("overlay3").style.display = "flex";
 });
