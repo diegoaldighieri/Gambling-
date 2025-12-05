@@ -1,0 +1,66 @@
+/* FONT + RESET */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* BODY TOP */
+body {
+    background: linear-gradient(120deg, #1e3c72, #2a5298);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #fff;
+}
+
+/* CONTAINER */
+.container {
+    background: rgba(0,0,0,0.6);
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    text-align: center;
+}
+
+/* H1 SPAZIO */
+h1 {
+    margin-bottom: 20px;
+    color: #ffdd57;
+    text-shadow: 2px 2px 8px #000;
+}
+
+/* BUTTONS */
+.buttons button {
+    background: #ffdd57;
+    color: #000;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.buttons button:hover {
+    background: #fff;
+    transform: scale(1.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+}
+
+/* TEXTAREA */
+textarea {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    border-radius: 15px;
+    border: none;
+    resize: none;
+    font-size: 16px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    text-align: center;
+}
