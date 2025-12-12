@@ -51,9 +51,18 @@ function aggiornaMoltiplicatore() {
 const versioni = [v1, v2, v3];
 
 const versionSettings = {
-    1: { safeBoost: 1.03, bonusFinale: 1.10 },
-    2: { safeBoost: 1.04, bonusFinale: 1.25 },
-    3: { safeBoost: 1.06, bonusFinale: 1.50 }
+    1: {
+        safeBoost: 1.03,
+        bonusFinale: 1.10
+    },
+    2: {
+        safeBoost: 1.04,
+        bonusFinale: 1.25
+    },
+    3: {
+        safeBoost: 1.06,
+        bonusFinale: 1.50
+    }
 };
 
 versioni.forEach(btn => {
@@ -137,7 +146,7 @@ function generacelle() {
         return;
 
     }
-    
+
 
     // Set colonne griglia
     grid.style.gridTemplateColumns =
@@ -244,4 +253,3 @@ accontentati.addEventListener("click", () => {
 
     document.getElementById("overlay3").style.display = "flex";
 });
-
