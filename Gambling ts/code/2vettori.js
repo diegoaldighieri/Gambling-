@@ -1,8 +1,9 @@
 const textarea = document.getElementById("textarea");
 
 function stampaVettore(vettore, titolo) {
-    textarea.value = titolo + ":\n" + vettore.join(", ") + "\n";
+    textarea.value += titolo + ":\n" + vettore.join(", ") + "\n\n";
 }
+
 
 function generazione1() {
     vettore1 = [];
@@ -47,4 +48,9 @@ function bubbleSort(arr) {
             }
         }
     }
+}
+
+function pulisci(){
+    textarea.value="";
+
 }
