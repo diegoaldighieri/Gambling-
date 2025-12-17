@@ -15,6 +15,7 @@ let celle = [];
 let tesori = [];
 let cliccata = [];
 let trovati = 0;
+let inGioco = false; // NUOVO: traccia se una partita è in corso
 
 let totalescommessa = 0;
 let cmoltiplicatore = 1;
@@ -67,14 +68,28 @@ const versionSettings = {
 
 versioni.forEach(btn => {
     btn.addEventListener("click", () => {
+        // NUOVO: blocca cambio versione durante il gioco
+        if (inGioco) {
+            alert("Non puoi cambiare versione durante una partita!");
+            return;
+        }
+
         versioni.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
     });
 });
 
-v1.addEventListener("click", () => versione = 1);
-v2.addEventListener("click", () => versione = 2);
-v3.addEventListener("click", () => versione = 3);
+v1.addEventListener("click", () => {
+    if (!inGioco) versione = 1;
+});
+
+v2.addEventListener("click", () => {
+    if (!inGioco) versione = 2;
+});
+
+v3.addEventListener("click", () => {
+    if (!inGioco) versione = 3;
+});
 
 
 // ============================================================================
@@ -123,6 +138,12 @@ maxbet.addEventListener("click", () => aggiungi(getCaramelle()));
 // ============================================================================
 function generacelle() {
 
+    // NUOVO: controlla se la scommessa è maggiore di 0
+    if (totalescommessa <= 0) {
+        alert("Devi inserire una scommessa per giocare!");
+        return;
+    }
+
     // Reset totale
     celle.forEach(c => c.remove());
     celle = [];
@@ -144,9 +165,10 @@ function generacelle() {
     if (count === 0) {
         alert("Scegli una versione pls");
         return;
-
     }
 
+    // NUOVO: segna che la partita è iniziata
+    inGioco = true;
 
     // Set colonne griglia
     grid.style.gridTemplateColumns =
@@ -190,6 +212,7 @@ function generacelle() {
                 cella.innerHTML = "💣";
                 setCaramelle(getCaramelle() - totalescommessa);
 
+                inGioco = false; // NUOVO: partita finita
                 document.getElementById("overlay").style.display = "flex";
                 return;
             }
@@ -208,6 +231,7 @@ function generacelle() {
                 const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
 
                 setCaramelle(getCaramelle() + premio);
+                inGioco = false; // NUOVO: partita finita
                 document.getElementById("overlay2").style.display = "flex";
             }
 
@@ -240,6 +264,7 @@ function closePopup() {
     cliccata = [];
     trovati = 0;
     cmoltiplicatore = 1;
+    inGioco = false; // NUOVO: reset stato gioco
     aggiornaMoltiplicatore();
 }
 
@@ -251,5 +276,6 @@ accontentati.addEventListener("click", () => {
     const premio = Math.floor(totalescommessa * cmoltiplicatore);
     setCaramelle(getCaramelle() + premio - totalescommessa);
 
+    inGioco = false; // NUOVO: partita finita
     document.getElementById("overlay3").style.display = "flex";
 });
