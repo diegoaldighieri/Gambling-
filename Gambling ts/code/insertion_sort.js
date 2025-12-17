@@ -38,8 +38,8 @@ function sortall() {
 }
 
 function insertionSort(arr) {
-    for (let i = 0; i < arr.length-1; i++) {
-        let T = arr[i]; 
+    for (let i = 0; i < arr.length; i++) {
+        let T = arr[i];
         let j = i - 1;
 
         while (j >= 0 && arr[j] > T) {
