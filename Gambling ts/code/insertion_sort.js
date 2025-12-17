@@ -22,31 +22,32 @@ function generazione2() {
 }
 
 function sort1() {
-    bubbleSort(vettore1);
+    insertionSort(vettore1);
     stampaVettore(vettore1, "Primo Vettore Ordinato");
 }
 
 function sort2() {
-    bubbleSort(vettore2);
+    insertionSort(vettore2);
     stampaVettore(vettore2, "Secondo Vettore Ordinato");
 }
 
 function sortall() {
     let vettore3 = [...vettore1, ...vettore2];
-    bubbleSort(vettore3);
+    insertionSort(vettore3);
     stampaVettore(vettore3, "Vettore Totale Ordinato");
 }
 
-function bubbleSort(arr) {
-    let scambio = true;
-    while (scambio) {
-        scambio = false;
-        for (let i = 0; i < arr.length - 1; i++) {
-            if (arr[i] > arr[i+1]) {
-                [arr[i], arr[i+1]] = [arr[i+1], arr[i]]; // swap più elegante
-                scambio = true;
-            }
+function insertionSort(arr) {
+    for (let i = 0; i < arr.length-1; i++) {
+        let T = arr[i]; 
+        let j = i - 1;
+
+        while (j >= 0 && arr[j] > T) {
+            arr[j + 1] = arr[j];
+            j--;
         }
+
+        arr[j + 1] = T;
     }
 }
 
