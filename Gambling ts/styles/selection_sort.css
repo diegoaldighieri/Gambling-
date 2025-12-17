@@ -71,9 +71,10 @@ textarea {
     border-radius: 8px;
     font-family: 'Courier New', monospace;
     font-size: 14px;
+    font-weight: bold;
     resize: vertical;
     background: #f8f9ff;
-    color: #333;
+    color:  rgba(253, 29, 29, 1);
     line-height: 1.6;
 }
 

@@ -58,7 +58,7 @@ function selectionSort(arr) {
 }
 
 
-function pulisci(){
-    textarea.value="";
+function pulisci() {
+    textarea.value = "";
 
 }
