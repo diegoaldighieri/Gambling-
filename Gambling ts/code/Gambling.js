@@ -15,11 +15,13 @@ let celle = [];
 let tesori = [];
 let cliccata = [];
 let trovati = 0;
-let inGioco = false; // NUOVO: traccia se una partita è in corso
+let inGioco = false;
 
 let totalescommessa = 0;
 let cmoltiplicatore = 1;
 
+// TEMA CORRENTE
+let currentTheme = 'default';
 
 // ============================================================================
 //  FUNZIONI GESTIONE CARAMELLE
@@ -33,9 +35,7 @@ function setCaramelle(n) {
     document.getElementById("caramelle").textContent = n;
 }
 
-// Caramelle iniziali
 setCaramelle(500);
-
 
 // ============================================================================
 //  AGGIORNA MOLTIPLICATORE E VINCITA
@@ -44,7 +44,6 @@ function aggiornaMoltiplicatore() {
     document.getElementById("moltiplicatore").textContent = cmoltiplicatore.toFixed(2);
     document.getElementById("vincita").textContent = Math.floor(totalescommessa * cmoltiplicatore);
 }
-
 
 // ============================================================================
 //  GESTIONE VERSIONI
@@ -68,9 +67,7 @@ const versionSettings = {
 
 versioni.forEach(btn => {
     btn.addEventListener("click", () => {
-        // NUOVO: blocca cambio versione durante il gioco
         if (inGioco) {
-            alert("Non puoi cambiare versione durante una partita!");
             return;
         }
 
@@ -91,7 +88,6 @@ v3.addEventListener("click", () => {
     if (!inGioco) versione = 3;
 });
 
-
 // ============================================================================
 //  SCOMMESSA
 // ============================================================================
@@ -103,11 +99,14 @@ const maxbet = document.getElementById("maxbet");
 const scommessa = document.getElementById("scommessa");
 
 function setTotaleScommessa(n) {
+    if (inGioco) {
+        scommessa.value = totalescommessa;
+        return;
+    }
 
     if (n < 0) n = 0;
 
     if (n > getCaramelle()) {
-        alert("NON HAI ABBASTANZA CARAMELLE");
         n = getCaramelle();
     }
 
@@ -118,11 +117,20 @@ function setTotaleScommessa(n) {
 }
 
 scommessa.addEventListener("input", () => {
+    if (inGioco) {
+        scommessa.value = totalescommessa;
+        return;
+    }
+
     const valore = parseInt(scommessa.value) || 0;
     setTotaleScommessa(valore);
 });
 
 function aggiungi(amount) {
+    if (inGioco) {
+        return;
+    }
+
     setTotaleScommessa(totalescommessa + amount);
 }
 
@@ -132,19 +140,29 @@ somma50.addEventListener("click", () => aggiungi(50));
 somma100.addEventListener("click", () => aggiungi(100));
 maxbet.addEventListener("click", () => aggiungi(getCaramelle()));
 
+// ============================================================================
+//  OTTIENI IMMAGINE PER TEMA
+// ============================================================================
+function getThemeImage(theme) {
+    const themeImages = {
+        'default': 'images/gray-square.png',
+        'dark': 'images/scuro-square.png',
+        'neon': 'images/neon-square.png',
+        'forest': 'images/forest-square.png',
+        'sunset': 'images/tramonto-square.png',
+        'ocean': 'images/oceano-square.png'
+    };
+    return themeImages[theme] || themeImages['default'];
+}
 
 // ============================================================================
 //  GENERA CELLE
 // ============================================================================
 function generacelle() {
-
-    // NUOVO: controlla se la scommessa è maggiore di 0
     if (totalescommessa <= 0) {
-        alert("Devi inserire una scommessa per giocare!");
         return;
     }
 
-    // Reset totale
     celle.forEach(c => c.remove());
     celle = [];
     tesori = [];
@@ -156,33 +174,27 @@ function generacelle() {
 
     const grid = document.getElementById("grid");
 
-    // Numero celle in base alla versione
     const count =
         versione === 1 ? 9 :
             versione === 2 ? 16 :
                 versione === 3 ? 25 : 0;
 
     if (count === 0) {
-        alert("Scegli una versione pls");
         return;
     }
 
-    // NUOVO: segna che la partita è iniziata
     inGioco = true;
 
-    // Set colonne griglia
     grid.style.gridTemplateColumns =
         versione === 1 ? "repeat(3, 1fr)" :
             versione === 2 ? "repeat(4, 1fr)" :
                 "repeat(5, 1fr)";
 
-    // Generate cells
     for (let i = 0; i < count; i++) {
-
         const cella = document.createElement("button");
         const img = document.createElement("img");
 
-        img.src = "images/gray-square.png";
+        img.src = getThemeImage(currentTheme);
         img.classList.add("cella-img");
 
         cella.appendChild(img);
@@ -194,65 +206,50 @@ function generacelle() {
         cliccata.push(false);
     }
 
-    // Posizione bomba
     const indiceBomba = Math.floor(Math.random() * celle.length);
     tesori = [indiceBomba];
 
-    // Click sulle celle
     celle.forEach((cella, index) => {
-
         cella.addEventListener("click", () => {
-
             if (cliccata[index]) return;
             cliccata[index] = true;
 
-            // BOMBA
-            if (tesori.includes(index)) {
+            // Rimuovi l'immagine e mostra l'emoji
+            cella.innerHTML = "";
 
+            if (tesori.includes(index)) {
                 cella.innerHTML = "💣";
                 setCaramelle(getCaramelle() - totalescommessa);
 
-                inGioco = false; // NUOVO: partita finita
+                inGioco = false;
                 document.getElementById("overlay").style.display = "flex";
                 return;
             }
 
-            // SAFE
             cella.innerHTML = "💎";
             trovati++;
 
             cmoltiplicatore *= versionSettings[versione].safeBoost;
             aggiornaMoltiplicatore();
 
-            // Vittoria totale
             if (trovati === celle.length - 1) {
-
                 const bonus = versionSettings[versione].bonusFinale;
                 const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
 
                 setCaramelle(getCaramelle() + premio);
-                inGioco = false; // NUOVO: partita finita
+                inGioco = false;
                 document.getElementById("overlay2").style.display = "flex";
             }
-
         });
-
     });
-
 }
 
-
-// ============================================================================
-//  START
-// ============================================================================
 start.addEventListener("click", generacelle);
-
 
 // ============================================================================
 //  CHIUDI POPUP
 // ============================================================================
 function closePopup() {
-
     document.getElementById("overlay").style.display = "none";
     document.getElementById("overlay2").style.display = "none";
     document.getElementById("overlay3").style.display = "none";
@@ -264,18 +261,138 @@ function closePopup() {
     cliccata = [];
     trovati = 0;
     cmoltiplicatore = 1;
-    inGioco = false; // NUOVO: reset stato gioco
+    inGioco = false;
+    totalescommessa = 0;
+    scommessa.value = 0;
     aggiornaMoltiplicatore();
 }
-
 
 // ============================================================================
 //  ACCONTENTATI (CASHOUT)
 // ============================================================================
 accontentati.addEventListener("click", () => {
+    if (!inGioco) {
+        return;
+    }
+
     const premio = Math.floor(totalescommessa * cmoltiplicatore);
     setCaramelle(getCaramelle() + premio - totalescommessa);
 
-    inGioco = false; // NUOVO: partita finita
+    inGioco = false;
     document.getElementById("overlay3").style.display = "flex";
 });
+
+// ============================================================================
+//  THEME SWITCHER
+// ============================================================================
+const themes = {
+    default: {
+        primary: '#ffc400',
+        primaryHover: '#ffae00',
+        secondary: '#00cc66',
+        background: '#0b0f1a',
+        cardBg: '#111627',
+        cellBg: '#1a2030',
+        text: '#ffffff',
+        textDark: '#000000'
+    },
+    dark: {
+        primary: '#60a5fa',
+        primaryHover: '#3b82f6',
+        secondary: '#a78bfa',
+        background: '#000000',
+        cardBg: '#1a1a1a',
+        cellBg: '#2a2a2a',
+        text: '#f9fafb',
+        textDark: '#000000'
+    },
+    neon: {
+        primary: '#ec4899',
+        primaryHover: '#db2777',
+        secondary: '#06b6d4',
+        background: '#0f172a',
+        cardBg: '#1e293b',
+        cellBg: '#334155',
+        text: '#f0abfc',
+        textDark: '#0f172a'
+    },
+    forest: {
+        primary: '#10b981',
+        primaryHover: '#059669',
+        secondary: '#34d399',
+        background: '#064e3b',
+        cardBg: '#065f46',
+        cellBg: '#047857',
+        text: '#d1fae5',
+        textDark: '#064e3b'
+    },
+    sunset: {
+        primary: '#f59e0b',
+        primaryHover: '#d97706',
+        secondary: '#ef4444',
+        background: '#7c2d12',
+        cardBg: '#9a3412',
+        cellBg: '#b45309',
+        text: '#fef3c7',
+        textDark: '#7c2d12'
+    },
+    ocean: {
+        primary: '#0ea5e9',
+        primaryHover: '#0284c7',
+        secondary: '#06b6d4',
+        background: '#0c4a6e',
+        cardBg: '#075985',
+        cellBg: '#0369a1',
+        text: '#e0f2fe',
+        textDark: '#0c4a6e'
+    }
+};
+
+function applyTheme(themeName) {
+    currentTheme = themeName;
+    const theme = themes[themeName];
+    document.documentElement.style.setProperty('--color-primary', theme.primary);
+    document.documentElement.style.setProperty('--color-primary-hover', theme.primaryHover);
+    document.documentElement.style.setProperty('--color-secondary', theme.secondary);
+    document.documentElement.style.setProperty('--color-background', theme.background);
+    document.documentElement.style.setProperty('--color-card-bg', theme.cardBg);
+    document.documentElement.style.setProperty('--color-cell-bg', theme.cellBg);
+    document.documentElement.style.setProperty('--color-text', theme.text);
+    document.documentElement.style.setProperty('--color-text-dark', theme.textDark);
+
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.theme === themeName) {
+            btn.classList.add('active');
+        }
+    });
+
+    // Aggiorna le celle esistenti se il gioco è in corso
+    if (inGioco) {
+        celle.forEach((cella, index) => {
+            if (!cliccata[index]) {
+                const img = cella.querySelector('img.cella-img');
+                if (img) {
+                    img.src = getThemeImage(themeName);
+                }
+            }
+        });
+    }
+}
+
+document.getElementById('theme-button').addEventListener('click', () => {
+    document.getElementById('theme-menu').classList.toggle('hidden');
+});
+
+document.querySelectorAll('.theme-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+        applyTheme(btn.dataset.theme);
+        document.getElementById('theme-menu').classList.add('hidden');
+    });
+});
+
+applyTheme('default');
+
+
+
+

@@ -2,13 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Caccia al tesoro</title>
     <script src="code/Gambling.js" defer></script>
     <link rel="stylesheet" href="styles/Gambling.css"/>
 </head>
 <body>
+<div id="theme-switcher">
+    <button id="theme-button">🎨</button>
+    <div id="theme-menu" class="hidden">
+        <div class="theme-menu-title">Scegli Tema</div>
+        <button class="theme-option" data-theme="default">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ffc400, #00cc66)"></span>
+            <span>Classico</span>
+        </button>
+        <button class="theme-option" data-theme="dark">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #60a5fa, #a78bfa)"></span>
+            <span>Scuro</span>
+        </button>
+        <button class="theme-option" data-theme="neon">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #06b6d4)"></span>
+            <span>Neon</span>
+        </button>
+        <button class="theme-option" data-theme="forest">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #10b981, #34d399)"></span>
+            <span>Foresta</span>
+        </button>
+        <button class="theme-option" data-theme="sunset">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #f59e0b, #ef4444)"></span>
+            <span>Tramonto</span>
+        </button>
+        <button class="theme-option" data-theme="ocean">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4)"></span>
+            <span>Oceano</span>
+        </button>
+    </div>
+</div>
+
+
+
+
+
 <div id="main-content">
-    <h2>Caramelle: <span id="caramelle"></span></h2>
+    <h2>💵Money💵: <span id="caramelle"></span></h2>
 
     <div>
         <button id="Versione1">Versione 1</button>

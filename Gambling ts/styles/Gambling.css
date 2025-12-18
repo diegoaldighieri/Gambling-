@@ -1,13 +1,124 @@
+/* VARIABILI CSS PER I TEMI */
+:root {
+    --color-primary: #ffc400;
+    --color-primary-hover: #ffae00;
+    --color-secondary: #00cc66;
+    --color-background: #0b0f1a;
+    --color-card-bg: #111627;
+    --color-cell-bg: #1a2030;
+    --color-text: #ffffff;
+    --color-text-dark: #000000;
+}
+
 body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
     display: flex;
-    flex-direction: row; /* 🔥 sposto layout a riga per avere scommesse a destra */
+    flex-direction: row;
     justify-content: center;
     align-items: flex-start;
     gap: 40px;
-    background: #0b0f1a;
+    background: var(--color-background);
+    transition: background 0.3s ease;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+/* THEME SWITCHER */
+#theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+}
+
+#theme-button {
+    background: var(--color-primary);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: 50%;
+    width: 56px;
+    height: 56px;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+}
+
+#theme-button:hover {
+    transform: scale(1.1);
+}
+
+#theme-menu {
+    position: absolute;
+    top: 70px;
+    right: 0;
+    background: var(--color-card-bg);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    min-width: 200px;
+    animation: slideIn 0.3s ease;
+}
+
+#theme-menu.hidden {
+    display: none;
+}
+
+.theme-menu-title {
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    opacity: 0.7;
+    margin-bottom: 8px;
+    color: var(--color-text);
+}
+
+.theme-option {
+    width: 100%;
+    padding: 12px;
+    margin: 4px 0;
+    background: transparent;
+    color: var(--color-text);
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.theme-option:hover {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: var(--color-text-dark);
+}
+
+.theme-option.active {
+    background: var(--color-primary);
+    color: var(--color-text-dark);
+    border-color: var(--color-primary);
+}
+
+.theme-preview {
+    width: 20px;
+    height: 20px;
+    border-radius: 4px;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* CONTENITORE CENTRALE DEL GIOCO */
@@ -24,7 +135,7 @@ body {
     gap: 2px !important;
     margin-top: 10px;
     justify-content: center;
-    background: #0b0f1a;
+    background: var(--color-background);
     padding: 10px;
     border-radius: 10px;
 }
@@ -35,13 +146,14 @@ button {
     font-size: 30px;
     cursor: pointer;
     border: none;
-    background-color: #ffc400;
+    background-color: var(--color-primary);
+    color: var(--color-text-dark);
     border-radius: 8px;
     transition: 0.2s;
 }
 
 button:hover {
-    background-color: #ffae00;
+    background-color: var(--color-primary-hover);
 }
 
 /* CELLE DI GIOCO */
@@ -57,8 +169,9 @@ button:hover {
     margin: 0;
     border-radius: 6px;
     font-size: 50px;
-    background: #1a2030;
-    box-shadow: 0 0 6px #101522;
+    background: var(--color-cell-bg);
+    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    transition: background 0.3s ease;
 }
 
 /* IMMAGINI */
@@ -72,12 +185,12 @@ button:hover {
 
 /* VERSIONE ATTIVA */
 .active {
-    background-color: #00cc66 !important;
+    background-color: var(--color-secondary) !important;
     color: white;
 }
 
 /* OVERLAY */
-#overlay {
+#overlay, #overlay2, #overlay3 {
     position: fixed;
     top: 0;
     left: 0;
@@ -92,32 +205,36 @@ button:hover {
 }
 
 /* POPUP */
-#popup {
-    background: white;
+#popup, #popup2, #popup3 {
+    background: var(--color-card-bg);
     padding: 30px;
     border-radius: 15px;
     text-align: center;
     font-size: 24px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    color: var(--color-text);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 h2 {
-    color: #ffc400;
+    color: var(--color-primary);
+    transition: color 0.3s ease;
 }
 
-/* 🔥🔥 SEZIONE SCOMMESSE A DESTRA (CON SPAZIO SUO) */
+/* SEZIONE SCOMMESSE A DESTRA */
 #scomm\/vinc {
     position: sticky;
     top: 40px;
-    background: #111627;
+    background: var(--color-card-bg);
     padding: 20px;
     border-radius: 12px;
-    box-shadow: 0 0 10px #0007;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
     display: flex;
     flex-direction: column;
     gap: 10px;
-    color: white;
+    color: var(--color-text);
     min-width: 200px;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 #scomm\/vinc input {
@@ -125,58 +242,12 @@ h2 {
     font-size: 18px;
     border-radius: 8px;
     border: none;
+    background: var(--color-cell-bg);
+    color: var(--color-text);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 #scomm\/vinc button {
     font-size: 20px;
     padding: 8px 12px;
 }
-
-#overlay2 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-/* POPUP */
-#popup2 {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    font-size: 24px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
-#overlay3 {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(5px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-/* POPUP */
-#popup3 {
-    background: white;
-    padding: 30px;
-    border-radius: 15px;
-    text-align: center;
-    font-size: 24px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-}
-
