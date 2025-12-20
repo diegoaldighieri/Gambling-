@@ -1,103 +1,1272 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Plinko</title>
-    <script src="code/Plinko.js" defer></script>
-    <link rel="stylesheet" href="styles/Plinko.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plinko • Cyber Casino</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00f5ff;
+            --primary-glow: rgba(0, 245, 255, 0.5);
+            --secondary: #ff00ea;
+            --secondary-glow: rgba(255, 0, 234, 0.5);
+            --accent: #ffd700;
+            --bg-primary: #0a0014;
+            --bg-secondary: #130026;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b8;
+            --success: #00ff88;
+            --danger: #ff3366;
+        }
+
+        [data-theme="neon"] {
+            --primary: #ff006e;
+            --primary-glow: rgba(255, 0, 110, 0.5);
+            --secondary: #00ffff;
+            --secondary-glow: rgba(0, 255, 255, 0.5);
+            --accent: #ffbe0b;
+            --bg-primary: #1a0033;
+            --bg-secondary: #2d0052;
+        }
+
+        [data-theme="gold"] {
+            --primary: #ffd700;
+            --primary-glow: rgba(255, 215, 0, 0.5);
+            --secondary: #ff8c00;
+            --secondary-glow: rgba(255, 140, 0, 0.5);
+            --accent: #ffffff;
+            --bg-primary: #1a1300;
+            --bg-secondary: #2d2200;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    radial-gradient(circle at 20% 80%, var(--primary-glow) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, var(--secondary-glow) 0%, transparent 50%),
+                    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+            animation: bgPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.6; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            padding: 20px 30px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            backdrop-filter: blur(20px);
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .logo {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 42px;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 2px;
+            text-shadow: 0 0 40px var(--primary-glow);
+        }
+
+        .balance-card {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, var(--glass-bg), rgba(255, 255, 255, 0.01));
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .balance-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .balance-amount {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary-glow);
+            letter-spacing: 1px;
+        }
+
+        .balance-currency {
+            font-size: 24px;
+            opacity: 0.7;
+        }
+
+        /* Theme Switcher */
+        .theme-switcher {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .theme-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .theme-menu {
+            position: absolute;
+            top: 75px;
+            right: 0;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            backdrop-filter: blur(20px);
+            padding: 12px;
+            min-width: 220px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .theme-menu.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            margin: 4px 0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .theme-option:hover {
+            background: rgba(255, 255, 255, 0.05);
+            transform: translateX(5px);
+        }
+
+        .theme-option.active {
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            border-color: var(--primary);
+        }
+
+        .theme-preview {
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Main Layout */
+        .game-layout {
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 30px;
+            animation: fadeIn 0.8s ease-out 0.2s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Control Panel */
+        .control-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 28px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .panel-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
+        }
+
+        .panel-title {
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        /* Difficulty Selection */
+        .difficulty-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+
+        .difficulty-btn {
+            position: relative;
+            padding: 20px 12px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .difficulty-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary-glow), var(--secondary-glow));
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .difficulty-btn:hover::before {
+            opacity: 0.1;
+        }
+
+        .difficulty-btn.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: transparent;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .difficulty-btn.active .difficulty-number,
+        .difficulty-btn.active .difficulty-label {
+            color: #ffffff;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-content {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .difficulty-number {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .difficulty-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        /* Bet Section */
+        .bet-input-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .bet-input {
+            width: 100%;
+            padding: 20px 24px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            background: rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            color: var(--primary);
+            text-align: center;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .bet-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .bet-quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .bet-quick-btn {
+            padding: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .bet-quick-btn:hover {
+            background: var(--primary);
+            color: var(--bg-primary);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px var(--primary-glow);
+        }
+
+        .max-bet-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 16px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px var(--primary-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .max-bet-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+
+        .max-bet-btn:hover::before {
+            width: 400px;
+            height: 400px;
+        }
+
+        .max-bet-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px var(--primary-glow);
+        }
+
+        /* Stats Card */
+        .stats-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .stat-value {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* Play Button */
+        .play-btn {
+            width: 100%;
+            padding: 24px;
+            background: linear-gradient(135deg, var(--success), #00cc66);
+            border: none;
+            border-radius: 20px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .play-btn::after {
+            content: '▼';
+            position: absolute;
+            right: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .play-btn:hover::after {
+            transform: translateY(-50%) translateY(5px);
+        }
+
+        .play-btn:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 15px 60px rgba(0, 255, 136, 0.6);
+        }
+
+        .play-btn:active {
+            transform: translateY(-2px) scale(0.98);
+        }
+
+        /* Game Area */
+        .game-area {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0px, transparent 1px, transparent 40px),
+                    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0px, transparent 1px, transparent 40px);
+            pointer-events: none;
+        }
+
+        #plinko-canvas {
+            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow:
+                    inset 0 0 60px rgba(0, 0, 0, 0.5),
+                    0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .multipliers-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .multiplier-box {
+            min-width: 70px;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .multiplier-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .multiplier-box:hover::before {
+            opacity: 1;
+        }
+
+        .mult-extreme {
+            background: linear-gradient(135deg, #ff00ff, #ff0080);
+            color: #ffffff;
+            box-shadow: 0 6px 30px rgba(255, 0, 255, 0.5);
+            animation: pulseGlow 2s ease-in-out infinite;
+        }
+
+        .mult-high {
+            background: linear-gradient(135deg, #00ff88, #00cc66);
+            color: #ffffff;
+            box-shadow: 0 6px 25px rgba(0, 255, 136, 0.4);
+        }
+
+        .mult-medium {
+            background: linear-gradient(135deg, #ffd700, #ffae00);
+            color: #000000;
+            box-shadow: 0 6px 25px rgba(255, 215, 0, 0.4);
+        }
+
+        .mult-low {
+            background: linear-gradient(135deg, #ff3366, #cc0044);
+            color: #ffffff;
+            box-shadow: 0 6px 25px rgba(255, 51, 102, 0.4);
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% {
+                box-shadow: 0 6px 30px rgba(255, 0, 255, 0.5);
+                transform: scale(1);
+            }
+            50% {
+                box-shadow: 0 8px 40px rgba(255, 0, 255, 0.8);
+                transform: scale(1.05);
+            }
+        }
+
+        /* Win Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(20px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .overlay.active {
+            display: flex;
+        }
+
+        .popup {
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 60px 50px;
+            text-align: center;
+            backdrop-filter: blur(40px);
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
+            max-width: 500px;
+            animation: popupEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popup::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, var(--primary-glow) 0%, transparent 70%);
+            opacity: 0.2;
+            animation: rotateBg 10s linear infinite;
+        }
+
+        @keyframes rotateBg {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes popupEnter {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .popup-icon {
+            font-size: 100px;
+            margin-bottom: 20px;
+            animation: bounce 1s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px var(--primary));
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .popup-title {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 52px;
+            font-weight: 900;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+        }
+
+        .popup-message {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+        }
+
+        .popup-win-amount {
+            font-family: 'Bebas Neue', cursive;
+            font-size: 56px;
+            font-weight: 900;
+            color: var(--success);
+            text-shadow: 0 0 40px rgba(0, 255, 136, 0.6);
+            margin-bottom: 30px;
+            letter-spacing: 2px;
+        }
+
+        .popup-btn {
+            padding: 18px 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 16px;
+            font-family: 'Bebas Neue', cursive;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 30px var(--primary-glow);
+        }
+
+        .popup-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 40px var(--primary-glow);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .game-layout {
+                grid-template-columns: 1fr;
+            }
+
+            .control-panel {
+                order: 2;
+            }
+
+            .game-area {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .logo {
+                font-size: 32px;
+            }
+
+            .balance-amount {
+                font-size: 28px;
+            }
+
+            #plinko-canvas {
+                max-width: 100%;
+                height: auto;
+            }
+        }
+    </style>
 </head>
 <body>
 <!-- Theme Switcher -->
-<div id="theme-switcher">
-    <button id="theme-button">🎨</button>
-    <div id="theme-menu" class="hidden">
-        <button class="theme-option active" data-theme="default">
-            <span class="theme-preview" style="background: linear-gradient(135deg, #ffc400, #00cc66)"></span>
-            <span>Classico</span>
-        </button>
-        <button class="theme-option" data-theme="dark">
-            <span class="theme-preview" style="background: linear-gradient(135deg, #60a5fa, #a78bfa)"></span>
-            <span>Scuro</span>
-        </button>
-        <button class="theme-option" data-theme="neon">
-            <span class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #06b6d4)"></span>
+<div class="theme-switcher">
+    <button class="theme-btn" id="theme-btn">🎨</button>
+    <div class="theme-menu" id="theme-menu">
+        <div class="theme-option active" data-theme="cyber">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #00f5ff, #ff00ea)"></div>
+            <span>Cyber</span>
+        </div>
+        <div class="theme-option" data-theme="neon">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #ff006e, #00ffff)"></div>
             <span>Neon</span>
-        </button>
+        </div>
+        <div class="theme-option" data-theme="gold">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #ffd700, #ff8c00)"></div>
+            <span>Gold</span>
+        </div>
     </div>
 </div>
 
 <!-- Main Container -->
-<div class="game-container">
+<div class="container">
     <!-- Header -->
-    <header class="game-header">
-        <div class="balance-display">
-            <span>💰 Saldo</span>
-            <span class="balance-amount"><span id="balance">500</span> 💵</span>
+    <header class="header">
+        <div class="logo">◆ PLINKO ELITE ◆</div>
+        <div class="balance-card">
+            <div class="balance-label">Saldo</div>
+            <div class="balance-amount">
+                <span id="balance">500</span>
+                <span class="balance-currency">€</span>
+            </div>
         </div>
     </header>
 
     <!-- Game Layout -->
     <div class="game-layout">
-        <!-- Controls Panel -->
-        <aside class="controls-panel">
-            <section>
-                <h3 class="section-title">Seleziona Difficoltà</h3>
-                <div class="version-buttons">
-                    <button class="version-btn active" data-rows="8">
-                        <span class="version-number">8</span>
-                        <span class="version-label">Facile</span>
+        <!-- Control Panel -->
+        <aside class="control-panel">
+            <!-- Difficulty -->
+            <div class="panel-card">
+                <h3 class="panel-title">Difficoltà</h3>
+                <div class="difficulty-grid">
+                    <button class="difficulty-btn active" data-rows="8">
+                        <div class="difficulty-content">
+                            <div class="difficulty-number">8</div>
+                            <div class="difficulty-label">Facile</div>
+                        </div>
                     </button>
-                    <button class="version-btn" data-rows="12">
-                        <span class="version-number">12</span>
-                        <span class="version-label">Medio</span>
+                    <button class="difficulty-btn" data-rows="12">
+                        <div class="difficulty-content">
+                            <div class="difficulty-number">12</div>
+                            <div class="difficulty-label">Medio</div>
+                        </div>
                     </button>
-                    <button class="version-btn" data-rows="16">
-                        <span class="version-number">16</span>
-                        <span class="version-label">Difficile</span>
+                    <button class="difficulty-btn" data-rows="16">
+                        <div class="difficulty-content">
+                            <div class="difficulty-number">16</div>
+                            <div class="difficulty-label">Pro</div>
+                        </div>
                     </button>
                 </div>
-            </section>
+            </div>
 
-            <section>
-                <h3 class="section-title">Imposta Puntata</h3>
-                <input type="number" id="scommessa" placeholder="0" value="10">
-                <div class="bet-buttons">
-                    <button class="bet-btn" data-add="5">+5</button>
-                    <button class="bet-btn" data-add="10">+10</button>
-                    <button class="bet-btn" data-add="50">+50</button>
-                    <button class="bet-btn" data-add="100">+100</button>
+            <!-- Bet Section -->
+            <div class="panel-card">
+                <h3 class="panel-title">Puntata</h3>
+                <div class="bet-input-wrapper">
+                    <input type="number" id="bet-input" class="bet-input" value="10" min="1">
                 </div>
-                <button class="max-bet-btn">MAX BET</button>
-            </section>
-
-            <section class="info-section">
-                <div class="info-row">
-                    <span>Ultima Vincita</span>
-                    <span class="info-value"><span id="last-win">0</span> 💵</span>
+                <div class="bet-quick-buttons">
+                    <button class="bet-quick-btn" data-add="5">+5</button>
+                    <button class="bet-quick-btn" data-add="10">+10</button>
+                    <button class="bet-quick-btn" data-add="50">+50</button>
+                    <button class="bet-quick-btn" data-add="100">+100</button>
                 </div>
-            </section>
+                <button class="max-bet-btn" id="max-bet">MAX BET</button>
+            </div>
 
-            <button id="drop-btn" class="action-btn primary-btn">
-                🎮 LANCIA PALLINA
-            </button>
+            <!-- Stats -->
+            <div class="panel-card">
+                <h3 class="panel-title">Statistiche</h3>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-label">Ultima Vincita</span>
+                        <span class="stat-value"><span id="last-win">0</span>€</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Play Button -->
+            <button class="play-btn" id="drop-btn">LANCIA</button>
         </aside>
 
         <!-- Game Area -->
         <main class="game-area">
             <canvas id="plinko-canvas" width="600" height="700"></canvas>
-            <div class="multipliers" id="multipliers"></div>
+            <div class="multipliers-container" id="multipliers"></div>
         </main>
     </div>
 </div>
 
 <!-- Win Overlay -->
-<div id="overlay" class="overlay">
-    <div class="popup popup-win">
+<div class="overlay" id="overlay">
+    <div class="popup">
         <div class="popup-icon">💎</div>
-        <h2 class="popup-title">HAI VINTO!</h2>
-        <p class="popup-message">Hai vinto <span id="win-amount">0</span> 💵</p>
-        <button class="popup-btn" onclick="closePopup()">Fantastico!</button>
+        <h2 class="popup-title">JACKPOT!</h2>
+        <div class="popup-win-amount"><span id="win-amount">0</span>€</div>
+        <p class="popup-message">Congratulazioni per la vincita!</p>
+        <button class="popup-btn" id="close-popup">Continua</button>
     </div>
 </div>
+
+<script>
+    // Game State
+    let balance = 500;
+    let currentBet = 10;
+    let rows = 8;
+    let inGame = false;
+    let currentTheme = 'cyber';
+
+    const canvas = document.getElementById('plinko-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const themeColors = {
+        cyber: {
+            primary: '#00f5ff',
+            secondary: '#ff00ea',
+            accent: '#ffd700',
+            peg: '#00f5ff',
+            ball: '#ff00ea'
+        },
+        neon: {
+            primary: '#ff006e',
+            secondary: '#00ffff',
+            accent: '#ffbe0b',
+            peg: '#ff006e',
+            ball: '#00ffff'
+        },
+        gold: {
+            primary: '#ffd700',
+            secondary: '#ff8c00',
+            accent: '#ffffff',
+            peg: '#ffd700',
+            ball: '#ff8c00'
+        }
+    };
+
+    // Balance Management
+    function updateBalance(amount) {
+        balance = Math.max(0, balance + amount);
+        document.getElementById('balance').textContent = balance;
+    }
+
+    // Bet Management
+    document.getElementById('bet-input').addEventListener('input', (e) => {
+        if (inGame) return;
+        currentBet = Math.min(parseInt(e.target.value) || 0, balance);
+        e.target.value = currentBet;
+    });
+
+    document.querySelectorAll('.bet-quick-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (inGame) return;
+            const add = parseInt(btn.dataset.add);
+            currentBet = Math.min(currentBet + add, balance);
+            document.getElementById('bet-input').value = currentBet;
+        });
+    });
+
+    document.getElementById('max-bet').addEventListener('click', () => {
+        if (inGame) return;
+        currentBet = balance;
+        document.getElementById('bet-input').value = currentBet;
+    });
+
+    // Difficulty Selection
+    document.querySelectorAll('.difficulty-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (inGame) return;
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            rows = parseInt(btn.dataset.rows);
+            setupPlinko();
+        });
+    });
+
+    // Theme Switcher
+    document.getElementById('theme-btn').addEventListener('click', () => {
+        document.getElementById('theme-menu').classList.toggle('active');
+    });
+
+    document.querySelectorAll('.theme-option').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const theme = btn.dataset.theme;
+            applyTheme(theme);
+            document.getElementById('theme-menu').classList.remove('active');
+        });
+    });
+
+    function applyTheme(themeName) {
+        currentTheme = themeName;
+        document.body.setAttribute('data-theme', themeName);
+
+        document.querySelectorAll('.theme-option').forEach(b => b.classList.remove('active'));
+        document.querySelector(`[data-theme="${themeName}"]`).classList.add('active');
+
+        setupPlinko();
+    }
+
+    // Plinko Game Logic
+    class Ball {
+        constructor(x, y) {
+            this.x = x;
+            this.y = y;
+            this.vx = 0;
+            this.vy = 0;
+            this.radius = 10;
+            this.gravity = 0.6;
+            this.bounce = 0.65;
+            this.trail = [];
+        }
+
+        update() {
+            this.trail.push({ x: this.x, y: this.y });
+            if (this.trail.length > 10) this.trail.shift();
+
+            this.vy += this.gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+            this.vx *= 0.98;
+        }
+
+        draw() {
+            const theme = themeColors[currentTheme];
+
+            // Draw trail
+            this.trail.forEach((point, i) => {
+                const alpha = i / this.trail.length;
+                ctx.beginPath();
+                ctx.arc(point.x, point.y, this.radius * alpha, 0, Math.PI * 2);
+                ctx.fillStyle = `${theme.ball}${Math.floor(alpha * 128).toString(16).padStart(2, '0')}`;
+                ctx.fill();
+            });
+
+            // Draw ball
+            const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.3, theme.ball);
+            gradient.addColorStop(1, theme.ball + '66');
+
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = theme.ball;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+    }
+
+    let pegs = [];
+    let multipliers = [];
+    let balls = [];
+
+    function setupPlinko() {
+        pegs = [];
+        const pegSpacing = 40;
+        const startX = canvas.width / 2 - (rows / 2) * pegSpacing;
+        const startY = 100;
+
+        for (let row = 0; row < rows; row++) {
+            for (let col = 0; col <= row; col++) {
+                pegs.push({
+                    x: startX + col * pegSpacing + (rows - row - 1) * pegSpacing / 2,
+                    y: startY + row * pegSpacing,
+                    radius: 6
+                });
+            }
+        }
+
+        // Setup multipliers
+        const slots = rows + 1;
+        multipliers = [];
+        const multValues = generateMultipliers(slots);
+
+        const multContainer = document.getElementById('multipliers');
+        multContainer.innerHTML = '';
+
+        multValues.forEach((mult, i) => {
+            multipliers.push({
+                x: startX + i * pegSpacing - pegSpacing / 2,
+                value: mult
+            });
+
+            const box = document.createElement('div');
+            box.className = 'multiplier-box';
+
+            if (mult >= 15) box.classList.add('mult-extreme');
+            else if (mult >= 8) box.classList.add('mult-high');
+            else if (mult >= 2) box.classList.add('mult-medium');
+            else box.classList.add('mult-low');
+
+            box.textContent = `×${mult}`;
+            multContainer.appendChild(box);
+        });
+
+        drawPlinko();
+    }
+
+    function generateMultipliers(slots) {
+        const mults = [];
+        const center = Math.floor(slots / 2);
+
+        for (let i = 0; i < slots; i++) {
+            const distance = Math.abs(i - center);
+            if (distance === 0) mults.push(16);
+            else if (distance === 1) mults.push(9);
+            else if (distance === 2) mults.push(2);
+            else if (distance === 3) mults.push(1.2);
+            else if (distance === 4) mults.push(0.5);
+            else mults.push(0.3);
+        }
+
+        return mults;
+    }
+
+    function drawPlinko() {
+        const theme = themeColors[currentTheme];
+
+        // Clear canvas
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw pegs
+        pegs.forEach(peg => {
+            const gradient = ctx.createRadialGradient(peg.x, peg.y, 0, peg.x, peg.y, peg.radius);
+            gradient.addColorStop(0, '#ffffff');
+            gradient.addColorStop(0.3, theme.peg);
+            gradient.addColorStop(1, theme.peg + '66');
+
+            ctx.beginPath();
+            ctx.arc(peg.x, peg.y, peg.radius, 0, Math.PI * 2);
+            ctx.fillStyle = gradient;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = theme.peg;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        });
+
+        // Draw balls
+        balls.forEach(ball => ball.draw());
+    }
+
+    function checkCollisions(ball) {
+        pegs.forEach(peg => {
+            const dx = ball.x - peg.x;
+            const dy = ball.y - peg.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+
+            if (distance < ball.radius + peg.radius) {
+                const angle = Math.atan2(dy, dx);
+                ball.x = peg.x + Math.cos(angle) * (ball.radius + peg.radius);
+                ball.y = peg.y + Math.sin(angle) * (ball.radius + peg.radius);
+
+                const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
+                ball.vx = Math.cos(angle) * speed * ball.bounce + (Math.random() - 0.5) * 3;
+                ball.vy = Math.sin(angle) * speed * ball.bounce;
+            }
+        });
+    }
+
+    function getMultiplierSlot(x) {
+        for (let i = 0; i < multipliers.length; i++) {
+            const mult = multipliers[i];
+            const nextMult = multipliers[i + 1];
+            if (nextMult && x >= mult.x && x < nextMult.x) {
+                return i;
+            }
+        }
+        return multipliers.length - 1;
+    }
+
+    function animate() {
+        drawPlinko();
+
+        balls = balls.filter(ball => {
+            ball.update();
+            checkCollisions(ball);
+
+            if (ball.y > canvas.height - 50) {
+                const slot = getMultiplierSlot(ball.x);
+                const mult = multipliers[slot].value;
+                const winAmount = Math.floor(currentBet * mult);
+
+                updateBalance(winAmount);
+                document.getElementById('last-win').textContent = winAmount;
+
+                if (mult >= 5) {
+                    showWinPopup(winAmount);
+                }
+
+                return false;
+            }
+
+            return ball.y < canvas.height + 50;
+        });
+
+        if (balls.length > 0 || inGame) {
+            requestAnimationFrame(animate);
+        } else {
+            inGame = false;
+        }
+    }
+
+    function dropBall() {
+        if (currentBet <= 0 || currentBet > balance) return;
+
+        updateBalance(-currentBet);
+
+        const ball = new Ball(canvas.width / 2 + (Math.random() - 0.5) * 30, 50);
+        balls.push(ball);
+
+        if (!inGame) {
+            inGame = true;
+            animate();
+        }
+    }
+
+    document.getElementById('drop-btn').addEventListener('click', dropBall);
+
+    function showWinPopup(amount) {
+        document.getElementById('win-amount').textContent = amount;
+        document.getElementById('overlay').classList.add('active');
+    }
+
+    document.getElementById('close-popup').addEventListener('click', () => {
+        document.getElementById('overlay').classList.remove('active');
+    });
+
+    // Close theme menu when clicking outside
+    document.addEventListener('click', (e) => {
+        const themeMenu = document.getElementById('theme-menu');
+        const themeBtn = document.getElementById('theme-btn');
+
+        if (!themeMenu.contains(e.target) && !themeBtn.contains(e.target)) {
+            themeMenu.classList.remove('active');
+        }
+    });
+
+    // Initialize
+    setupPlinko();
+</script>
 </body>
 </html>
