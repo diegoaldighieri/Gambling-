@@ -41,8 +41,22 @@ setCaramelle(500);
 //  AGGIORNA MOLTIPLICATORE E VINCITA
 // ============================================================================
 function aggiornaMoltiplicatore() {
-    document.getElementById("moltiplicatore").textContent = cmoltiplicatore.toFixed(2);
-    document.getElementById("vincita").textContent = Math.floor(totalescommessa * cmoltiplicatore);
+    const moltiplicatoreEl = document.getElementById("moltiplicatore");
+    const vincitaEl = document.getElementById("vincita");
+
+    moltiplicatoreEl.textContent = cmoltiplicatore.toFixed(2);
+    vincitaEl.textContent = Math.floor(totalescommessa * cmoltiplicatore);
+
+    // Animazione pulse se il gioco è in corso
+    if (inGioco && cmoltiplicatore > 1) {
+        moltiplicatoreEl.parentElement.classList.add('pulse');
+        vincitaEl.parentElement.classList.add('pulse');
+
+        setTimeout(() => {
+            moltiplicatoreEl.parentElement.classList.remove('pulse');
+            vincitaEl.parentElement.classList.remove('pulse');
+        }, 500);
+    }
 }
 
 // ============================================================================
@@ -214,32 +228,61 @@ function generacelle() {
             if (cliccata[index]) return;
             cliccata[index] = true;
 
-            // Rimuovi l'immagine e mostra l'emoji
-            cella.innerHTML = "";
+            // Aggiungi animazione di flip
+            cella.classList.add('revealing');
 
-            if (tesori.includes(index)) {
-                cella.innerHTML = "💣";
-                setCaramelle(getCaramelle() - totalescommessa);
+            // Dopo l'animazione di flip, mostra il risultato
+            setTimeout(() => {
+                // Rimuovi l'immagine
+                cella.innerHTML = "";
 
-                inGioco = false;
-                document.getElementById("overlay").style.display = "flex";
-                return;
-            }
+                if (tesori.includes(index)) {
+                    // BOMBA! 💣
+                    cella.classList.remove('revealing');
+                    cella.classList.add('bomb-reveal');
+                    cella.innerHTML = "💣";
 
-            cella.innerHTML = "💎";
-            trovati++;
+                    // Shake della griglia
+                    const gridWrapper = document.querySelector('.grid-wrapper');
+                    gridWrapper.classList.add('shake');
+                    setTimeout(() => gridWrapper.classList.remove('shake'), 500);
 
-            cmoltiplicatore *= versionSettings[versione].safeBoost;
-            aggiornaMoltiplicatore();
+                    // Mostra overlay dopo l'animazione
+                    setTimeout(() => {
+                        setCaramelle(getCaramelle() - totalescommessa);
+                        inGioco = false;
+                        document.getElementById("overlay").style.display = "flex";
+                    }, 600);
 
-            if (trovati === celle.length - 1) {
-                const bonus = versionSettings[versione].bonusFinale;
-                const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
+                    return;
+                }
 
-                setCaramelle(getCaramelle() + premio);
-                inGioco = false;
-                document.getElementById("overlay2").style.display = "flex";
-            }
+                // DIAMANTE! 💎
+                cella.classList.remove('revealing');
+                cella.classList.add('diamond-reveal');
+
+                // Se hai trovato 3+ diamanti, aggiungi effetto combo
+                if (trovati >= 2) {
+                    cella.classList.add('combo-hit');
+                }
+
+                cella.innerHTML = "💎";
+                trovati++;
+
+                cmoltiplicatore *= versionSettings[versione].safeBoost;
+                aggiornaMoltiplicatore();
+
+                if (trovati === celle.length - 1) {
+                    const bonus = versionSettings[versione].bonusFinale;
+                    const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
+
+                    setTimeout(() => {
+                        setCaramelle(getCaramelle() + premio);
+                        inGioco = false;
+                        document.getElementById("overlay2").style.display = "flex";
+                    }, 800);
+                }
+            }, 300); // Timing sincronizzato con l'animazione flip
         });
     });
 }
@@ -392,7 +435,3 @@ document.querySelectorAll('.theme-option').forEach(btn => {
 });
 
 applyTheme('default');
-
-
-
-

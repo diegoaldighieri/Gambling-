@@ -1,15 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Caccia al tesoro</title>
+    <title>💎 Caccia al Tesoro</title>
+    <link rel="stylesheet" href="styles/Gambling.css" />
     <script src="code/Gambling.js" defer></script>
-    <link rel="stylesheet" href="styles/Gambling.css"/>
 </head>
 <body>
+<!-- Theme Switcher -->
 <div id="theme-switcher">
-    <button id="theme-button">🎨</button>
+    <button id="theme-button" aria-label="Cambia tema">🎨</button>
     <div id="theme-menu" class="hidden">
         <div class="theme-menu-title">Scegli Tema</div>
         <button class="theme-option" data-theme="default">
@@ -39,53 +40,120 @@
     </div>
 </div>
 
+<!-- Container Principale -->
+<div class="game-container">
 
-
-
-
-<div id="main-content">
-    <h2>💵Money💵: <span id="caramelle"></span></h2>
-
-    <div>
-        <button id="Versione1">Versione 1</button>
-        <button id="Versione2">Versione 2</button>
-        <button id="Versione3">Versione 3</button>
-    </div>
-
-    <button id="start">Comincia la caccia</button>
-
-    <div id="grid"></div>
-
-    <div id="overlay">
-        <div id="popup">
-            <h2>💣 BOMBOCLAT HAI PERSO 💣</h2>
-            <button onclick="closePopup()">Chiudi</button>
+    <!-- Header con Saldo -->
+    <header class="game-header">
+        <div class="balance-display">
+            <span class="balance-label">💰 Saldo</span>
+            <span class="balance-amount"><span id="caramelle"></span> 💵</span>
         </div>
-    </div>
-    <div id="overlay2">
-        <div id="popup2">
-            <h2>💎 BOMBOCLAT HAI VINTO 💎</h2>
-            <button onclick="closePopup()">Chiudi</button>
-        </div>
-    </div>
-    <div id="overlay3">
-        <div id="popup3">
-            <h2>EDDAI SCOMMETTI</h2>
-            <button onclick="closePopup()">Chiudi</button>
-        </div>
+    </header>
+
+    <!-- Layout a due colonne -->
+    <div class="game-layout">
+
+        <!-- Colonna Sinistra: Controlli -->
+        <aside class="controls-panel">
+
+            <!-- Sezione Versioni -->
+            <section class="control-section">
+                <h3 class="section-title">Seleziona Difficoltà</h3>
+                <div class="version-buttons">
+                    <button id="Versione1" class="version-btn">
+                        <span class="version-number">3×3</span>
+                        <span class="version-label">Facile</span>
+                    </button>
+                    <button id="Versione2" class="version-btn">
+                        <span class="version-number">4×4</span>
+                        <span class="version-label">Medio</span>
+                    </button>
+                    <button id="Versione3" class="version-btn">
+                        <span class="version-number">5×5</span>
+                        <span class="version-label">Difficile</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Sezione Scommessa -->
+            <section class="control-section">
+                <h3 class="section-title">Imposta Puntata</h3>
+                <div class="bet-input-wrapper">
+                    <input type="number" id="scommessa" placeholder="0" />
+                </div>
+                <div class="bet-buttons">
+                    <button id="somma5" class="bet-btn">+5</button>
+                    <button id="somma10" class="bet-btn">+10</button>
+                    <button id="somma50" class="bet-btn">+50</button>
+                    <button id="somma100" class="bet-btn">+100</button>
+                </div>
+                <button id="maxbet" class="max-bet-btn">MAX BET</button>
+            </section>
+
+            <!-- Sezione Info Vincita -->
+            <section class="control-section info-section">
+                <div class="info-row">
+                    <span class="info-label">Moltiplicatore</span>
+                    <span class="info-value">×<span id="moltiplicatore"></span></span>
+                </div>
+                <div class="info-row highlight">
+                    <span class="info-label">Vincita Potenziale</span>
+                    <span class="info-value"><span id="vincita"></span> 💵</span>
+                </div>
+            </section>
+
+            <!-- Pulsanti Azione -->
+            <div class="action-buttons">
+                <button id="start" class="action-btn primary-btn">
+                    🎮 INIZIA PARTITA
+                </button>
+                <button id="accontentati" class="action-btn secondary-btn">
+                    💰 RITIRA VINCITA
+                </button>
+            </div>
+
+        </aside>
+
+        <!-- Colonna Destra: Griglia di Gioco -->
+        <main class="game-area">
+            <div class="grid-wrapper">
+                <div id="grid"></div>
+            </div>
+        </main>
+
     </div>
 </div>
-<div id="scomm/vinc">
-    <label for="scommessa">Inserisci la tua puntata</label>
-    <input type="number" id="scommessa" />
-    <button id="somma5">+5</button>
-    <button id="somma10">+10</button>
-    <button id="somma50">+50</button>
-    <button id="somma100">+100</button>
-    <button id="maxbet">MAX BET</button>
-    <h2>Moltiplicatore: <span id="moltiplicatore"></span></h2>
-    <h2>Vincita al momento: <span id="vincita"></span></h2>
-    <button id="accontentati">CI ACCONTENTIAMO</button>
+
+<!-- Overlay Sconfitta -->
+<div id="overlay" class="overlay">
+    <div id="popup" class="popup popup-lose">
+        <div class="popup-icon">💣</div>
+        <h2 class="popup-title">HAI PERSO!</h2>
+        <p class="popup-message">La bomba ti ha fatto saltare in aria!</p>
+        <button onclick="closePopup()" class="popup-btn">Riprova</button>
+    </div>
 </div>
+
+<!-- Overlay Vittoria -->
+<div id="overlay2" class="overlay">
+    <div id="popup2" class="popup popup-win">
+        <div class="popup-icon">💎</div>
+        <h2 class="popup-title">HAI VINTO!</h2>
+        <p class="popup-message">Hai trovato tutti i tesori!</p>
+        <button onclick="closePopup()" class="popup-btn">Fantastico!</button>
+    </div>
+</div>
+
+<!-- Overlay Cashout -->
+<div id="overlay3" class="overlay">
+    <div id="popup3" class="popup popup-cashout">
+        <div class="popup-icon">💰</div>
+        <h2 class="popup-title">VINCITA RITIRATA!</h2>
+        <p class="popup-message">Hai incassato la tua vincita!</p>
+        <button onclick="closePopup()" class="popup-btn">Perfetto!</button>
+    </div>
+</div>
+
 </body>
 </html>
