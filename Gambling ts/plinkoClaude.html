@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Plinko</title>
+    <script src="code/Plinko.js" defer></script>
+    <link rel="stylesheet" href="styles/Plinko.css">
+</head>
+<body>
+<!-- Theme Switcher -->
+<div id="theme-switcher">
+    <button id="theme-button">🎨</button>
+    <div id="theme-menu" class="hidden">
+        <button class="theme-option active" data-theme="default">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ffc400, #00cc66)"></span>
+            <span>Classico</span>
+        </button>
+        <button class="theme-option" data-theme="dark">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #60a5fa, #a78bfa)"></span>
+            <span>Scuro</span>
+        </button>
+        <button class="theme-option" data-theme="neon">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ec4899, #06b6d4)"></span>
+            <span>Neon</span>
+        </button>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="game-container">
+    <!-- Header -->
+    <header class="game-header">
+        <div class="balance-display">
+            <span>💰 Saldo</span>
+            <span class="balance-amount"><span id="balance">500</span> 💵</span>
+        </div>
+    </header>
+
+    <!-- Game Layout -->
+    <div class="game-layout">
+        <!-- Controls Panel -->
+        <aside class="controls-panel">
+            <section>
+                <h3 class="section-title">Seleziona Difficoltà</h3>
+                <div class="version-buttons">
+                    <button class="version-btn active" data-rows="8">
+                        <span class="version-number">8</span>
+                        <span class="version-label">Facile</span>
+                    </button>
+                    <button class="version-btn" data-rows="12">
+                        <span class="version-number">12</span>
+                        <span class="version-label">Medio</span>
+                    </button>
+                    <button class="version-btn" data-rows="16">
+                        <span class="version-number">16</span>
+                        <span class="version-label">Difficile</span>
+                    </button>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="section-title">Imposta Puntata</h3>
+                <input type="number" id="scommessa" placeholder="0" value="10">
+                <div class="bet-buttons">
+                    <button class="bet-btn" data-add="5">+5</button>
+                    <button class="bet-btn" data-add="10">+10</button>
+                    <button class="bet-btn" data-add="50">+50</button>
+                    <button class="bet-btn" data-add="100">+100</button>
+                </div>
+                <button class="max-bet-btn">MAX BET</button>
+            </section>
+
+            <section class="info-section">
+                <div class="info-row">
+                    <span>Ultima Vincita</span>
+                    <span class="info-value"><span id="last-win">0</span> 💵</span>
+                </div>
+            </section>
+
+            <button id="drop-btn" class="action-btn primary-btn">
+                🎮 LANCIA PALLINA
+            </button>
+        </aside>
+
+        <!-- Game Area -->
+        <main class="game-area">
+            <canvas id="plinko-canvas" width="600" height="700"></canvas>
+            <div class="multipliers" id="multipliers"></div>
+        </main>
+    </div>
+</div>
+
+<!-- Win Overlay -->
+<div id="overlay" class="overlay">
+    <div class="popup popup-win">
+        <div class="popup-icon">💎</div>
+        <h2 class="popup-title">HAI VINTO!</h2>
+        <p class="popup-message">Hai vinto <span id="win-amount">0</span> 💵</p>
+        <button class="popup-btn" onclick="closePopup()">Fantastico!</button>
+    </div>
+</div>
+</body>
+</html>
