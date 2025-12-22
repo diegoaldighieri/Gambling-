@@ -8,7 +8,7 @@
     <script src="code/Gambling.js" defer></script>
 </head>
 <body>
-<!-- Cambio temi-->
+<!-- Theme Switcher -->
 <div id="theme-switcher">
     <button id="theme-button" aria-label="Cambia tema">🎨</button>
     <div id="theme-menu" class="hidden">
@@ -36,6 +36,30 @@
         <button class="theme-option" data-theme="ocean">
             <span class="theme-preview" style="background: linear-gradient(135deg, #0ea5e9, #06b6d4)"></span>
             <span>Oceano</span>
+        </button>
+        <button class="theme-option" data-theme="cyberpunk">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ff00ff, #00ffff)"></span>
+            <span>Cyberpunk</span>
+        </button>
+        <button class="theme-option" data-theme="lava">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ff4500, #ff8c00)"></span>
+            <span>Lava</span>
+        </button>
+        <button class="theme-option" data-theme="arctic">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #00d4ff, #b3e5fc)"></span>
+            <span>Arctic</span>
+        </button>
+        <button class="theme-option" data-theme="goldRush">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #ffd700, #ffb347)"></span>
+            <span>Gold Rush</span>
+        </button>
+        <button class="theme-option" data-theme="purpleHaze">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #9c27b0, #e91e63)"></span>
+            <span>Purple Haze</span>
+        </button>
+        <button class="theme-option" data-theme="matrix">
+            <span class="theme-preview" style="background: linear-gradient(135deg, #00ff00, #39ff14)"></span>
+            <span>Matrix</span>
         </button>
     </div>
 </div>
@@ -75,7 +99,7 @@
                 </div>
             </section>
 
-            <!-- Selezione numero bombe -->
+            <!-- Bomb Selection -->
             <section class="control-section">
                 <h3 class="section-title">Numero di Bombe 💣</h3>
                 <div class="bomb-selector">
@@ -91,7 +115,7 @@
                 </div>
             </section>
 
-            <!-- Bet totale -->
+            <!-- Bet Amount -->
             <section class="control-section">
                 <h3 class="section-title">Imposta Puntata</h3>
                 <div class="bet-input-wrapper">
@@ -122,7 +146,7 @@
                 </div>
             </section>
 
-            <!-- Pulsanti vari -->
+            <!-- Action Buttons -->
             <div class="action-buttons">
                 <button id="start" class="action-btn primary-btn">
                     🎮 INIZIA PARTITA
@@ -144,7 +168,7 @@
     </div>
 </div>
 
-<!-- Perdita Overlay -->
+<!-- Lose Overlay -->
 <div id="overlay" class="overlay">
     <div id="popup" class="popup popup-lose">
         <div class="popup-icon">💣</div>
@@ -155,7 +179,7 @@
     </div>
 </div>
 
-<!-- Vincita Overlay -->
+<!-- Win Overlay -->
 <div id="overlay2" class="overlay">
     <div id="popup2" class="popup popup-win">
         <div class="popup-icon">💎</div>
