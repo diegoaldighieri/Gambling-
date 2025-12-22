@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Plinko • Cyber Casino</title>
+    <title>Plinko Elite • Cyber Casino</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Bebas+Neue&display=swap" rel="stylesheet">
@@ -42,6 +42,16 @@
             --accent: #ffffff;
             --bg-primary: #1a1300;
             --bg-secondary: #2d2200;
+        }
+
+        [data-theme="matrix"] {
+            --primary: #00ff41;
+            --primary-glow: rgba(0, 255, 65, 0.5);
+            --secondary: #008f11;
+            --secondary-glow: rgba(0, 143, 17, 0.5);
+            --accent: #00ff41;
+            --bg-primary: #0d0208;
+            --bg-secondary: #1a1a1a;
         }
 
         * {
@@ -375,6 +385,55 @@
             transition: all 0.3s ease;
         }
 
+        /* Auto Play Toggle */
+        .auto-play-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 16px;
+            padding: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+        }
+
+        .auto-play-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .toggle-switch.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .toggle-switch.active .toggle-slider {
+            transform: translateX(30px);
+        }
+
         /* Bet Section */
         .bet-input-wrapper {
             position: relative;
@@ -428,40 +487,38 @@
             box-shadow: 0 4px 20px var(--primary-glow);
         }
 
-        .max-bet-btn {
-            width: 100%;
-            padding: 18px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 16px;
+        .bet-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .half-bet-btn, .double-bet-btn, .max-bet-btn {
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 14px;
             font-family: 'Bebas Neue', cursive;
-            font-size: 20px;
+            font-size: 18px;
             font-weight: 700;
-            letter-spacing: 2px;
-            color: #ffffff;
+            letter-spacing: 1px;
+            color: var(--text-primary);
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        .max-bet-btn {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #ffffff;
             box-shadow: 0 8px 30px var(--primary-glow);
-            position: relative;
-            overflow: hidden;
         }
 
-        .max-bet-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-
-        .max-bet-btn:hover::before {
-            width: 400px;
-            height: 400px;
+        .half-bet-btn:hover, .double-bet-btn:hover {
+            background: var(--primary);
+            color: var(--bg-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px var(--primary-glow);
         }
 
         .max-bet-btn:hover {
@@ -499,6 +556,14 @@
             text-shadow: 0 0 15px var(--primary-glow);
         }
 
+        .stat-value.positive {
+            color: var(--success);
+        }
+
+        .stat-value.negative {
+            color: var(--danger);
+        }
+
         /* Play Button */
         .play-btn {
             width: 100%;
@@ -518,6 +583,11 @@
             overflow: hidden;
         }
 
+        .play-btn.auto-active {
+            background: linear-gradient(135deg, var(--danger), #cc0044);
+            box-shadow: 0 10px 40px rgba(255, 51, 102, 0.4);
+        }
+
         .play-btn::after {
             content: '▼';
             position: absolute;
@@ -526,6 +596,10 @@
             transform: translateY(-50%);
             font-size: 20px;
             transition: transform 0.3s ease;
+        }
+
+        .play-btn.auto-active::after {
+            content: '■';
         }
 
         .play-btn:hover::after {
@@ -537,8 +611,49 @@
             box-shadow: 0 15px 60px rgba(0, 255, 136, 0.6);
         }
 
+        .play-btn.auto-active:hover {
+            box-shadow: 0 15px 60px rgba(255, 51, 102, 0.6);
+        }
+
         .play-btn:active {
             transform: translateY(-2px) scale(0.98);
+        }
+
+        .play-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Sound Toggle */
+        .sound-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 2px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .sound-toggle:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .sound-toggle.muted {
+            opacity: 0.5;
         }
 
         /* Game Area */
@@ -621,6 +736,15 @@
             opacity: 1;
         }
 
+        .multiplier-box.hit {
+            animation: multiplierHit 0.5s ease;
+        }
+
+        @keyframes multiplierHit {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
         .mult-extreme {
             background: linear-gradient(135deg, #ff00ff, #ff0080);
             color: #ffffff;
@@ -657,127 +781,50 @@
             }
         }
 
-        /* Win Overlay */
-        .overlay {
+        /* Notification Toast */
+        .notification {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(20px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 10000;
-            animation: fadeIn 0.3s ease-out;
-        }
-
-        .overlay.active {
-            display: flex;
-        }
-
-        .popup {
+            top: 100px;
+            right: 20px;
             background: var(--glass-bg);
-            border: 2px solid var(--glass-border);
-            border-radius: 32px;
-            padding: 60px 50px;
-            text-align: center;
-            backdrop-filter: blur(40px);
-            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.5);
-            max-width: 500px;
-            animation: popupEnter 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .popup::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, var(--primary-glow) 0%, transparent 70%);
-            opacity: 0.2;
-            animation: rotateBg 10s linear infinite;
-        }
-
-        @keyframes rotateBg {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes popupEnter {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .popup-icon {
-            font-size: 100px;
-            margin-bottom: 20px;
-            animation: bounce 1s ease-in-out infinite;
-            filter: drop-shadow(0 0 30px var(--primary));
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        .popup-title {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 52px;
-            font-weight: 900;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 3px;
-        }
-
-        .popup-message {
-            font-size: 20px;
-            font-weight: 500;
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-        }
-
-        .popup-win-amount {
-            font-family: 'Bebas Neue', cursive;
-            font-size: 56px;
-            font-weight: 900;
-            color: var(--success);
-            text-shadow: 0 0 40px rgba(0, 255, 136, 0.6);
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-        }
-
-        .popup-btn {
-            padding: 18px 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
+            border: 1px solid var(--glass-border);
             border-radius: 16px;
-            font-family: 'Bebas Neue', cursive;
-            font-size: 22px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            color: #ffffff;
-            cursor: pointer;
+            padding: 16px 24px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            opacity: 0;
+            transform: translateX(400px);
             transition: all 0.3s ease;
-            box-shadow: 0 8px 30px var(--primary-glow);
+            z-index: 9999;
+            min-width: 300px;
         }
 
-        .popup-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 40px var(--primary-glow);
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification-icon {
+            font-size: 24px;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .notification-message {
+            font-size: 12px;
+            color: var(--text-secondary);
         }
 
         /* Responsive */
@@ -813,6 +860,11 @@
                 max-width: 100%;
                 height: auto;
             }
+
+            .notification {
+                right: 10px;
+                min-width: calc(100vw - 20px);
+            }
         }
     </style>
 </head>
@@ -833,6 +885,22 @@
             <div class="theme-preview" style="background: linear-gradient(135deg, #ffd700, #ff8c00)"></div>
             <span>Gold</span>
         </div>
+        <div class="theme-option" data-theme="matrix">
+            <div class="theme-preview" style="background: linear-gradient(135deg, #00ff41, #008f11)"></div>
+            <span>Matrix</span>
+        </div>
+    </div>
+</div>
+
+<!-- Sound Toggle -->
+<button class="sound-toggle" id="sound-toggle">🔊</button>
+
+<!-- Notification -->
+<div class="notification" id="notification">
+    <div class="notification-icon">💰</div>
+    <div class="notification-content">
+        <div class="notification-title" id="notif-title">Vincita!</div>
+        <div class="notification-message" id="notif-message">Hai vinto 100€</div>
     </div>
 </div>
 
@@ -877,6 +945,14 @@
                         </div>
                     </button>
                 </div>
+
+                <!-- Auto Play -->
+                <div class="auto-play-section">
+                    <span class="auto-play-label">Auto Play</span>
+                    <div class="toggle-switch" id="auto-toggle">
+                        <div class="toggle-slider"></div>
+                    </div>
+                </div>
             </div>
 
             <!-- Bet Section -->
@@ -891,7 +967,11 @@
                     <button class="bet-quick-btn" data-add="50">+50</button>
                     <button class="bet-quick-btn" data-add="100">+100</button>
                 </div>
-                <button class="max-bet-btn" id="max-bet">MAX BET</button>
+                <div class="bet-controls">
+                    <button class="half-bet-btn" id="half-bet">1/2</button>
+                    <button class="double-bet-btn" id="double-bet">2×</button>
+                    <button class="max-bet-btn" id="max-bet">MAX BET</button>
+                </div>
             </div>
 
             <!-- Stats -->
@@ -902,7 +982,22 @@
                         <span class="stat-label">Ultima Vincita</span>
                         <span class="stat-value"><span id="last-win">0</span>€</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Migliore Vincita</span>
+                        <span class="stat-value"><span id="best-win">0</span>€</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Totale Giocate</span>
+                        <span class="stat-value"><span id="total-games">0</span></span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Profitto Totale</span>
+                        <span class="stat-value" id="profit-stat">
+                            <span id="total-profit">0</span>€
+                        </span>
+                    </div>
                 </div>
+                <button class="max-bet-btn" id="reset-stats" style="margin-top: 16px; background: linear-gradient(135deg, rgba(255, 51, 102, 0.3), rgba(204, 0, 68, 0.3)); font-size: 14px; padding: 12px;">RESET STATISTICHE</button>
             </div>
 
             <!-- Play Button -->
@@ -917,24 +1012,24 @@
     </div>
 </div>
 
-<!-- Win Overlay -->
-<div class="overlay" id="overlay">
-    <div class="popup">
-        <div class="popup-icon">💎</div>
-        <h2 class="popup-title">JACKPOT!</h2>
-        <div class="popup-win-amount"><span id="win-amount">0</span>€</div>
-        <p class="popup-message">Congratulazioni per la vincita!</p>
-        <button class="popup-btn" id="close-popup">Continua</button>
-    </div>
-</div>
-
 <script>
     // Game State
     let balance = 500;
     let currentBet = 10;
     let rows = 8;
     let inGame = false;
+    let autoPlay = false;
     let currentTheme = 'cyber';
+    let soundEnabled = true;
+
+    // Statistics
+    let stats = {
+        lastWin: 0,
+        bestWin: 0,
+        totalGames: 0,
+        totalProfit: 0,
+        totalWins: 0
+    };
 
     const canvas = document.getElementById('plinko-canvas');
     const ctx = canvas.getContext('2d');
@@ -960,45 +1055,197 @@
             accent: '#ffffff',
             peg: '#ffd700',
             ball: '#ff8c00'
+        },
+        matrix: {
+            primary: '#00ff41',
+            secondary: '#008f11',
+            accent: '#00ff41',
+            peg: '#00ff41',
+            ball: '#00ff41'
         }
     };
+
+    // Audio Context for Sound Effects
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(frequency, duration, type = 'sine') {
+        if (!soundEnabled) return;
+
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+
+        oscillator.frequency.value = frequency;
+        oscillator.type = type;
+
+        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + duration);
+    }
+
+    // Sound Toggle
+    document.getElementById('sound-toggle').addEventListener('click', (e) => {
+        soundEnabled = !soundEnabled;
+        e.target.textContent = soundEnabled ? '🔊' : '🔇';
+        e.target.classList.toggle('muted', !soundEnabled);
+    });
+
+    // Notification System
+    function showNotification(title, message, icon = '💰') {
+        const notif = document.getElementById('notification');
+        const notifIcon = notif.querySelector('.notification-icon');
+        const notifTitle = document.getElementById('notif-title');
+        const notifMessage = document.getElementById('notif-message');
+
+        notifIcon.textContent = icon;
+        notifTitle.textContent = title;
+        notifMessage.textContent = message;
+
+        notif.classList.add('show');
+
+        setTimeout(() => {
+            notif.classList.remove('show');
+        }, 3000);
+    }
 
     // Balance Management
     function updateBalance(amount) {
         balance = Math.max(0, balance + amount);
-        document.getElementById('balance').textContent = balance;
+        const balanceEl = document.getElementById('balance');
+        balanceEl.textContent = balance;
+
+        // Animate balance change
+        balanceEl.parentElement.style.transform = 'scale(1.1)';
+        setTimeout(() => {
+            balanceEl.parentElement.style.transform = 'scale(1)';
+        }, 200);
+    }
+
+    // Statistics Update
+    function updateStats(winAmount, betAmount) {
+        stats.lastWin = winAmount;
+        stats.totalGames++;
+        stats.totalProfit += (winAmount - betAmount);
+
+        if (winAmount > betAmount) {
+            stats.totalWins++;
+        }
+
+        if (winAmount > stats.bestWin) {
+            stats.bestWin = winAmount;
+        }
+
+        document.getElementById('last-win').textContent = stats.lastWin;
+        document.getElementById('best-win').textContent = stats.bestWin;
+        document.getElementById('total-games').textContent = stats.totalGames;
+
+        const profitEl = document.getElementById('total-profit');
+        const profitStat = document.getElementById('profit-stat');
+
+        if (stats.totalProfit > 0) {
+            profitStat.classList.remove('negative');
+            profitStat.classList.add('positive');
+            profitEl.textContent = '+' + stats.totalProfit;
+        } else if (stats.totalProfit < 0) {
+            profitStat.classList.remove('positive');
+            profitStat.classList.add('negative');
+            profitEl.textContent = stats.totalProfit;
+        } else {
+            profitStat.classList.remove('positive', 'negative');
+            profitEl.textContent = '0';
+        }
     }
 
     // Bet Management
     document.getElementById('bet-input').addEventListener('input', (e) => {
-        if (inGame) return;
-        currentBet = Math.min(parseInt(e.target.value) || 0, balance);
+        if (inGame && !autoPlay) return;
+        currentBet = Math.min(Math.max(1, parseInt(e.target.value) || 1), balance);
         e.target.value = currentBet;
     });
 
     document.querySelectorAll('.bet-quick-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (inGame) return;
+            if (inGame && !autoPlay) return;
             const add = parseInt(btn.dataset.add);
             currentBet = Math.min(currentBet + add, balance);
             document.getElementById('bet-input').value = currentBet;
+            playSound(800, 0.1);
         });
     });
 
+    document.getElementById('half-bet').addEventListener('click', () => {
+        if (inGame && !autoPlay) return;
+        currentBet = Math.max(1, Math.floor(currentBet / 2));
+        document.getElementById('bet-input').value = currentBet;
+        playSound(600, 0.1);
+    });
+
+    document.getElementById('double-bet').addEventListener('click', () => {
+        if (inGame && !autoPlay) return;
+        currentBet = Math.min(currentBet * 2, balance);
+        document.getElementById('bet-input').value = currentBet;
+        playSound(1000, 0.1);
+    });
+
     document.getElementById('max-bet').addEventListener('click', () => {
-        if (inGame) return;
+        if (inGame && !autoPlay) return;
         currentBet = balance;
         document.getElementById('bet-input').value = currentBet;
+        playSound(1200, 0.15);
+    });
+
+    // Auto Play Toggle
+    document.getElementById('auto-toggle').addEventListener('click', (e) => {
+        // Don't allow toggle if a ball is currently falling
+        if (inGame && balls.length > 0 && !autoPlay) {
+            showNotification('Attendi', 'Aspetta che la pallina finisca la corsa', '⏳');
+            return;
+        }
+
+        autoPlay = !autoPlay;
+        e.currentTarget.classList.toggle('active', autoPlay);
+
+        const playBtn = document.getElementById('drop-btn');
+        playBtn.classList.toggle('auto-active', autoPlay);
+        playBtn.textContent = autoPlay ? 'STOP AUTO' : 'LANCIA';
+
+        if (autoPlay) {
+            if (balance < currentBet) {
+                showNotification('Saldo Insufficiente', 'Non hai abbastanza credito per l\'auto play', '❌');
+                autoPlay = false;
+                e.currentTarget.classList.remove('active');
+                playBtn.classList.remove('auto-active');
+                playBtn.textContent = 'LANCIA';
+                return;
+            }
+            showNotification('Auto Play Attivo', 'Il gioco continuerà automaticamente', '🔄');
+            playSound(1000, 0.2);
+            if (!inGame) dropBall();
+        } else {
+            showNotification('Auto Play Disattivato', 'Il gioco automatico è stato fermato', '⏸️');
+            playSound(600, 0.2);
+        }
     });
 
     // Difficulty Selection
     document.querySelectorAll('.difficulty-btn').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (inGame) return;
+            if (inGame || autoPlay) {
+                showNotification('Impossibile Cambiare', 'Ferma il gioco prima di cambiare difficoltà', '⚠️');
+                return;
+            }
             document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             rows = parseInt(btn.dataset.rows);
             setupPlinko();
+            playSound(900, 0.15);
+
+            const label = btn.querySelector('.difficulty-label').textContent;
+            showNotification('Difficoltà Cambiata', `Modalità ${label} selezionata`, '🎯');
         });
     });
 
@@ -1012,6 +1259,7 @@
             const theme = btn.dataset.theme;
             applyTheme(theme);
             document.getElementById('theme-menu').classList.remove('active');
+            playSound(1100, 0.15);
         });
     });
 
@@ -1030,48 +1278,84 @@
         constructor(x, y) {
             this.x = x;
             this.y = y;
-            this.vx = 0;
+            this.vx = (Math.random() - 0.5) * 1.5;
             this.vy = 0;
             this.radius = 10;
-            this.gravity = 0.6;
-            this.bounce = 0.65;
+            this.gravity = 0.55;
+            this.bounce = 0.75;
+            this.friction = 0.985;
             this.trail = [];
+            this.rotation = 0;
+            this.rotationSpeed = (Math.random() - 0.5) * 0.3;
+            this.lastCollision = 0;
         }
 
         update() {
             this.trail.push({ x: this.x, y: this.y });
-            if (this.trail.length > 10) this.trail.shift();
+            if (this.trail.length > 15) this.trail.shift();
 
             this.vy += this.gravity;
             this.x += this.vx;
             this.y += this.vy;
-            this.vx *= 0.98;
+            this.vx *= this.friction;
+            this.vy *= 0.998;
+            this.rotation += this.rotationSpeed;
+
+            // Wall collision with better bounce
+            if (this.x - this.radius < 0) {
+                this.x = this.radius;
+                this.vx = Math.abs(this.vx) * this.bounce;
+                playSound(500, 0.05, 'triangle');
+            }
+            if (this.x + this.radius > canvas.width) {
+                this.x = canvas.width - this.radius;
+                this.vx = -Math.abs(this.vx) * this.bounce;
+                playSound(500, 0.05, 'triangle');
+            }
         }
 
         draw() {
             const theme = themeColors[currentTheme];
 
-            // Draw trail
-            this.trail.forEach((point, i) => {
+            // Draw trail with gradient
+            for (let i = 0; i < this.trail.length - 1; i++) {
                 const alpha = i / this.trail.length;
-                ctx.beginPath();
-                ctx.arc(point.x, point.y, this.radius * alpha, 0, Math.PI * 2);
-                ctx.fillStyle = `${theme.ball}${Math.floor(alpha * 128).toString(16).padStart(2, '0')}`;
-                ctx.fill();
-            });
+                const point = this.trail[i];
+                const nextPoint = this.trail[i + 1];
 
-            // Draw ball
-            const gradient = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.radius);
+                ctx.beginPath();
+                ctx.moveTo(point.x, point.y);
+                ctx.lineTo(nextPoint.x, nextPoint.y);
+                ctx.strokeStyle = `${theme.ball}${Math.floor(alpha * 180).toString(16).padStart(2, '0')}`;
+                ctx.lineWidth = this.radius * 2 * alpha;
+                ctx.lineCap = 'round';
+                ctx.stroke();
+            }
+
+            // Draw ball with enhanced gradient
+            ctx.save();
+            ctx.translate(this.x, this.y);
+            ctx.rotate(this.rotation);
+
+            const gradient = ctx.createRadialGradient(-3, -3, 0, 0, 0, this.radius);
             gradient.addColorStop(0, '#ffffff');
-            gradient.addColorStop(0.3, theme.ball);
-            gradient.addColorStop(1, theme.ball + '66');
+            gradient.addColorStop(0.4, theme.ball);
+            gradient.addColorStop(1, theme.ball + '99');
 
             ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
             ctx.fillStyle = gradient;
-            ctx.shadowBlur = 20;
+            ctx.shadowBlur = 25;
             ctx.shadowColor = theme.ball;
             ctx.fill();
+
+            // Add highlight
+            ctx.beginPath();
+            ctx.arc(-3, -3, this.radius * 0.3, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.6)';
+            ctx.fill();
+
+            ctx.restore();
             ctx.shadowBlur = 0;
         }
     }
@@ -1091,12 +1375,14 @@
                 pegs.push({
                     x: startX + col * pegSpacing + (rows - row - 1) * pegSpacing / 2,
                     y: startY + row * pegSpacing,
-                    radius: 6
+                    radius: 6,
+                    hit: false,
+                    hitTime: 0
                 });
             }
         }
 
-        // Setup multipliers
+        // Setup multipliers with better distribution
         const slots = rows + 1;
         multipliers = [];
         const multValues = generateMultipliers(slots);
@@ -1112,9 +1398,10 @@
 
             const box = document.createElement('div');
             box.className = 'multiplier-box';
+            box.id = `mult-${i}`;
 
-            if (mult >= 15) box.classList.add('mult-extreme');
-            else if (mult >= 8) box.classList.add('mult-high');
+            if (mult >= 30) box.classList.add('mult-extreme');
+            else if (mult >= 10) box.classList.add('mult-high');
             else if (mult >= 2) box.classList.add('mult-medium');
             else box.classList.add('mult-low');
 
@@ -1129,14 +1416,24 @@
         const mults = [];
         const center = Math.floor(slots / 2);
 
+        // Different multiplier distributions based on rows (difficulty)
+        const distributions = {
+            8: {  // Easy - Lower variance
+                0: 10, 1: 5, 2: 2, 3: 1.1, 4: 0.5
+            },
+            12: { // Medium - Balanced
+                0: 33, 1: 11, 2: 4, 3: 2, 4: 1, 5: 0.5, 6: 0.3
+            },
+            16: { // Hard - High variance
+                0: 110, 1: 41, 2: 10, 3: 5, 4: 3, 5: 1.5, 6: 1, 7: 0.5, 8: 0.3
+            }
+        };
+
+        const dist = distributions[rows] || distributions[8];
+
         for (let i = 0; i < slots; i++) {
             const distance = Math.abs(i - center);
-            if (distance === 0) mults.push(16);
-            else if (distance === 1) mults.push(9);
-            else if (distance === 2) mults.push(2);
-            else if (distance === 3) mults.push(1.2);
-            else if (distance === 4) mults.push(0.5);
-            else mults.push(0.3);
+            mults.push(dist[distance] || 0.2);
         }
 
         return mults;
@@ -1144,22 +1441,56 @@
 
     function drawPlinko() {
         const theme = themeColors[currentTheme];
+        const time = Date.now();
 
-        // Clear canvas
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+        // Semi-transparent clear for trail effect
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // Draw pegs
+        // Draw multiplier zones at the bottom
+        const pegSpacing = 40;
+        const startX = canvas.width / 2 - (rows / 2) * pegSpacing;
+        const bottomY = canvas.height - 40;
+
+        multipliers.forEach((mult, i) => {
+            const x = startX + i * pegSpacing - pegSpacing / 2;
+            const width = pegSpacing;
+
+            // Draw zone indicator
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.fillRect(x, bottomY, width, 40);
+
+            // Draw zone borders
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, bottomY);
+            ctx.lineTo(x, canvas.height);
+            ctx.stroke();
+        });
+
+        // Draw pegs with enhanced effects
         pegs.forEach(peg => {
-            const gradient = ctx.createRadialGradient(peg.x, peg.y, 0, peg.x, peg.y, peg.radius);
+            const hitFade = peg.hit ? Math.max(0, 1 - (time - peg.hitTime) / 300) : 0;
+            const pulseSize = peg.radius * (1 + hitFade * 0.5);
+
+            // Glow effect on hit
+            if (hitFade > 0) {
+                ctx.beginPath();
+                ctx.arc(peg.x, peg.y, pulseSize * 2, 0, Math.PI * 2);
+                ctx.fillStyle = `${theme.peg}${Math.floor(hitFade * 50).toString(16).padStart(2, '0')}`;
+                ctx.fill();
+            }
+
+            const gradient = ctx.createRadialGradient(peg.x - 2, peg.y - 2, 0, peg.x, peg.y, pulseSize);
             gradient.addColorStop(0, '#ffffff');
             gradient.addColorStop(0.3, theme.peg);
-            gradient.addColorStop(1, theme.peg + '66');
+            gradient.addColorStop(1, theme.peg + '88');
 
             ctx.beginPath();
-            ctx.arc(peg.x, peg.y, peg.radius, 0, Math.PI * 2);
+            ctx.arc(peg.x, peg.y, pulseSize, 0, Math.PI * 2);
             ctx.fillStyle = gradient;
-            ctx.shadowBlur = 15;
+            ctx.shadowBlur = 15 + hitFade * 10;
             ctx.shadowColor = theme.peg;
             ctx.fill();
             ctx.shadowBlur = 0;
@@ -1176,26 +1507,44 @@
             const distance = Math.sqrt(dx * dx + dy * dy);
 
             if (distance < ball.radius + peg.radius) {
-                const angle = Math.atan2(dy, dx);
-                ball.x = peg.x + Math.cos(angle) * (ball.radius + peg.radius);
-                ball.y = peg.y + Math.sin(angle) * (ball.radius + peg.radius);
+                // Mark peg as hit
+                peg.hit = true;
+                peg.hitTime = Date.now();
 
+                // Play collision sound
+                playSound(400 + Math.random() * 400, 0.05, 'triangle');
+
+                const angle = Math.atan2(dy, dx);
                 const speed = Math.sqrt(ball.vx * ball.vx + ball.vy * ball.vy);
-                ball.vx = Math.cos(angle) * speed * ball.bounce + (Math.random() - 0.5) * 3;
-                ball.vy = Math.sin(angle) * speed * ball.bounce;
+
+                // Better collision response
+                ball.x = peg.x + Math.cos(angle) * (ball.radius + peg.radius + 0.5);
+                ball.y = peg.y + Math.sin(angle) * (ball.radius + peg.radius + 0.5);
+
+                const normalX = Math.cos(angle);
+                const normalY = Math.sin(angle);
+                const relativeVelocity = ball.vx * normalX + ball.vy * normalY;
+
+                ball.vx = (ball.vx - 2 * relativeVelocity * normalX) * ball.bounce + (Math.random() - 0.5) * 4;
+                ball.vy = (ball.vy - 2 * relativeVelocity * normalY) * ball.bounce;
+
+                ball.rotationSpeed = (Math.random() - 0.5) * 0.4;
             }
         });
     }
 
     function getMultiplierSlot(x) {
-        for (let i = 0; i < multipliers.length; i++) {
-            const mult = multipliers[i];
-            const nextMult = multipliers[i + 1];
-            if (nextMult && x >= mult.x && x < nextMult.x) {
-                return i;
-            }
-        }
-        return multipliers.length - 1;
+        const pegSpacing = 40;
+        const startX = canvas.width / 2 - (rows / 2) * pegSpacing;
+
+        // Calculate which slot based on position relative to start
+        const relativeX = x - (startX - pegSpacing / 2);
+        let slot = Math.floor(relativeX / pegSpacing);
+
+        // Clamp to valid range
+        slot = Math.max(0, Math.min(slot, multipliers.length - 1));
+
+        return slot;
     }
 
     function animate() {
@@ -1205,16 +1554,41 @@
             ball.update();
             checkCollisions(ball);
 
-            if (ball.y > canvas.height - 50) {
+            if (ball.y > canvas.height - 60) {
                 const slot = getMultiplierSlot(ball.x);
                 const mult = multipliers[slot].value;
                 const winAmount = Math.floor(currentBet * mult);
 
-                updateBalance(winAmount);
-                document.getElementById('last-win').textContent = winAmount;
+                // Debug: Log slot info
+                console.log(`Ball landed at x=${Math.floor(ball.x)}, slot=${slot}, mult=×${mult}`);
 
-                if (mult >= 5) {
-                    showWinPopup(winAmount);
+                updateBalance(winAmount);
+                updateStats(winAmount, currentBet);
+
+                // Animate multiplier box
+                const multBox = document.getElementById(`mult-${slot}`);
+                if (multBox) {
+                    multBox.classList.add('hit');
+                    setTimeout(() => multBox.classList.remove('hit'), 500);
+                }
+
+                // Play win sound and show notification
+                if (mult >= 10) {
+                    // Big win
+                    playSound(800, 0.3, 'square');
+                    playSound(1000, 0.3, 'square');
+                    playSound(1200, 0.3, 'square');
+                    showNotification('🎉 Grande Vincita!', `Hai vinto ${winAmount}€ (×${mult})`, '💎');
+                } else if (mult >= 5) {
+                    // Good win
+                    playSound(900, 0.2, 'sine');
+                    showNotification('Bella Vincita!', `Hai vinto ${winAmount}€ (×${mult})`, '💰');
+                } else if (winAmount > currentBet) {
+                    // Small profit
+                    showNotification('Vincita', `Hai vinto ${winAmount}€ (×${mult})`, '✅');
+                } else if (winAmount < currentBet) {
+                    // Loss
+                    showNotification('Perdita', `Hai vinto ${winAmount}€ (×${mult})`, '💔');
                 }
 
                 return false;
@@ -1227,15 +1601,35 @@
             requestAnimationFrame(animate);
         } else {
             inGame = false;
+
+            // Auto play next round
+            if (autoPlay && balance >= currentBet) {
+                setTimeout(() => dropBall(), 500);
+            } else if (autoPlay && balance < currentBet) {
+                autoPlay = false;
+                document.getElementById('auto-toggle').classList.remove('active');
+                document.getElementById('drop-btn').classList.remove('auto-active');
+                document.getElementById('drop-btn').textContent = 'LANCIA';
+                showNotification('Auto Play Fermato', 'Saldo insufficiente', '⚠️');
+            }
         }
     }
 
     function dropBall() {
-        if (currentBet <= 0 || currentBet > balance) return;
+        if (currentBet <= 0) {
+            showNotification('Errore', 'La puntata deve essere maggiore di 0', '❌');
+            return;
+        }
+
+        if (currentBet > balance) {
+            showNotification('Saldo Insufficiente', `Ti servono ${currentBet}€ ma hai solo ${balance}€`, '❌');
+            return;
+        }
 
         updateBalance(-currentBet);
+        playSound(600, 0.2);
 
-        const ball = new Ball(canvas.width / 2 + (Math.random() - 0.5) * 30, 50);
+        const ball = new Ball(canvas.width / 2 + (Math.random() - 0.5) * 40, 50);
         balls.push(ball);
 
         if (!inGame) {
@@ -1244,15 +1638,16 @@
         }
     }
 
-    document.getElementById('drop-btn').addEventListener('click', dropBall);
-
-    function showWinPopup(amount) {
-        document.getElementById('win-amount').textContent = amount;
-        document.getElementById('overlay').classList.add('active');
-    }
-
-    document.getElementById('close-popup').addEventListener('click', () => {
-        document.getElementById('overlay').classList.remove('active');
+    document.getElementById('drop-btn').addEventListener('click', () => {
+        if (autoPlay) {
+            autoPlay = false;
+            document.getElementById('auto-toggle').classList.remove('active');
+            document.getElementById('drop-btn').classList.remove('auto-active');
+            document.getElementById('drop-btn').textContent = 'LANCIA';
+            showNotification('Auto Play Fermato', 'Gioco manuale ripristinato', '⏸️');
+        } else {
+            dropBall();
+        }
     });
 
     // Close theme menu when clicking outside
@@ -1265,8 +1660,46 @@
         }
     });
 
+    // Keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !autoPlay) {
+            e.preventDefault();
+            dropBall();
+        }
+    });
+
     // Initialize
     setupPlinko();
+
+    // Reset Statistics Button
+    document.getElementById('reset-stats').addEventListener('click', () => {
+        if (inGame || autoPlay) {
+            showNotification('Impossibile Resettare', 'Ferma il gioco prima di resettare le statistiche', '⚠️');
+            return;
+        }
+
+        stats = {
+            lastWin: 0,
+            bestWin: 0,
+            totalGames: 0,
+            totalProfit: 0,
+            totalWins: 0
+        };
+
+        document.getElementById('last-win').textContent = '0';
+        document.getElementById('best-win').textContent = '0';
+        document.getElementById('total-games').textContent = '0';
+        document.getElementById('total-profit').textContent = '0';
+        document.getElementById('profit-stat').classList.remove('positive', 'negative');
+
+        showNotification('Statistiche Resettate', 'Tutte le statistiche sono state azzerate', '🔄');
+        playSound(800, 0.15);
+    });
+
+    // Welcome notification
+    setTimeout(() => {
+        showNotification('Benvenuto!', 'Buona fortuna al Plinko Elite', '🎰');
+    }, 500);
 </script>
 </body>
 </html>
