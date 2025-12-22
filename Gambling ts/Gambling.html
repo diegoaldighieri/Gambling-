@@ -63,23 +63,19 @@
         </button>
     </div>
 </div>
-
 <div class="game-container">
-
     <!-- Header -->
     <header class="game-header">
         <div class="balance-display">
             <span class="balance-label">💰 Saldo</span>
-            <span class="balance-amount"><span id="caramelle"></span> 💵</span>
+            <span class="balance-amount">
+            <span id="caramelle"></span> 💵 </span>
         </div>
     </header>
-
     <!-- Game Layout -->
     <div class="game-layout">
-
         <!-- Controls Panel -->
         <aside class="controls-panel">
-
             <!-- Grid Size -->
             <section class="control-section">
                 <h3 class="section-title">Dimensione Griglia</h3>
@@ -98,7 +94,6 @@
                     </button>
                 </div>
             </section>
-
             <!-- Bomb Selection -->
             <section class="control-section">
                 <h3 class="section-title">Numero di Bombe 💣</h3>
@@ -114,7 +109,6 @@
                     </div>
                 </div>
             </section>
-
             <!-- Bet Amount -->
             <section class="control-section">
                 <h3 class="section-title">Imposta Puntata</h3>
@@ -129,77 +123,69 @@
                 </div>
                 <button id="maxbet" class="max-bet-btn">MAX BET</button>
             </section>
-
             <!-- Stats -->
             <section class="control-section info-section">
                 <div class="info-row">
                     <span class="info-label">Moltiplicatore</span>
-                    <span class="info-value">×<span id="moltiplicatore"></span></span>
+                    <span class="info-value">× <span id="moltiplicatore"></span>
+              </span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Celle Sicure</span>
-                    <span class="info-value"><span id="celleSicure">0</span>/<span id="totaleCelle">0</span></span>
+                    <span class="info-value">
+                <span id="celleSicure">0</span>/ <span id="totaleCelle">0</span>
+              </span>
                 </div>
                 <div class="info-row highlight">
                     <span class="info-label">Vincita Potenziale</span>
-                    <span class="info-value"><span id="vincita"></span> 💵</span>
+                    <span class="info-value">
+                <span id="vincita"></span> 💵 </span>
                 </div>
             </section>
-
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button id="start" class="action-btn primary-btn">
-                    🎮 INIZIA PARTITA
-                </button>
-                <button id="accontentati" class="action-btn secondary-btn">
-                    💰 RITIRA VINCITA
-                </button>
+                <button id="start" class="action-btn primary-btn"> 🎮 INIZIA PARTITA </button>
+                <button id="accontentati" class="action-btn secondary-btn"> 💰 RITIRA VINCITA </button>
             </div>
-
         </aside>
-
         <!-- Game Grid -->
         <main class="game-area">
             <div class="grid-wrapper">
                 <div id="grid"></div>
             </div>
         </main>
-
     </div>
 </div>
-
 <!-- Lose Overlay -->
 <div id="overlay" class="overlay">
     <div id="popup" class="popup popup-lose">
         <div class="popup-icon">💣</div>
         <h2 class="popup-title">HAI PERSO!</h2>
         <p class="popup-message">La bomba ti ha fatto saltare in aria!</p>
-        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span></p>
+        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span>
+        </p>
         <button onclick="closePopup()" class="popup-btn">💵 Riprova 💵</button>
     </div>
 </div>
-
 <!-- Win Overlay -->
 <div id="overlay2" class="overlay">
     <div id="popup2" class="popup popup-win">
         <div class="popup-icon">💎</div>
         <h2 class="popup-title">HAI VINTO!</h2>
         <p class="popup-message">Hai trovato tutti i tesori!</p>
-        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵</p>
+        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵 </p>
         <button onclick="closePopup()" class="popup-btn">Incredibile!</button>
     </div>
 </div>
-
 <!-- Cashout Overlay -->
 <div id="overlay3" class="overlay">
     <div id="popup3" class="popup popup-cashout">
         <div class="popup-icon">💰</div>
         <h2 class="popup-title">VINCITA RITIRATA!</h2>
         <p class="popup-message">Hai incassato la tua vincita!</p>
-        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵</p>
+        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵 </p>
         <button onclick="closePopup()" class="popup-btn">Perfetto!</button>
     </div>
 </div>
-
 </body>
 </html>
