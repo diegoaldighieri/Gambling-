@@ -1,31 +1,29 @@
-// ============================================================================
-//  VARIABILI ELEMENTI DOM
-// ============================================================================
+// DOM Elementi
 const v1 = document.getElementById("Versione1");
 const v2 = document.getElementById("Versione2");
 const v3 = document.getElementById("Versione3");
 const start = document.getElementById("start");
 const accontentati = document.getElementById("accontentati");
+const numBombeInput = document.getElementById("numBombe");
+const decreaseBombs = document.getElementById("decreaseBombs");
+const increaseBombs = document.getElementById("increaseBombs");
+const riskLevel = document.getElementById("riskLevel");
 
-// ============================================================================
-//  VARIABILI DI GIOCO
-// ============================================================================
+// Variabili gioco
 let versione = 0;
 let celle = [];
-let tesori = [];
+let bombe = [];
 let cliccata = [];
 let trovati = 0;
 let inGioco = false;
+let numBombe = 1;
 
 let totalescommessa = 0;
 let cmoltiplicatore = 1;
 
-// TEMA CORRENTE
 let currentTheme = 'default';
 
-// ============================================================================
-//  FUNZIONI GESTIONE CARAMELLE
-// ============================================================================
+// Gestione saldo
 function getCaramelle() {
     return parseInt(document.getElementById("caramelle").textContent) || 0;
 }
@@ -37,17 +35,59 @@ function setCaramelle(n) {
 
 setCaramelle(500);
 
-// ============================================================================
-//  AGGIORNA MOLTIPLICATORE E VINCITA
-// ============================================================================
+// Moltiplicatore
+function calcolaMoltiplicatorePerCella(celleRimaste, bombeRimaste, totaleCelle) {
+    const celleSicure = celleRimaste - bombeRimaste;
+    if (celleSicure <= 0) return 1;
+
+    const probabilitaSicura = celleSicure / celleRimaste;
+    const moltiplicatoreStep = 1 / probabilitaSicura;
+
+    return moltiplicatoreStep;
+}
+
+function getMoltiplicatoreBase() {
+    const totaleCelle = getTotaleCelle();
+    const percentualeBombe = numBombe / totaleCelle;
+
+    if (percentualeBombe >= 0.5) return 1.15;
+    if (percentualeBombe >= 0.4) return 1.12;
+    if (percentualeBombe >= 0.3) return 1.10;
+    if (percentualeBombe >= 0.2) return 1.08;
+    if (percentualeBombe >= 0.1) return 1.05;
+    return 1.03;
+}
+
+function getBonusFinale() {
+    const totaleCelle = getTotaleCelle();
+    const percentualeBombe = numBombe / totaleCelle;
+
+    if (percentualeBombe >= 0.5) return 2.5;
+    if (percentualeBombe >= 0.4) return 2.0;
+    if (percentualeBombe >= 0.3) return 1.7;
+    if (percentualeBombe >= 0.2) return 1.5;
+    if (percentualeBombe >= 0.1) return 1.3;
+    return 1.2;
+}
+
+function getTotaleCelle() {
+    return versione === 1 ? 9 : versione === 2 ? 16 : versione === 3 ? 25 : 0;
+}
+
 function aggiornaMoltiplicatore() {
     const moltiplicatoreEl = document.getElementById("moltiplicatore");
     const vincitaEl = document.getElementById("vincita");
+    const celleSicureEl = document.getElementById("celleSicure");
+    const totaleCelleEl = document.getElementById("totaleCelle");
 
     moltiplicatoreEl.textContent = cmoltiplicatore.toFixed(2);
     vincitaEl.textContent = Math.floor(totalescommessa * cmoltiplicatore);
 
-    // Animazione pulse se il gioco è in corso
+    const totaleCelle = getTotaleCelle();
+    const celleSicureTotali = totaleCelle - numBombe;
+    celleSicureEl.textContent = trovati;
+    totaleCelleEl.textContent = celleSicureTotali;
+
     if (inGioco && cmoltiplicatore > 1) {
         moltiplicatoreEl.parentElement.classList.add('pulse');
         vincitaEl.parentElement.classList.add('pulse');
@@ -59,52 +99,132 @@ function aggiornaMoltiplicatore() {
     }
 }
 
-// ============================================================================
-//  GESTIONE VERSIONI
-// ============================================================================
-const versioni = [v1, v2, v3];
-
-const versionSettings = {
-    1: {
-        safeBoost: 1.03,
-        bonusFinale: 1.10
-    },
-    2: {
-        safeBoost: 1.04,
-        bonusFinale: 1.25
-    },
-    3: {
-        safeBoost: 1.06,
-        bonusFinale: 1.50
+// Livello di rischio
+function aggiornaRischio() {
+    const totaleCelle = getTotaleCelle();
+    if (totaleCelle === 0) {
+        riskLevel.textContent = "SELEZIONA GRIGLIA";
+        riskLevel.className = "risk-indicator";
+        return;
     }
-};
+
+    const percentuale = (numBombe / totaleCelle) * 100;
+
+    if (percentuale >= 50) {
+        riskLevel.textContent = "ESTREMO 🔥";
+        riskLevel.className = "risk-indicator risk-extreme";
+    } else if (percentuale >= 40) {
+        riskLevel.textContent = "MOLTO ALTO ⚠️";
+        riskLevel.className = "risk-indicator risk-very-high";
+    } else if (percentuale >= 30) {
+        riskLevel.textContent = "ALTO 📈";
+        riskLevel.className = "risk-indicator risk-high";
+    } else if (percentuale >= 20) {
+        riskLevel.textContent = "MEDIO ⚖️";
+        riskLevel.className = "risk-indicator risk-medium";
+    } else if (percentuale >= 10) {
+        riskLevel.textContent = "BASSO 📉";
+        riskLevel.className = "risk-indicator risk-low";
+    } else {
+        riskLevel.textContent = "MOLTO BASSO 🛡️";
+        riskLevel.className = "risk-indicator risk-very-low";
+    }
+}
+
+// Selezione bombe
+function aggiornaMaxBombe() {
+    const totaleCelle = getTotaleCelle();
+    if (totaleCelle === 0) {
+        numBombeInput.max = 1;
+        numBombe = 1;
+        numBombeInput.value = 1;
+        return;
+    }
+
+    const maxBombe = Math.floor(totaleCelle * 0.8);
+    numBombeInput.max = maxBombe;
+
+    if (numBombe > maxBombe) {
+        numBombe = maxBombe;
+        numBombeInput.value = maxBombe;
+    }
+
+    aggiornaRischio();
+    aggiornaMoltiplicatore();
+}
+
+decreaseBombs.addEventListener("click", () => {
+    if (inGioco) return;
+
+    const min = parseInt(numBombeInput.min);
+    if (numBombe > min) {
+        numBombe--;
+        numBombeInput.value = numBombe;
+        aggiornaRischio();
+        aggiornaMoltiplicatore();
+    }
+});
+
+increaseBombs.addEventListener("click", () => {
+    if (inGioco) return;
+
+    const max = parseInt(numBombeInput.max);
+    if (numBombe < max) {
+        numBombe++;
+        numBombeInput.value = numBombe;
+        aggiornaRischio();
+        aggiornaMoltiplicatore();
+    }
+});
+
+numBombeInput.addEventListener("change", () => {
+    if (inGioco) return;
+
+    let val = parseInt(numBombeInput.value) || 1;
+    const min = parseInt(numBombeInput.min);
+    const max = parseInt(numBombeInput.max);
+
+    if (val < min) val = min;
+    if (val > max) val = max;
+
+    numBombe = val;
+    numBombeInput.value = val;
+    aggiornaRischio();
+    aggiornaMoltiplicatore();
+});
+
+const versioni = [v1, v2, v3];
 
 versioni.forEach(btn => {
     btn.addEventListener("click", () => {
-        if (inGioco) {
-            return;
-        }
-
+        if (inGioco) return;
         versioni.forEach(b => b.classList.remove("active"));
         btn.classList.add("active");
     });
 });
 
 v1.addEventListener("click", () => {
-    if (!inGioco) versione = 1;
+    if (!inGioco) {
+        versione = 1;
+        aggiornaMaxBombe();
+    }
 });
 
 v2.addEventListener("click", () => {
-    if (!inGioco) versione = 2;
+    if (!inGioco) {
+        versione = 2;
+        aggiornaMaxBombe();
+    }
 });
 
 v3.addEventListener("click", () => {
-    if (!inGioco) versione = 3;
+    if (!inGioco) {
+        versione = 3;
+        aggiornaMaxBombe();
+    }
 });
 
-// ============================================================================
-//  SCOMMESSA
-// ============================================================================
+// Aggiunga di soldi nella scommessa
 const somma5 = document.getElementById("somma5");
 const somma10 = document.getElementById("somma10");
 const somma50 = document.getElementById("somma50");
@@ -119,14 +239,10 @@ function setTotaleScommessa(n) {
     }
 
     if (n < 0) n = 0;
-
-    if (n > getCaramelle()) {
-        n = getCaramelle();
-    }
+    if (n > getCaramelle()) n = getCaramelle();
 
     totalescommessa = n;
     scommessa.value = n;
-
     aggiornaMoltiplicatore();
 }
 
@@ -135,16 +251,12 @@ scommessa.addEventListener("input", () => {
         scommessa.value = totalescommessa;
         return;
     }
-
     const valore = parseInt(scommessa.value) || 0;
     setTotaleScommessa(valore);
 });
 
 function aggiungi(amount) {
-    if (inGioco) {
-        return;
-    }
-
+    if (inGioco) return;
     setTotaleScommessa(totalescommessa + amount);
 }
 
@@ -154,9 +266,7 @@ somma50.addEventListener("click", () => aggiungi(50));
 somma100.addEventListener("click", () => aggiungi(100));
 maxbet.addEventListener("click", () => aggiungi(getCaramelle()));
 
-// ============================================================================
-//  OTTIENI IMMAGINE PER TEMA
-// ============================================================================
+// Temi
 function getThemeImage(theme) {
     const themeImages = {
         'default': 'images/gray-square.png',
@@ -169,17 +279,21 @@ function getThemeImage(theme) {
     return themeImages[theme] || themeImages['default'];
 }
 
-// ============================================================================
-//  GENERA CELLE
-// ============================================================================
+// generazione intero gioco
 function generacelle() {
     if (totalescommessa <= 0) {
+        alert("Inserisci una puntata!");
+        return;
+    }
+
+    if (versione === 0) {
+        alert("Seleziona una dimensione della griglia!");
         return;
     }
 
     celle.forEach(c => c.remove());
     celle = [];
-    tesori = [];
+    bombe = [];
     cliccata = [];
     trovati = 0;
 
@@ -187,15 +301,9 @@ function generacelle() {
     aggiornaMoltiplicatore();
 
     const grid = document.getElementById("grid");
+    const totaleCelle = getTotaleCelle();
 
-    const count =
-        versione === 1 ? 9 :
-            versione === 2 ? 16 :
-                versione === 3 ? 25 : 0;
-
-    if (count === 0) {
-        return;
-    }
+    if (totaleCelle === 0) return;
 
     inGioco = true;
 
@@ -204,7 +312,8 @@ function generacelle() {
             versione === 2 ? "repeat(4, 1fr)" :
                 "repeat(5, 1fr)";
 
-    for (let i = 0; i < count; i++) {
+    // Crea celle
+    for (let i = 0; i < totaleCelle; i++) {
         const cella = document.createElement("button");
         const img = document.createElement("img");
 
@@ -220,48 +329,66 @@ function generacelle() {
         cliccata.push(false);
     }
 
-    const indiceBomba = Math.floor(Math.random() * celle.length);
-    tesori = [indiceBomba];
+    // Genera posizione bombe
+    bombe = [];
+    while (bombe.length < numBombe) {
+        const indiceBomba = Math.floor(Math.random() * totaleCelle);
+        if (!bombe.includes(indiceBomba)) {
+            bombe.push(indiceBomba);
+        }
+    }
 
+    // Aggiungi eventi quando una cella viene cliccata
     celle.forEach((cella, index) => {
         cella.addEventListener("click", () => {
             if (cliccata[index]) return;
             cliccata[index] = true;
 
-            // Aggiungi animazione di flip
             cella.classList.add('revealing');
 
-            // Dopo l'animazione di flip, mostra il risultato
             setTimeout(() => {
-                // Rimuovi l'immagine
                 cella.innerHTML = "";
 
-                if (tesori.includes(index)) {
-                    // BOMBA! 💣
+                if (bombe.includes(index)) {
+                    // BOMBA PRESA
                     cella.classList.remove('revealing');
                     cella.classList.add('bomb-reveal');
                     cella.innerHTML = "💣";
 
-                    // Shake della griglia
                     const gridWrapper = document.querySelector('.grid-wrapper');
                     gridWrapper.classList.add('shake');
                     setTimeout(() => gridWrapper.classList.remove('shake'), 500);
 
-                    // Mostra overlay dopo l'animazione
+                    // Rivela tutto
+                    setTimeout(() => {
+                        celle.forEach((c, i) => {
+                            if (!cliccata[i]) {
+                                c.innerHTML = "";
+                                if (bombe.includes(i)) {
+                                    c.classList.add('bomb-reveal-secondary');
+                                    c.innerHTML = "💣";
+                                } else {
+                                    c.classList.add('diamond-reveal-missed');
+                                    c.innerHTML = "💎";
+                                }
+                            }
+                        });
+                    }, 300);
+
                     setTimeout(() => {
                         setCaramelle(getCaramelle() - totalescommessa);
+                        document.getElementById("statCelleTrovate").textContent = trovati;
                         inGioco = false;
                         document.getElementById("overlay").style.display = "flex";
-                    }, 600);
+                    }, 1000);
 
                     return;
                 }
 
-                // DIAMANTE! 💎
+                // DIAMANTE TROVATO
                 cella.classList.remove('revealing');
                 cella.classList.add('diamond-reveal');
 
-                // Se hai trovato 3+ diamanti, aggiungi effetto combo
                 if (trovati >= 2) {
                     cella.classList.add('combo-hit');
                 }
@@ -269,29 +396,46 @@ function generacelle() {
                 cella.innerHTML = "💎";
                 trovati++;
 
-                cmoltiplicatore *= versionSettings[versione].safeBoost;
+                const celleRimaste = totaleCelle - trovati;
+                const bombeRimaste = numBombe;
+                const stepMolt = calcolaMoltiplicatorePerCella(celleRimaste, bombeRimaste, totaleCelle);
+
+                cmoltiplicatore *= stepMolt;
                 aggiornaMoltiplicatore();
 
-                if (trovati === celle.length - 1) {
-                    const bonus = versionSettings[versione].bonusFinale;
+                // Controlla se tutti i diamanti siano stati trovati
+                const celleSicureTotali = totaleCelle - numBombe;
+                if (trovati === celleSicureTotali) {
+                    const bonus = getBonusFinale();
                     const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
 
                     setTimeout(() => {
+                        celle.forEach((c, i) => {
+                            if (!cliccata[i]) {
+                                c.innerHTML = "";
+                                if (bombe.includes(i)) {
+                                    c.classList.add('bomb-reveal-win');
+                                    c.innerHTML = "💣";
+                                }
+                            }
+                        });
+                    }, 300);
+
+                    setTimeout(() => {
                         setCaramelle(getCaramelle() + premio);
+                        document.getElementById("statVincita").textContent = premio;
                         inGioco = false;
                         document.getElementById("overlay2").style.display = "flex";
-                    }, 800);
+                    }, 1200);
                 }
-            }, 300); // Timing sincronizzato con l'animazione flip
+            }, 300);
         });
     });
 }
 
 start.addEventListener("click", generacelle);
 
-// ============================================================================
-//  CHIUDI POPUP
-// ============================================================================
+// Close Popup
 function closePopup() {
     document.getElementById("overlay").style.display = "none";
     document.getElementById("overlay2").style.display = "none";
@@ -300,7 +444,7 @@ function closePopup() {
     celle.forEach(c => c.remove());
 
     celle = [];
-    tesori = [];
+    bombe = [];
     cliccata = [];
     trovati = 0;
     cmoltiplicatore = 1;
@@ -314,24 +458,40 @@ function closePopup() {
     aggiornaMoltiplicatore();
 }
 
-// ============================================================================
-//  ACCONTENTATI (CASHOUT)
-// ============================================================================
+// Cashout
 accontentati.addEventListener("click", () => {
-    if (!inGioco) {
+    if (!inGioco) return;
+
+    if (trovati === 0) {
+        alert("Devi scoprire almeno una cella prima di ritirare!");
         return;
     }
 
     const premio = Math.floor(totalescommessa * cmoltiplicatore);
     setCaramelle(getCaramelle() + premio - totalescommessa);
 
+    document.getElementById("statCashout").textContent = premio;
+
+    celle.forEach((c, i) => {
+        if (!cliccata[i]) {
+            c.innerHTML = "";
+            if (bombe.includes(i)) {
+                c.classList.add('bomb-reveal-cashout');
+                c.innerHTML = "💣";
+            } else {
+                c.classList.add('diamond-reveal-missed');
+                c.innerHTML = "💎";
+            }
+        }
+    });
+
     inGioco = false;
-    document.getElementById("overlay3").style.display = "flex";
+    setTimeout(() => {
+        document.getElementById("overlay3").style.display = "flex";
+    }, 500);
 });
 
-// ============================================================================
-//  THEME SWITCHER
-// ============================================================================
+// Intero dizionario sui temi e css incluso
 const themes = {
     default: {
         primary: '#ffc400',
@@ -414,7 +574,6 @@ function applyTheme(themeName) {
         }
     });
 
-    // Aggiorna le celle esistenti se il gioco è in corso
     if (inGioco) {
         celle.forEach((cella, index) => {
             if (!cliccata[index]) {
@@ -427,6 +586,8 @@ function applyTheme(themeName) {
     }
 }
 
+// Theme eventi
+
 document.getElementById('theme-button').addEventListener('click', () => {
     document.getElementById('theme-menu').classList.toggle('hidden');
 });
@@ -438,4 +599,7 @@ document.querySelectorAll('.theme-option').forEach(btn => {
     });
 });
 
+// Inizializzazione di tutto
 applyTheme('default');
+aggiornaRischio();
+aggiornaMoltiplicatore();

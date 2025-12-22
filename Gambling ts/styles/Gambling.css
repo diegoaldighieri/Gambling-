@@ -1,11 +1,7 @@
-/* ============================================================================
-   IMPORT FONT
-   ============================================================================ */
+/* Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
 
-/* ============================================================================
-   VARIABILI CSS PER I TEMI
-   ============================================================================ */
+/* Theme Variables */
 :root {
     --color-primary: #ffc400;
     --color-primary-hover: #ffae00;
@@ -17,9 +13,7 @@
     --color-text-dark: #000000;
 }
 
-/* ============================================================================
-   RESET E STILI BASE
-   ============================================================================ */
+/* Reset */
 * {
     margin: 0;
     padding: 0;
@@ -35,9 +29,7 @@ body {
     overflow-x: hidden;
 }
 
-/* ============================================================================
-   THEME SWITCHER
-   ============================================================================ */
+/* Theme Switcher */
 #theme-switcher {
     position: fixed;
     top: 20px;
@@ -141,18 +133,14 @@ body {
     }
 }
 
-/* ============================================================================
-   CONTAINER PRINCIPALE
-   ============================================================================ */
+/* Container */
 .game-container {
     max-width: 1400px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* ============================================================================
-   HEADER
-   ============================================================================ */
+/* Header */
 .game-header {
     text-align: center;
     margin-bottom: 30px;
@@ -184,9 +172,7 @@ body {
     text-shadow: 0 0 10px rgba(255, 196, 0, 0.5);
 }
 
-/* ============================================================================
-   LAYOUT A DUE COLONNE
-   ============================================================================ */
+/* Game Layout */
 .game-layout {
     display: grid;
     grid-template-columns: 380px 1fr;
@@ -200,9 +186,7 @@ body {
     }
 }
 
-/* ============================================================================
-   PANNELLO CONTROLLI (SINISTRA)
-   ============================================================================ */
+/* Controls Panel */
 .controls-panel {
     background: var(--color-card-bg);
     border-radius: 20px;
@@ -231,7 +215,7 @@ body {
     margin-bottom: 5px;
 }
 
-/* Pulsanti Versione */
+/* Version Buttons */
 .version-buttons {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -277,11 +261,138 @@ body {
     box-shadow: 0 5px 20px rgba(0, 204, 102, 0.4);
 }
 
-/* Input Scommessa */
+/* Bomb Selector */
+.bomb-selector {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.bomb-input-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-cell-bg);
+    border: 2px solid var(--color-primary);
+    border-radius: 12px;
+    padding: 8px;
+}
+
+.bomb-control-btn {
+    background: var(--color-primary);
+    color: var(--color-text-dark);
+    border: none;
+    border-radius: 8px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bomb-control-btn:hover {
+    background: var(--color-primary-hover);
+    transform: scale(1.1);
+}
+
+.bomb-control-btn:active {
+    transform: scale(0.95);
+}
+
+#numBombe {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--color-text);
+    font-family: 'Orbitron', monospace;
+    font-size: 28px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+}
+
+.bomb-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: var(--color-cell-bg);
+    border-radius: 8px;
+}
+
+.bomb-info-label {
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.risk-indicator {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+}
+
+.risk-indicator.risk-very-low {
+    background: rgba(16, 185, 129, 0.2);
+    color: #10b981;
+    box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.risk-indicator.risk-low {
+    background: rgba(52, 211, 153, 0.2);
+    color: #34d399;
+    box-shadow: 0 0 10px rgba(52, 211, 153, 0.3);
+}
+
+.risk-indicator.risk-medium {
+    background: rgba(251, 191, 36, 0.2);
+    color: #fbbf24;
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+.risk-indicator.risk-high {
+    background: rgba(251, 146, 60, 0.2);
+    color: #fb923c;
+    box-shadow: 0 0 10px rgba(251, 146, 60, 0.3);
+}
+
+.risk-indicator.risk-very-high {
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+    animation: pulseRisk 1.5s ease-in-out infinite;
+}
+
+.risk-indicator.risk-extreme {
+    background: rgba(220, 38, 38, 0.3);
+    color: #ff0000;
+    box-shadow: 0 0 15px rgba(220, 38, 38, 0.5);
+    animation: pulseRisk 1s ease-in-out infinite;
+}
+
+@keyframes pulseRisk {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+}
+
+/* Bet Input */
 .bet-input-wrapper {
     position: relative;
 }
-
 
 #scommessa {
     width: 100%;
@@ -303,7 +414,7 @@ body {
     transform: scale(1.02);
 }
 
-/* Pulsanti Scommessa */
+/* Bet Buttons */
 .bet-buttons {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -350,7 +461,7 @@ body {
     box-shadow: 0 5px 20px rgba(255, 196, 0, 0.5);
 }
 
-/* Info Sezione */
+/* Info Section */
 .info-section {
     background: var(--color-cell-bg);
     border-radius: 12px;
@@ -381,7 +492,7 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Animazione quando il moltiplicatore aumenta */
+/* Pulse Animation */
 .info-value.pulse {
     animation: valuePulse 0.5s ease-out;
 }
@@ -419,7 +530,7 @@ body {
     text-shadow: 0 0 10px rgba(255, 196, 0, 0.5);
 }
 
-/* Pulsanti Azione */
+/* Action Buttons */
 .action-buttons {
     display: flex;
     flex-direction: column;
@@ -468,9 +579,7 @@ body {
     box-shadow: 0 8px 25px rgba(255, 196, 0, 0.6);
 }
 
-/* ============================================================================
-   AREA DI GIOCO (DESTRA)
-   ============================================================================ */
+/* Game Area */
 .game-area {
     display: flex;
     justify-content: center;
@@ -491,7 +600,7 @@ body {
     justify-content: center;
 }
 
-/* Celle di Gioco */
+/* Grid Cells */
 #grid button {
     all: unset;
     width: 110px;
@@ -541,7 +650,7 @@ body {
     pointer-events: none;
 }
 
-/* Animazione Flip quando la cella viene rivelata */
+/* Flip Animation */
 #grid button.revealing {
     animation: cardFlip 0.6s ease-out forwards;
 }
@@ -558,7 +667,7 @@ body {
     }
 }
 
-/* Animazione per diamante (vittoria) */
+/* Diamond Reveal */
 #grid button.diamond-reveal {
     animation: diamondReveal 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
@@ -577,7 +686,7 @@ body {
     }
 }
 
-/* Animazione per bomba (sconfitta) */
+/* Bomb Reveal */
 #grid button.bomb-reveal {
     animation: bombReveal 0.6s ease-out forwards;
 }
@@ -607,7 +716,79 @@ body {
     }
 }
 
-/* Effetto particelle per il diamante */
+/* Secondary Bomb Reveal */
+#grid button.bomb-reveal-secondary {
+    animation: bombRevealSecondary 0.4s ease-out forwards;
+    background: #880000;
+    opacity: 0.7;
+}
+
+@keyframes bombRevealSecondary {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.7;
+    }
+}
+
+/* Bomb Reveal on Win */
+#grid button.bomb-reveal-win {
+    animation: bombRevealWin 0.5s ease-out forwards;
+    background: #555;
+    opacity: 0.5;
+}
+
+@keyframes bombRevealWin {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+/* Bomb Reveal on Cashout */
+#grid button.bomb-reveal-cashout {
+    animation: bombRevealCashout 0.4s ease-out forwards;
+    background: #666;
+    opacity: 0.6;
+}
+
+@keyframes bombRevealCashout {
+    0% {
+        transform: scale(0.7);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.6;
+    }
+}
+
+/* Missed Diamonds Reveal */
+#grid button.diamond-reveal-missed {
+    animation: diamondRevealMissed 0.5s ease-out forwards;
+    background: var(--color-cell-bg);
+    opacity: 0.5;
+}
+
+@keyframes diamondRevealMissed {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+}
+
+/* Diamond Sparkle Effect */
 #grid button.diamond-reveal::after {
     content: '';
     position: absolute;
@@ -637,7 +818,7 @@ body {
     }
 }
 
-/* Animazione extra per combo di diamanti */
+/* Diamond Combo Animation */
 #grid button.diamond-reveal.combo-hit {
     animation: diamondCombo 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
 }
@@ -656,7 +837,7 @@ body {
     }
 }
 
-/* Effetto particelle più intense per combo */
+/* Combo Sparkle Effect */
 #grid button.diamond-reveal.combo-hit::after {
     background: radial-gradient(circle,
     rgba(255, 215, 0, 0.9) 0%,
@@ -679,7 +860,7 @@ body {
     }
 }
 
-/* Effetto esplosione per la bomba */
+/* Bomb Explosion Effect */
 #grid button.bomb-reveal::after {
     content: '';
     position: absolute;
@@ -709,7 +890,7 @@ body {
     }
 }
 
-/* Shake dell'intera griglia quando si trova una bomba */
+/* Grid Shake Animation */
 @keyframes gridShake {
     0%, 100% { transform: translateX(0); }
     10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
@@ -720,10 +901,7 @@ body {
     animation: gridShake 0.5s ease-in-out;
 }
 
-
-/* ============================================================================
-   OVERLAY E POPUP
-   ============================================================================ */
+/* Overlays & Popups */
 .overlay {
     position: fixed;
     top: 0;
@@ -808,9 +986,20 @@ body {
 
 .popup-message {
     font-size: 18px;
-    margin-bottom: 25px;
+    margin-bottom: 15px;
     opacity: 0.9;
     line-height: 1.5;
+}
+
+.popup-stats {
+    font-family: 'Orbitron', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 25px;
+    padding: 10px;
+    background: rgba(255, 196, 0, 0.1);
+    border-radius: 8px;
 }
 
 .popup-btn {
@@ -834,9 +1023,7 @@ body {
     box-shadow: 0 5px 20px rgba(255, 196, 0, 0.5);
 }
 
-/* ============================================================================
-   RESPONSIVE
-   ============================================================================ */
+/* Responsive */
 @media (max-width: 1024px) {
     .controls-panel {
         position: static;

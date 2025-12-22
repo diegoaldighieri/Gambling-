@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>💎 Caccia al Tesoro</title>
+    <title>💎 Caccia al Tesoro - Advanced</title>
     <link rel="stylesheet" href="styles/Gambling.css" />
     <script src="code/Gambling.js" defer></script>
 </head>
 <body>
-<!-- Cambio tema -->
+<!-- Cambio temi-->
 <div id="theme-switcher">
     <button id="theme-button" aria-label="Cambia tema">🎨</button>
     <div id="theme-menu" class="hidden">
@@ -40,10 +40,9 @@
     </div>
 </div>
 
-<!-- Container Principale -->
 <div class="game-container">
 
-    <!-- Header con soldi -->
+    <!-- Header -->
     <header class="game-header">
         <div class="balance-display">
             <span class="balance-label">💰 Saldo</span>
@@ -51,32 +50,48 @@
         </div>
     </header>
 
-    <!-- Layout a due colonne -->
+    <!-- Game Layout -->
     <div class="game-layout">
 
-        <!-- Colonna Sinistra: Controlli -->
+        <!-- Controls Panel -->
         <aside class="controls-panel">
 
-            <!-- Sezione Versioni -->
+            <!-- Grid Size -->
             <section class="control-section">
-                <h3 class="section-title">Seleziona Difficoltà</h3>
+                <h3 class="section-title">Dimensione Griglia</h3>
                 <div class="version-buttons">
                     <button id="Versione1" class="version-btn">
                         <span class="version-number">3×3</span>
-                        <span class="version-label">Facile</span>
+                        <span class="version-label">Piccola</span>
                     </button>
                     <button id="Versione2" class="version-btn">
                         <span class="version-number">4×4</span>
-                        <span class="version-label">Medio</span>
+                        <span class="version-label">Media</span>
                     </button>
                     <button id="Versione3" class="version-btn">
                         <span class="version-number">5×5</span>
-                        <span class="version-label">Difficile</span>
+                        <span class="version-label">Grande</span>
                     </button>
                 </div>
             </section>
 
-            <!-- Sezione Scommessa -->
+            <!-- Selezione numero bombe -->
+            <section class="control-section">
+                <h3 class="section-title">Numero di Bombe 💣</h3>
+                <div class="bomb-selector">
+                    <div class="bomb-input-wrapper">
+                        <button id="decreaseBombs" class="bomb-control-btn">−</button>
+                        <input type="number" id="numBombe" min="1" max="20" value="1" readonly />
+                        <button id="increaseBombs" class="bomb-control-btn">+</button>
+                    </div>
+                    <div class="bomb-info">
+                        <span class="bomb-info-label">Rischio:</span>
+                        <span id="riskLevel" class="risk-indicator">BASSO</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Bet totale -->
             <section class="control-section">
                 <h3 class="section-title">Imposta Puntata</h3>
                 <div class="bet-input-wrapper">
@@ -91,11 +106,15 @@
                 <button id="maxbet" class="max-bet-btn">MAX BET</button>
             </section>
 
-            <!-- Sezione Vincita-Moltiplicatore -->
+            <!-- Stats -->
             <section class="control-section info-section">
                 <div class="info-row">
                     <span class="info-label">Moltiplicatore</span>
                     <span class="info-value">×<span id="moltiplicatore"></span></span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Celle Sicure</span>
+                    <span class="info-value"><span id="celleSicure">0</span>/<span id="totaleCelle">0</span></span>
                 </div>
                 <div class="info-row highlight">
                     <span class="info-label">Vincita Potenziale</span>
@@ -103,7 +122,7 @@
                 </div>
             </section>
 
-            <!-- Pulsanti Inizio-Ritira -->
+            <!-- Pulsanti vari -->
             <div class="action-buttons">
                 <button id="start" class="action-btn primary-btn">
                     🎮 INIZIA PARTITA
@@ -115,7 +134,7 @@
 
         </aside>
 
-        <!-- Colonna Destra: Griglia di Gioco -->
+        <!-- Game Grid -->
         <main class="game-area">
             <div class="grid-wrapper">
                 <div id="grid"></div>
@@ -125,32 +144,35 @@
     </div>
 </div>
 
-<!-- Overlay Sconfitta -->
+<!-- Perdita Overlay -->
 <div id="overlay" class="overlay">
     <div id="popup" class="popup popup-lose">
         <div class="popup-icon">💣</div>
         <h2 class="popup-title">HAI PERSO!</h2>
         <p class="popup-message">La bomba ti ha fatto saltare in aria!</p>
-        <button onclick="closePopup()" class="popup-btn">💵Riprova💵</button>
+        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span></p>
+        <button onclick="closePopup()" class="popup-btn">💵 Riprova 💵</button>
     </div>
 </div>
 
-<!-- Overlay Vittoria -->
+<!-- Vincita Overlay -->
 <div id="overlay2" class="overlay">
     <div id="popup2" class="popup popup-win">
         <div class="popup-icon">💎</div>
         <h2 class="popup-title">HAI VINTO!</h2>
         <p class="popup-message">Hai trovato tutti i tesori!</p>
-        <button onclick="closePopup()" class="popup-btn">Mi Bombo!</button>
+        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵</p>
+        <button onclick="closePopup()" class="popup-btn">Incredibile!</button>
     </div>
 </div>
 
-<!-- Overlay Cashout -->
+<!-- Cashout Overlay -->
 <div id="overlay3" class="overlay">
     <div id="popup3" class="popup popup-cashout">
         <div class="popup-icon">💰</div>
         <h2 class="popup-title">VINCITA RITIRATA!</h2>
         <p class="popup-message">Hai incassato la tua vincita!</p>
+        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵</p>
         <button onclick="closePopup()" class="popup-btn">Perfetto!</button>
     </div>
 </div>
