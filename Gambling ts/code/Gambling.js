@@ -305,8 +305,12 @@ function closePopup() {
     trovati = 0;
     cmoltiplicatore = 1;
     inGioco = false;
-    totalescommessa = 0;
-    scommessa.value = 0;
+
+    if (totalescommessa > getCaramelle()) {
+        totalescommessa = 0;
+        scommessa.value = 0;
+    }
+
     aggiornaMoltiplicatore();
 }
 
