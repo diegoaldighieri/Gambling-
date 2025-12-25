@@ -23,6 +23,51 @@ let cmoltiplicatore = 1;
 
 let currentTheme = 'default';
 
+
+function salvaCaramelle(n) {
+    localStorage.setItem('caramelle', n.toString());
+}
+
+function caricaCaramelle() {
+    const saved = localStorage.getItem('caramelle');
+    return saved !== null ? parseInt(saved) : 500;
+}
+
+function salvaTema(tema) {
+    localStorage.setItem('tema', tema);
+}
+
+function caricaTema() {
+    return localStorage.getItem('tema') || 'default';
+}
+
+function salvaUltimaScommessa(scommessa) {
+    localStorage.setItem('ultimaScommessa', scommessa.toString());
+}
+
+function caricaUltimaScommessa() {
+    const saved = localStorage.getItem('ultimaScommessa');
+    return saved !== null ? parseInt(saved) : 0;
+}
+
+function salvaUltimaBombeCount(count) {
+    localStorage.setItem('ultimeBombe', count.toString());
+}
+
+function caricaUltimaBombeCount() {
+    const saved = localStorage.getItem('ultimeBombe');
+    return saved !== null ? parseInt(saved) : 1;
+}
+
+function salvaUltimaVersione(ver) {
+    localStorage.setItem('ultimaVersione', ver.toString());
+}
+
+function caricaUltimaVersione() {
+    const saved = localStorage.getItem('ultimaVersione');
+    return saved !== null ? parseInt(saved) : 0;
+}
+
 // Gestione saldo
 function getCaramelle() {
     return parseInt(document.getElementById("caramelle").textContent) || 0;
@@ -31,9 +76,11 @@ function getCaramelle() {
 function setCaramelle(n) {
     if (n < 0) n = 0;
     document.getElementById("caramelle").textContent = n;
+    salvaCaramelle(n); // Salva ogni volta che cambia
 }
 
-setCaramelle(500);
+// Inizializza caramelle dal localStorage
+setCaramelle(caricaCaramelle());
 
 // Moltiplicatore
 function calcolaMoltiplicatorePerCella(celleRimaste, bombeRimaste, totaleCelle) {
@@ -160,6 +207,7 @@ decreaseBombs.addEventListener("click", () => {
     if (numBombe > min) {
         numBombe--;
         numBombeInput.value = numBombe;
+        salvaUltimaBombeCount(numBombe);
         aggiornaRischio();
         aggiornaMoltiplicatore();
     }
@@ -172,6 +220,7 @@ increaseBombs.addEventListener("click", () => {
     if (numBombe < max) {
         numBombe++;
         numBombeInput.value = numBombe;
+        salvaUltimaBombeCount(numBombe);
         aggiornaRischio();
         aggiornaMoltiplicatore();
     }
@@ -189,6 +238,7 @@ numBombeInput.addEventListener("change", () => {
 
     numBombe = val;
     numBombeInput.value = val;
+    salvaUltimaBombeCount(numBombe);
     aggiornaRischio();
     aggiornaMoltiplicatore();
 });
@@ -206,6 +256,7 @@ versioni.forEach(btn => {
 v1.addEventListener("click", () => {
     if (!inGioco) {
         versione = 1;
+        salvaUltimaVersione(1);
         aggiornaMaxBombe();
     }
 });
@@ -213,6 +264,7 @@ v1.addEventListener("click", () => {
 v2.addEventListener("click", () => {
     if (!inGioco) {
         versione = 2;
+        salvaUltimaVersione(2);
         aggiornaMaxBombe();
     }
 });
@@ -220,6 +272,7 @@ v2.addEventListener("click", () => {
 v3.addEventListener("click", () => {
     if (!inGioco) {
         versione = 3;
+        salvaUltimaVersione(3);
         aggiornaMaxBombe();
     }
 });
@@ -243,6 +296,7 @@ function setTotaleScommessa(n) {
 
     totalescommessa = n;
     scommessa.value = n;
+    salvaUltimaScommessa(n);
     aggiornaMoltiplicatore();
 }
 
@@ -640,6 +694,8 @@ function applyTheme(themeName) {
         }
     });
 
+    salvaTema(themeName);
+
     if (inGioco) {
         celle.forEach((cella, index) => {
             if (!cliccata[index]) {
@@ -665,7 +721,33 @@ document.querySelectorAll('.theme-option').forEach(btn => {
     });
 });
 
-// Inizializzazione di tutto
-applyTheme('default');
+// ===== INIZIALIZZAZIONE CON DATI SALVATI =====
+
+// Carica tema salvato
+const temaSalvato = caricaTema();
+applyTheme(temaSalvato);
+
+// Carica ultima versione
+const versioneSalvata = caricaUltimaVersione();
+if (versioneSalvata > 0) {
+    versione = versioneSalvata;
+    const btnVersione = document.getElementById(`Versione${versioneSalvata}`);
+    if (btnVersione) {
+        versioni.forEach(b => b.classList.remove("active"));
+        btnVersione.classList.add("active");
+        aggiornaMaxBombe();
+    }
+}
+
+// Carica ultimo numero bombe
+const bombeSalvate = caricaUltimaBombeCount();
+numBombe = bombeSalvate;
+numBombeInput.value = bombeSalvate;
+
+// Carica ultima scommessa
+const scommessaSalvata = caricaUltimaScommessa();
+totalescommessa = scommessaSalvata;
+scommessa.value = scommessaSalvata;
+
 aggiornaRischio();
 aggiornaMoltiplicatore();
