@@ -393,7 +393,7 @@ function generacelle() {
     bombe = [];
     while (bombe.length < numBombe) {
         const indiceBomba = Math.floor(Math.random() * totaleCelle);
-        if (!bombe.includes(indiceBomba)) {
+        if (!bombe.includes(indiceBomba)) {+
             bombe.push(indiceBomba);
         }
     }
