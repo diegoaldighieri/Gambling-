@@ -76,45 +76,68 @@ function getCaramelle() {
 function setCaramelle(n) {
     if (n < 0) n = 0;
     document.getElementById("caramelle").textContent = n;
-    salvaCaramelle(n); // Salva ogni volta che cambia
+    salvaCaramelle(n);
 }
 
 // Inizializza caramelle dal localStorage
 setCaramelle(caricaCaramelle());
 
-// Moltiplicatore
-function calcolaMoltiplicatorePerCella(celleRimaste, bombeRimaste, totaleCelle) {
-    const celleSicure = celleRimaste - bombeRimaste;
-    if (celleSicure <= 0) return 1;
+// Moltiplicatore - Tabelle predefinite
+const moltiplicatoriTabelle = {
+    // 3x3 (9 celle)
+    "9_1": [1.13, 1.29, 1.48, 1.71, 2.00, 2.35, 2.79, 3.35],
+    "9_2": [1.29, 1.71, 2.35, 3.35, 5.00, 8.00, 13.00],
+    "9_3": [1.48, 2.35, 4.07, 8.00, 16.00, 35.00],
+    "9_4": [1.71, 3.35, 8.00, 20.00, 55.00],
+    "9_5": [2.00, 5.00, 16.00, 55.00],
+    "9_6": [2.35, 8.00, 35.00],
 
-    const probabilitaSicura = celleSicure / celleRimaste;
-    const moltiplicatoreStep = 1 / probabilitaSicura;
+    // 4x4 (16 celle)
+    "16_1": [1.07, 1.14, 1.22, 1.31, 1.41, 1.52, 1.64, 1.77, 1.92, 2.09, 2.28, 2.50, 2.75, 3.04, 3.38],
+    "16_2": [1.14, 1.31, 1.52, 1.77, 2.09, 2.50, 3.04, 3.75, 4.69, 6.00, 7.88, 10.71, 15.00],
+    "16_3": [1.22, 1.52, 1.92, 2.50, 3.38, 4.69, 6.79, 10.38, 16.88, 29.25, 56.25, 128.00],
+    "16_4": [1.31, 1.77, 2.50, 3.75, 6.00, 10.38, 19.69, 41.25, 100.00, 300.00],
+    "16_5": [1.41, 2.09, 3.38, 6.00, 12.00, 27.56, 73.13, 243.75],
+    "16_6": [1.52, 2.50, 4.69, 10.38, 27.56, 90.00, 393.75],
+    "16_7": [1.64, 3.04, 6.79, 19.69, 73.13, 393.75],
+    "16_8": [1.77, 3.75, 10.38, 41.25, 243.75],
+    "16_9": [1.92, 4.69, 16.88, 100.00],
+    "16_10": [2.09, 6.00, 29.25, 300.00],
+    "16_11": [2.28, 7.88, 56.25],
+    "16_12": [2.50, 10.71, 128.00],
 
-    return moltiplicatoreStep;
-}
+    // 5x5 (25 celle)
+    "25_1": [1.04, 1.09, 1.13, 1.18, 1.23, 1.28, 1.34, 1.40, 1.46, 1.53, 1.60, 1.68, 1.76, 1.85, 1.95, 2.05, 2.17, 2.29, 2.43, 2.58, 2.75, 2.93, 3.14, 3.38],
+    "25_2": [1.09, 1.18, 1.28, 1.40, 1.53, 1.68, 1.85, 2.05, 2.29, 2.58, 2.93, 3.38, 3.95, 4.69, 5.66, 6.97, 8.79, 11.44, 15.52, 22.13, 34.38, 59.69],
+    "25_3": [1.13, 1.29, 1.48, 1.71, 2.00, 2.35, 2.79, 3.35, 4.07, 5.00, 6.21, 7.83, 10.04, 13.13, 17.61, 24.38, 35.15, 53.44, 87.19, 156.25, 328.13],
+    "25_4": [1.18, 1.40, 1.68, 2.05, 2.58, 3.38, 4.69, 6.97, 11.44, 22.13, 53.44, 156.25, 656.25],
+    "25_5": [1.23, 1.53, 1.95, 2.58, 3.56, 5.16, 8.00, 13.40, 24.38, 50.00, 117.19, 328.13, 1093.75],
+    "25_10": [1.60, 2.93, 6.21, 15.63, 46.88, 171.88, 843.75, 6000.00],
+    "25_15": [2.17, 6.97, 34.38, 328.13, 10000.00],
+    "25_20": [3.38, 22.13, 656.25, 100000.00],
+};
 
-function getMoltiplicatoreBase() {
+function getMoltiplicatorePerDiamanti(diamantiTrovati) {
+    if (diamantiTrovati === 0) return 1.00;
+
     const totaleCelle = getTotaleCelle();
-    const percentualeBombe = numBombe / totaleCelle;
+    const key = `${totaleCelle}_${numBombe}`;
 
-    if (percentualeBombe >= 0.5) return 1.15;
-    if (percentualeBombe >= 0.4) return 1.12;
-    if (percentualeBombe >= 0.3) return 1.10;
-    if (percentualeBombe >= 0.2) return 1.08;
-    if (percentualeBombe >= 0.1) return 1.05;
-    return 1.03;
-}
+    const tabella = moltiplicatoriTabelle[key];
 
-function getBonusFinale() {
-    const totaleCelle = getTotaleCelle();
-    const percentualeBombe = numBombe / totaleCelle;
+    if (!tabella) {
+        // Fallback al calcolo base se non c'è tabella
+        const celleRimaste = totaleCelle - diamantiTrovati;
+        const bombeRimaste = numBombe;
+        const celleSicure = celleRimaste - bombeRimaste;
+        if (celleSicure <= 0) return 1.00;
+        const probabilitaSicura = celleSicure / celleRimaste;
+        return 1 / probabilitaSicura;
+    }
 
-    if (percentualeBombe >= 0.5) return 2.5;
-    if (percentualeBombe >= 0.4) return 2.0;
-    if (percentualeBombe >= 0.3) return 1.7;
-    if (percentualeBombe >= 0.2) return 1.5;
-    if (percentualeBombe >= 0.1) return 1.3;
-    return 1.2;
+    if (diamantiTrovati > tabella.length) return tabella[tabella.length - 1];
+
+    return tabella[diamantiTrovati - 1];
 }
 
 function getTotaleCelle() {
@@ -277,7 +300,7 @@ v3.addEventListener("click", () => {
     }
 });
 
-// Aggiunga di soldi nella scommessa
+// Aggiunta di soldi nella scommessa
 const somma5 = document.getElementById("somma5");
 const somma10 = document.getElementById("somma10");
 const somma50 = document.getElementById("somma50");
@@ -393,7 +416,7 @@ function generacelle() {
     bombe = [];
     while (bombe.length < numBombe) {
         const indiceBomba = Math.floor(Math.random() * totaleCelle);
-        if (!bombe.includes(indiceBomba)) {+
+        if (!bombe.includes(indiceBomba)) {
             bombe.push(indiceBomba);
         }
     }
@@ -456,18 +479,15 @@ function generacelle() {
                 cella.innerHTML = "💎";
                 trovati++;
 
-                const celleRimaste = totaleCelle - trovati;
-                const bombeRimaste = numBombe;
-                const stepMolt = calcolaMoltiplicatorePerCella(celleRimaste, bombeRimaste, totaleCelle);
-
-                cmoltiplicatore *= stepMolt;
+                // Usa la tabella dei moltiplicatori
+                cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati);
                 aggiornaMoltiplicatore();
 
                 // Controlla se tutti i diamanti siano stati trovati
                 const celleSicureTotali = totaleCelle - numBombe;
                 if (trovati === celleSicureTotali) {
-                    const bonus = getBonusFinale();
-                    const premio = Math.floor((totalescommessa * cmoltiplicatore) * bonus);
+                    // Premio finale senza bonus aggiuntivo
+                    const premio = Math.floor(totalescommessa * cmoltiplicatore);
 
                     setTimeout(() => {
                         celle.forEach((c, i) => {
