@@ -23,7 +23,7 @@ let cmoltiplicatore = 1;
 
 let currentTheme = 'default';
 
-// funzioni di Localstorage
+// ===== FUNZIONI LOCALSTORAGE =====
 
 function salvaCaramelle(n) {
     localStorage.setItem('caramelle', n.toString());
@@ -69,6 +69,125 @@ function caricaUltimaVersione() {
     return saved !== null ? parseInt(saved) : 0;
 }
 
+// ===== NUOVE FUNZIONI STATISTICHE =====
+
+function caricaStatistiche() {
+    const saved = localStorage.getItem('statistiche');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    return {
+        partiteGiocate: 0,
+        partiteVinte: 0,
+        partitePerse: 0,
+        totaleScommesso: 0,
+        totaleVinto: 0,
+        ultimaVincita: 0,
+        vincitaMassima: 0,
+        perditaMassima: 0
+    };
+}
+
+function salvaStatistiche(stats) {
+    localStorage.setItem('statistiche', JSON.stringify(stats));
+}
+
+function aggiornaStatistiche(tipo, importo) {
+    const stats = caricaStatistiche();
+
+    stats.partiteGiocate++;
+    stats.totaleScommesso += totalescommessa;
+
+    if (tipo === 'vinta') {
+        stats.partiteVinte++;
+        stats.totaleVinto += importo;
+        stats.ultimaVincita = importo;
+
+        if (importo > stats.vincitaMassima) {
+            stats.vincitaMassima = importo;
+        }
+    } else if (tipo === 'persa') {
+        stats.partitePerse++;
+        stats.ultimaVincita = -totalescommessa;
+
+        if (totalescommessa > stats.perditaMassima) {
+            stats.perditaMassima = totalescommessa;
+        }
+    } else if (tipo === 'cashout') {
+        stats.partiteVinte++;
+        stats.totaleVinto += importo;
+        stats.ultimaVincita = importo;
+
+        if (importo > stats.vincitaMassima) {
+            stats.vincitaMassima = importo;
+        }
+    }
+
+    salvaStatistiche(stats);
+    aggiornaUIStatistiche();
+}
+
+function aggiornaUIStatistiche() {
+    const stats = caricaStatistiche();
+
+    document.getElementById('partiteGiocate').textContent = stats.partiteGiocate;
+    document.getElementById('partiteVinte').textContent = stats.partiteVinte;
+    document.getElementById('partitePerse').textContent = stats.partitePerse;
+    document.getElementById('totaleScommesso').textContent = stats.totaleScommesso;
+    document.getElementById('totaleVinto').textContent = stats.totaleVinto;
+    document.getElementById('vincitaMassima').textContent = stats.vincitaMassima;
+    document.getElementById('perditaMassima').textContent = stats.perditaMassima;
+
+    // Ultima vincita con colore
+    const ultimaVincitaEl = document.getElementById('ultimaVincita');
+    ultimaVincitaEl.textContent = stats.ultimaVincita;
+
+    if (stats.ultimaVincita > 0) {
+        ultimaVincitaEl.style.color = '#00cc66';
+    } else if (stats.ultimaVincita < 0) {
+        ultimaVincitaEl.style.color = '#ef4444';
+    } else {
+        ultimaVincitaEl.style.color = 'var(--color-primary)';
+    }
+
+    // Calcola percentuale vittorie
+    const percVittorie = stats.partiteGiocate > 0
+        ? ((stats.partiteVinte / stats.partiteGiocate) * 100).toFixed(1)
+        : 0;
+    document.getElementById('percVittorie').textContent = percVittorie;
+
+    // Calcola profitto netto
+    const profittoNetto = stats.totaleVinto - stats.totaleScommesso;
+    const profittoNettoEl = document.getElementById('profittoNetto');
+    profittoNettoEl.textContent = profittoNetto;
+
+    if (profittoNetto > 0) {
+        profittoNettoEl.style.color = '#00cc66';
+    } else if (profittoNetto < 0) {
+        profittoNettoEl.style.color = '#ef4444';
+    } else {
+        profittoNettoEl.style.color = 'var(--color-primary)';
+    }
+}
+
+function resetStatistiche() {
+    if (confirm('Sei sicuro di voler resettare tutte le statistiche?')) {
+        const statsVuote = {
+            partiteGiocate: 0,
+            partiteVinte: 0,
+            partitePerse: 0,
+            totaleScommesso: 0,
+            totaleVinto: 0,
+            ultimaVincita: 0,
+            vincitaMassima: 0,
+            perditaMassima: 0
+        };
+        salvaStatistiche(statsVuote);
+        aggiornaUIStatistiche();
+        alert('Statistiche resettate!');
+    }
+}
+
 // Gestione saldo
 function getCaramelle() {
     return parseInt(document.getElementById("caramelle").textContent) || 0;
@@ -80,12 +199,11 @@ function setCaramelle(n) {
     salvaCaramelle(n);
 }
 
-// Inizializza caramelle dal localStorage
+// Inizializza caramelle dal storage
 setCaramelle(caricaCaramelle());
 
 // Moltiplicatore - Tabelle predefinite
 const moltiplicatoriTabelle = {
-
     "9_1": [1.10, 1.23, 1.38, 1.57, 1.80, 2.12, 2.51, 3.02],
     "9_2": [1.23, 1.57, 2.12, 3.02, 4.50, 7.20, 11.70],
     "9_3": [1.38, 2.12, 3.66, 7.20, 14.40, 31.50],
@@ -125,7 +243,6 @@ function getMoltiplicatorePerDiamanti(diamantiTrovati) {
     const tabella = moltiplicatoriTabelle[key];
 
     if (!tabella) {
-        // Fallback al calcolo base se non c'è tabella
         const celleRimaste = totaleCelle - diamantiTrovati;
         const bombeRimaste = numBombe;
         const celleSicure = celleRimaste - bombeRimaste;
@@ -460,6 +577,10 @@ function generacelle() {
                     setTimeout(() => {
                         setCaramelle(getCaramelle() - totalescommessa);
                         document.getElementById("statCelleTrovate").textContent = trovati;
+
+                        // AGGIORNA STATISTICHE - PERSA
+                        aggiornaStatistiche('persa', 0);
+
                         inGioco = false;
                         document.getElementById("overlay").style.display = "flex";
                     }, 1000);
@@ -503,6 +624,10 @@ function generacelle() {
                     setTimeout(() => {
                         setCaramelle(getCaramelle() + premio);
                         document.getElementById("statVincita").textContent = premio;
+
+                        // AGGIORNA STATISTICHE - VINTA
+                        aggiornaStatistiche('vinta', premio);
+
                         inGioco = false;
                         document.getElementById("overlay2").style.display = "flex";
                     }, 1200);
@@ -565,10 +690,13 @@ accontentati.addEventListener("click", () => {
             }
         }
     });
+
+    // AGGIORNA STATISTICHE - CASHOUT
+    aggiornaStatistiche('cashout', premio);
+
     resetStatoGioco();
 
     inGioco = false;
-    resetStatoGioco();
 
     setTimeout(() => {
         document.getElementById("overlay3").style.display = "flex";
@@ -733,7 +861,6 @@ function applyTheme(themeName) {
 }
 
 // Theme eventi
-
 document.getElementById('theme-button').addEventListener('click', () => {
     document.getElementById('theme-menu').classList.toggle('hidden');
 });
@@ -743,6 +870,36 @@ document.querySelectorAll('.theme-option').forEach(btn => {
         applyTheme(btn.dataset.theme);
         document.getElementById('theme-menu').classList.add('hidden');
     });
+});
+
+// ===== GESTIONE MODALE STATISTICHE =====
+const statsButton = document.getElementById('statsButton');
+const statsModal = document.getElementById('statsModal');
+const closeStatsBtn = document.getElementById('closeStats');
+const resetStatsBtn = document.getElementById('resetStats');
+
+if (statsButton) {
+    statsButton.addEventListener('click', () => {
+        statsModal.style.display = 'flex';
+        aggiornaUIStatistiche();
+    });
+}
+
+if (closeStatsBtn) {
+    closeStatsBtn.addEventListener('click', () => {
+        statsModal.style.display = 'none';
+    });
+}
+
+if (resetStatsBtn) {
+    resetStatsBtn.addEventListener('click', resetStatistiche);
+}
+
+// Chiudi modale cliccando fuori
+statsModal?.addEventListener('click', (e) => {
+    if (e.target === statsModal) {
+        statsModal.style.display = 'none';
+    }
 });
 
 // ===== INIZIALIZZAZIONE CON DATI SALVATI =====
@@ -775,7 +932,7 @@ scommessa.value = scommessaSalvata;
 
 aggiornaRischio();
 aggiornaMoltiplicatore();
-
+aggiornaUIStatistiche();
 
 function salvaStatoGioco() {
     const stato = {
@@ -839,4 +996,3 @@ if (stato && stato.inGioco) {
         }
     });
 }
-

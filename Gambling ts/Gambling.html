@@ -59,11 +59,15 @@
             <span>Purple Haze</span>
         </button>
         <button class="theme-option" data-theme="matrix">
-                <span class="theme-preview" style="background: linear-gradient(135deg, #00ff00, #39ff14)"></span>
+            <span class="theme-preview" style="background: linear-gradient(135deg, #00ff00, #39ff14)"></span>
             <span>Matrix</span>
         </button>
     </div>
 </div>
+
+<!-- Stats Button -->
+<button id="statsButton" class="stats-button" aria-label="Statistiche">📊</button>
+
 <div class="game-container">
     <!-- Header -->
     <header class="game-header">
@@ -157,6 +161,7 @@
         </main>
     </div>
 </div>
+
 <!-- Lose Overlay -->
 <div id="overlay" class="overlay">
     <div id="popup" class="popup popup-lose">
@@ -168,6 +173,7 @@
         <button onclick="closePopup()" class="popup-btn">💵 Riprova 💵</button>
     </div>
 </div>
+
 <!-- Win Overlay -->
 <div id="overlay2" class="overlay">
     <div id="popup2" class="popup popup-win">
@@ -178,6 +184,7 @@
         <button onclick="closePopup()" class="popup-btn">Incredibile!</button>
     </div>
 </div>
+
 <!-- Cashout Overlay -->
 <div id="overlay3" class="overlay">
     <div id="popup3" class="popup popup-cashout">
@@ -188,5 +195,112 @@
         <button onclick="closePopup()" class="popup-btn">Perfetto!</button>
     </div>
 </div>
+
+<!-- Statistics Modal -->
+<div id="statsModal" class="stats-modal">
+    <div class="stats-content">
+        <div class="stats-header">
+            <h2 class="stats-title">📊 STATISTICHE</h2>
+            <button id="closeStats" class="close-stats-btn">✕</button>
+        </div>
+
+        <div class="stats-grid">
+            <!-- Partite -->
+            <div class="stat-card">
+                <div class="stat-icon">🎮</div>
+                <div class="stat-info">
+                    <div class="stat-label">Partite Giocate</div>
+                    <div class="stat-value"><span id="partiteGiocate">0</span></div>
+                </div>
+            </div>
+
+            <!-- Vinte -->
+            <div class="stat-card stat-success">
+                <div class="stat-icon">🏆</div>
+                <div class="stat-info">
+                    <div class="stat-label">Partite Vinte</div>
+                    <div class="stat-value"><span id="partiteVinte">0</span></div>
+                </div>
+            </div>
+
+            <!-- Perse -->
+            <div class="stat-card stat-danger">
+                <div class="stat-icon">💣</div>
+                <div class="stat-info">
+                    <div class="stat-label">Partite Perse</div>
+                    <div class="stat-value"><span id="partitePerse">0</span></div>
+                </div>
+            </div>
+
+            <!-- Percentuale Vittorie -->
+            <div class="stat-card stat-info">
+                <div class="stat-icon">📈</div>
+                <div class="stat-info">
+                    <div class="stat-label">% Vittorie</div>
+                    <div class="stat-value"><span id="percVittorie">0</span>%</div>
+                </div>
+            </div>
+
+            <!-- Ultima Vincita -->
+            <div class="stat-card stat-highlight">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <div class="stat-label">Ultima Vincita</div>
+                    <div class="stat-value"><span id="ultimaVincita">0</span> 💵</div>
+                </div>
+            </div>
+
+            <!-- Totale Scommesso -->
+            <div class="stat-card">
+                <div class="stat-icon">💸</div>
+                <div class="stat-info">
+                    <div class="stat-label">Totale Scommesso</div>
+                    <div class="stat-value"><span id="totaleScommesso">0</span> 💵</div>
+                </div>
+            </div>
+
+            <!-- Totale Vinto -->
+            <div class="stat-card stat-success">
+                <div class="stat-icon">💎</div>
+                <div class="stat-info">
+                    <div class="stat-label">Totale Vinto</div>
+                    <div class="stat-value"><span id="totaleVinto">0</span> 💵</div>
+                </div>
+            </div>
+
+            <!-- Profitto Netto -->
+            <div class="stat-card stat-highlight">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <div class="stat-label">Profitto Netto</div>
+                    <div class="stat-value"><span id="profittoNetto">0</span> 💵</div>
+                </div>
+            </div>
+
+            <!-- Vincita Massima -->
+            <div class="stat-card stat-success">
+                <div class="stat-icon">🌟</div>
+                <div class="stat-info">
+                    <div class="stat-label">Vincita Massima</div>
+                    <div class="stat-value"><span id="vincitaMassima">0</span> 💵</div>
+                </div>
+            </div>
+
+            <!-- Perdita Massima -->
+            <div class="stat-card stat-danger">
+                <div class="stat-icon">⚠️</div>
+                <div class="stat-info">
+                    <div class="stat-label">Perdita Massima</div>
+                    <div class="stat-value"><span id="perditaMassima">0</span> 💵</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-actions">
+            <button id="resetStats" class="reset-stats-btn">🔄 Resetta Statistiche</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
