@@ -1109,7 +1109,7 @@ function generacelle() {
 
     celle.forEach((cella, index) => {
         cella.addEventListener("click", () => {
-            if (cliccata[index]) return;
+            if (cliccata[index] || !inGioco) return; // Controlla anche se la partita è ancora in corso
             cliccata[index] = true;
 
             cella.classList.add('revealing');
@@ -1119,6 +1119,7 @@ function generacelle() {
 
                 if (bombe.includes(index)) {
                     // BOMBA
+                    inGioco = false; // Termina subito la partita per bloccare altri click
                     playSound('bomb');
                     cella.classList.remove('revealing');
                     cella.classList.add('bomb-reveal');
@@ -1150,7 +1151,6 @@ function generacelle() {
                         aggiornaStatistiche('persa', 0);
                         updateStreak(false);
 
-                        inGioco = false;
                         resetStatoGioco(); // Reset stato quando si perde
                         document.getElementById("overlay").style.display = "flex";
                     }, 1000);
@@ -1176,6 +1176,7 @@ function generacelle() {
 
                 const celleSicureTotali = totaleCelle - numBombe;
                 if (trovati === celleSicureTotali) {
+                    inGioco = false; // Termina subito la partita per bloccare altri click
                     const levelMultiplier = levels[getPlayerLevel()].multiplier;
                     const premio = Math.floor(totalescommessa * cmoltiplicatore * levelMultiplier);
 
@@ -1200,7 +1201,6 @@ function generacelle() {
                         updateStreak(true);
                         checkAchievements();
 
-                        inGioco = false;
                         resetStatoGioco(); // Reset stato quando si vince
                         document.getElementById("overlay2").style.display = "flex";
                     }, 1200);
@@ -1584,7 +1584,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 cella.appendChild(img);
 
                 cella.addEventListener("click", () => {
-                    if (cliccata[i]) return;
+                    if (cliccata[i] || !inGioco) return; // Controlla anche se la partita è ancora in corso
                     cliccata[i] = true;
 
                     cella.classList.add('revealing');
@@ -1593,6 +1593,7 @@ window.addEventListener('DOMContentLoaded', () => {
                         cella.innerHTML = "";
 
                         if (bombe.includes(i)) {
+                            inGioco = false; // Termina subito la partita
                             playSound('bomb');
                             cella.classList.remove('revealing');
                             cella.classList.add('bomb-reveal');
@@ -1622,7 +1623,6 @@ window.addEventListener('DOMContentLoaded', () => {
                                 document.getElementById("statCelleTrovate").textContent = trovati;
                                 aggiornaStatistiche('persa', 0);
                                 updateStreak(false);
-                                inGioco = false;
                                 resetStatoGioco(); // Reset stato quando si perde (ripristino)
                                 document.getElementById("overlay").style.display = "flex";
                             }, 1000);
@@ -1647,6 +1647,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
                         const celleSicureTotali = totaleCelle - numBombe;
                         if (trovati === celleSicureTotali) {
+                            inGioco = false; // Termina subito la partita
                             const levelMultiplier = levels[getPlayerLevel()].multiplier;
                             const premio = Math.floor(totalescommessa * cmoltiplicatore * levelMultiplier);
 
@@ -1669,7 +1670,6 @@ window.addEventListener('DOMContentLoaded', () => {
                                 aggiornaStatistiche('vinta', premio);
                                 updateStreak(true);
                                 checkAchievements();
-                                inGioco = false;
                                 resetStatoGioco(); // Reset stato quando si vince (ripristino)
                                 document.getElementById("overlay2").style.display = "flex";
                             }, 1200);
