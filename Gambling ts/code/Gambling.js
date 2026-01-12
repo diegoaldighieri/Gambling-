@@ -1151,6 +1151,7 @@ function generacelle() {
                         updateStreak(false);
 
                         inGioco = false;
+                        resetStatoGioco(); // Reset stato quando si perde
                         document.getElementById("overlay").style.display = "flex";
                     }, 1000);
 
@@ -1200,6 +1201,7 @@ function generacelle() {
                         checkAchievements();
 
                         inGioco = false;
+                        resetStatoGioco(); // Reset stato quando si vince
                         document.getElementById("overlay2").style.display = "flex";
                     }, 1200);
                 }
@@ -1621,6 +1623,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 aggiornaStatistiche('persa', 0);
                                 updateStreak(false);
                                 inGioco = false;
+                                resetStatoGioco(); // Reset stato quando si perde (ripristino)
                                 document.getElementById("overlay").style.display = "flex";
                             }, 1000);
 
@@ -1667,6 +1670,7 @@ window.addEventListener('DOMContentLoaded', () => {
                                 updateStreak(true);
                                 checkAchievements();
                                 inGioco = false;
+                                resetStatoGioco(); // Reset stato quando si vince (ripristino)
                                 document.getElementById("overlay2").style.display = "flex";
                             }, 1200);
                         }
