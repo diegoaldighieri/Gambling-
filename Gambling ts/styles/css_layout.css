@@ -1,0 +1,52 @@
+/* Container */
+.game-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header */
+.game-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 20px;
+}
+
+.balance-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    background: var(--color-card-bg);
+    padding: 15px 30px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--color-primary);
+}
+
+.balance-label {
+    font-size: 18px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.balance-amount {
+    font-family: "Orbitron", monospace;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-shadow: 0 0 10px rgba(255, 196, 0, 0.5);
+}
+
+/* Game Layout */
+.game-layout {
+    display: grid;
+    grid-template-columns: 380px 1fr;
+    gap: 30px;
+    align-items: start;
+}
+
+@media (max-width: 1024px) {
+    .game-layout {
+        grid-template-columns: 1fr;
+    }
+}

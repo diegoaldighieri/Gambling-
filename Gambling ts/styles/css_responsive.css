@@ -1,0 +1,50 @@
+/* Responsive */
+@media (max-width: 1024px) {
+    .controls-panel {
+        position: static;
+    }
+
+    #grid button {
+        width: 90px;
+        height: 90px;
+        font-size: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .game-header {
+        margin-bottom: 20px;
+    }
+
+    .balance-display {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .balance-amount {
+        font-size: 24px;
+    }
+
+    #grid button {
+        width: 70px;
+        height: 70px;
+        font-size: 35px;
+    }
+
+    .grid-wrapper {
+        padding: 15px;
+    }
+
+    .popup {
+        padding: 30px 20px;
+        margin: 20px;
+    }
+
+    .popup-icon {
+        font-size: 60px;
+    }
+
+    .popup-title {
+        font-size: 24px;
+    }
+}

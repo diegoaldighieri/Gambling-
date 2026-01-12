@@ -23,6 +23,7 @@ let cmoltiplicatore = 1;
 
 let currentTheme = 'default';
 
+// funzioni di Localstorage
 
 function salvaCaramelle(n) {
     localStorage.setItem('caramelle', n.toString());
