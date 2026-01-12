@@ -1,0 +1,305 @@
+/* Enhanced Level Display */
+.level-display-enhanced {
+    background: var(--color-card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--color-secondary);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    min-width: 300px;
+    margin: 0 auto;
+}
+
+.level-badge {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.level-icon {
+    font-size: 48px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-secondary), var(--color-primary));
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0, 204, 102, 0.4);
+    animation: levelIconPulse 2s ease-in-out infinite;
+}
+
+@keyframes levelIconPulse {
+    0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 4px 15px rgba(0, 204, 102, 0.4);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px rgba(0, 204, 102, 0.6);
+    }
+}
+
+.level-info {
+    flex: 1;
+}
+
+.level-number {
+    font-family: "Orbitron", monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+    margin-bottom: 5px;
+}
+
+.level-number span {
+    color: var(--color-secondary);
+    font-size: 24px;
+}
+
+.level-name {
+    font-family: "Orbitron", monospace;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Level Progress Bar */
+.level-progress-bar {
+    position: relative;
+    width: 100%;
+    height: 30px;
+    background: var(--color-cell-bg);
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.level-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-secondary), var(--color-primary));
+    border-radius: 15px;
+    transition: width 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.level-progress-fill::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: progressShine 2s infinite;
+}
+
+@keyframes progressShine {
+    0% {
+        left: -100%;
+    }
+    100% {
+        left: 200%;
+    }
+}
+
+.level-progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Orbitron", monospace;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--color-text);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    z-index: 1;
+}
+
+/* Level Bonus */
+.level-bonus {
+    text-align: center;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, rgba(0, 204, 102, 0.15), rgba(255, 196, 0, 0.15));
+    border-radius: 12px;
+    border: 1px solid var(--color-secondary);
+    font-family: "Orbitron", monospace;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.level-bonus span {
+    color: var(--color-secondary);
+    font-size: 16px;
+    font-weight: 700;
+}
+
+/* Level Up Notification */
+.level-up-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    z-index: 10004;
+    background: linear-gradient(135deg, var(--color-card-bg), rgba(0, 204, 102, 0.2));
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
+    border: 3px solid var(--color-secondary);
+    transition: transform 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55), opacity 0.5s ease;
+    opacity: 0;
+    pointer-events: none;
+    min-width: 400px;
+}
+
+.level-up-notification.show {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.level-up-content {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.level-up-icon {
+    font-size: 80px;
+    animation: levelUpSpin 1s ease-out;
+}
+
+@keyframes levelUpSpin {
+    0% {
+        transform: rotate(0deg) scale(0);
+    }
+    50% {
+        transform: rotate(180deg) scale(1.3);
+    }
+    100% {
+        transform: rotate(360deg) scale(1);
+    }
+}
+
+.level-up-text {
+    flex: 1;
+}
+
+.level-up-title {
+    font-family: "Orbitron", monospace;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--color-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    text-shadow: 0 0 20px rgba(0, 204, 102, 0.8);
+}
+
+.level-up-name {
+    font-family: "Orbitron", monospace;
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 8px;
+}
+
+.level-up-bonus {
+    font-size: 16px;
+    color: var(--color-text);
+    opacity: 0.9;
+    font-weight: 600;
+}
+
+/* Responsive Level Display */
+@media (max-width: 1024px) {
+    .level-display-enhanced {
+        min-width: 250px;
+    }
+}
+
+@media (max-width: 768px) {
+    .level-display-enhanced {
+        margin-top: 15px;
+        min-width: 100%;
+    }
+    
+    .level-icon {
+        font-size: 40px;
+        width: 50px;
+        height: 50px;
+    }
+    
+    .level-number {
+        font-size: 18px;
+    }
+    
+    .level-number span {
+        font-size: 20px;
+    }
+    
+    .level-name {
+        font-size: 14px;
+    }
+    
+    .level-progress-bar {
+        height: 25px;
+    }
+    
+    .level-progress-text {
+        font-size: 12px;
+    }
+    
+    .level-up-notification {
+        min-width: 300px;
+        padding: 30px 20px;
+    }
+    
+    .level-up-icon {
+        font-size: 60px;
+    }
+    
+    .level-up-title {
+        font-size: 24px;
+    }
+    
+    .level-up-name {
+        font-size: 20px;
+    }
+    
+    .level-up-bonus {
+        font-size: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .level-display-enhanced {
+        padding: 15px;
+    }
+    
+    .level-badge {
+        gap: 10px;
+    }
+    
+    .level-icon {
+        font-size: 36px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .level-up-notification {
+        min-width: 90%;
+        padding: 25px 15px;
+    }
+    
+    .level-up-content {
+        flex-direction: column;
+        text-align: center;
+    }
+}

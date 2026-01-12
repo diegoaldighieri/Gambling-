@@ -1,0 +1,186 @@
+/* Level Display */
+.level-display {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--color-card-bg);
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    border: 2px solid var(--color-secondary);
+    margin-left: 20px;
+}
+
+.level-label {
+    font-size: 14px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.level-value {
+    font-family: "Orbitron", monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-secondary);
+}
+
+/* Popup Bonus */
+.popup-bonus {
+    border-color: var(--color-secondary);
+}
+
+.popup-bonus .popup-title {
+    color: var(--color-secondary);
+}
+
+/* Share Button */
+.secondary-share {
+    background: var(--color-cell-bg);
+    color: var(--color-text);
+    margin-top: 10px;
+}
+
+.secondary-share:hover {
+    background: var(--color-secondary);
+    color: white;
+}
+
+/* Export Button */
+.export-stats-btn {
+    background: var(--color-secondary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 15px 30px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: "Orbitron", monospace;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.export-stats-btn:hover {
+    background: #00b359;
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(0, 204, 102, 0.5);
+}
+
+/* Loading State */
+.action-btn.loading {
+    opacity: 0.7;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+.action-btn.loading::after {
+    content: "";
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    margin-left: 10px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Error Shake */
+.error-shake {
+    animation: shake 0.3s ease;
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-10px);
+    }
+    75% {
+        transform: translateX(10px);
+    }
+}
+
+/* Button Press Effect */
+.action-btn:active,
+.bet-btn:active,
+.version-btn:active,
+.bomb-control-btn:active {
+    transform: translateY(2px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+/* Glowing Pulse for Cashout */
+#accontentati.can-cashout {
+    animation: glowPulse 1.5s infinite;
+}
+
+@keyframes glowPulse {
+    0%, 100% {
+        box-shadow: 0 5px 20px rgba(255, 196, 0, 0.4);
+    }
+    50% {
+        box-shadow: 0 5px 40px rgba(255, 196, 0, 0.8);
+    }
+}
+
+/* Smooth Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-background);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-hover);
+}
+
+/* Responsive Updates */
+@media (max-width: 768px) {
+    .level-display {
+        margin-left: 0;
+        margin-top: 10px;
+        flex-basis: 100%;
+        justify-content: center;
+    }
+
+    .game-header {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .balance-display {
+        flex-basis: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .level-display {
+        padding: 8px 15px;
+    }
+
+    .level-label {
+        font-size: 12px;
+    }
+
+    .level-value {
+        font-size: 16px;
+    }
+}

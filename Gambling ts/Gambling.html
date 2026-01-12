@@ -18,7 +18,7 @@
             <span class="theme-preview" style="background: linear-gradient(135deg, #ffc400, #00cc66)"></span>
             <span>Classico</span>
         </button>
-        <button  class="theme-option" data-theme="dark">
+        <button class="theme-option" data-theme="dark">
             <span class="theme-preview" style="background: linear-gradient(135deg, #60a5fa, #a78bfa)"></span>
             <span>Scuro</span>
         </button>
@@ -68,15 +68,43 @@
 <!-- Stats Button -->
 <button id="statsButton" class="stats-button" aria-label="Statistiche">📊</button>
 
+<!-- Achievements Button -->
+<button id="achievementsButton" class="achievements-button" aria-label="Obiettivi">🏆</button>
+
+<!-- Tutorial Button -->
+<button id="tutorialButton" class="tutorial-button" aria-label="Tutorial">❓</button>
+
 <div class="game-container">
     <!-- Header -->
     <header class="game-header">
         <div class="balance-display">
             <span class="balance-label">💰 Saldo</span>
             <span class="balance-amount">
-            <span id="caramelle"></span> 💵 </span>
+                <span id="caramelle"></span> 💵
+            </span>
+        </div>
+
+        <!-- Enhanced Level Display -->
+        <div class="level-display-enhanced">
+            <div class="level-badge">
+                <div class="level-icon" id="levelIcon">🎮</div>
+                <div class="level-info">
+                    <div class="level-number">
+                        Livello <span id="playerLevel">1</span>
+                    </div>
+                    <div class="level-name" id="playerLevelName">Principiante</div>
+                </div>
+            </div>
+            <div class="level-progress-bar">
+                <div class="level-progress-fill" id="levelProgressFill"></div>
+                <div class="level-progress-text" id="levelProgressText">0 / 10 partite</div>
+            </div>
+            <div class="level-bonus">
+                Bonus: <span id="levelBonusMultiplier">+0%</span>
+            </div>
         </div>
     </header>
+
     <!-- Game Layout -->
     <div class="game-layout">
         <!-- Controls Panel -->
@@ -99,6 +127,7 @@
                     </button>
                 </div>
             </section>
+
             <!-- Bomb Selection -->
             <section class="control-section">
                 <h3 class="section-title">Numero di Bombe 💣</h3>
@@ -114,6 +143,7 @@
                     </div>
                 </div>
             </section>
+
             <!-- Bet Amount -->
             <section class="control-section">
                 <h3 class="section-title">Imposta Puntata</h3>
@@ -128,31 +158,38 @@
                 </div>
                 <button id="maxbet" class="max-bet-btn">MAX BET</button>
             </section>
+
             <!-- Stats -->
             <section class="control-section info-section">
                 <div class="info-row">
                     <span class="info-label">Moltiplicatore</span>
-                    <span class="info-value">× <span id="moltiplicatore"></span>
-              </span>
+                    <span class="info-value">× <span id="moltiplicatore"></span></span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Celle Sicure</span>
                     <span class="info-value">
-                <span id="celleSicure">0</span>/ <span id="totaleCelle">0</span>
-              </span>
+                        <span id="celleSicure">0</span>/<span id="totaleCelle">0</span>
+                    </span>
                 </div>
                 <div class="info-row highlight">
                     <span class="info-label">Vincita Potenziale</span>
                     <span class="info-value">
-                <span id="vincita"></span> 💵 </span>
+                        <span id="vincita"></span> 💵
+                    </span>
                 </div>
             </section>
+
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button id="start" class="action-btn primary-btn"> 🎮 INIZIA PARTITA </button>
-                <button id="accontentati" class="action-btn secondary-btn"> 💰 RITIRA VINCITA </button>
+                <button id="start" class="action-btn primary-btn">
+                    🎮 INIZIA PARTITA
+                </button>
+                <button id="accontentati" class="action-btn secondary-btn">
+                    💰 RITIRA VINCITA
+                </button>
             </div>
         </aside>
+
         <!-- Game Grid -->
         <main class="game-area">
             <div class="grid-wrapper">
@@ -162,14 +199,16 @@
     </div>
 </div>
 
+<!-- Notifications Container -->
+<div id="notifications-container"></div>
+
 <!-- Lose Overlay -->
 <div id="overlay" class="overlay">
     <div id="popup" class="popup popup-lose">
         <div class="popup-icon">💣</div>
         <h2 class="popup-title">HAI PERSO!</h2>
         <p class="popup-message">La bomba ti ha fatto saltare in aria!</p>
-        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span>
-        </p>
+        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span></p>
         <button onclick="closePopup()" class="popup-btn">💵 Riprova 💵</button>
     </div>
 </div>
@@ -180,8 +219,9 @@
         <div class="popup-icon">💎</div>
         <h2 class="popup-title">HAI VINTO!</h2>
         <p class="popup-message">Hai trovato tutti i tesori!</p>
-        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵 </p>
+        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵</p>
         <button onclick="closePopup()" class="popup-btn">Incredibile!</button>
+        <button onclick="shareResult()" class="popup-btn secondary-share">📤 Condividi</button>
     </div>
 </div>
 
@@ -191,8 +231,9 @@
         <div class="popup-icon">💰</div>
         <h2 class="popup-title">VINCITA RITIRATA!</h2>
         <p class="popup-message">Hai incassato la tua vincita!</p>
-        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵 </p>
+        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵</p>
         <button onclick="closePopup()" class="popup-btn">Perfetto!</button>
+        <button onclick="shareResult()" class="popup-btn secondary-share">📤 Condividi</button>
     </div>
 </div>
 
@@ -297,7 +338,123 @@
         </div>
 
         <div class="stats-actions">
+            <button id="exportStats" class="export-stats-btn">💾 Esporta Dati</button>
             <button id="resetStats" class="reset-stats-btn">🔄 Resetta Statistiche</button>
+        </div>
+    </div>
+</div>
+
+<!-- Enhanced Achievements Modal -->
+<div id="achievementsModal" class="achievements-modal">
+    <div class="achievements-content">
+        <div class="achievements-header">
+            <h2 class="achievements-title">🏆 OBIETTIVI</h2>
+            <button id="closeAchievements" class="close-achievements-btn">✕</button>
+        </div>
+
+        <!-- Achievement Progress Overview -->
+        <div class="achievements-overview">
+            <div class="achievements-progress-card">
+                <div class="progress-icon">🎯</div>
+                <div class="progress-info">
+                    <div class="progress-label">Completamento Obiettivi</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="achievementsProgressBar"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span id="achievementsUnlocked">0</span> / <span id="achievementsTotal">10</span> Sbloccati
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="achievementsList" class="achievements-list"></div>
+    </div>
+</div>
+
+<!-- Tutorial Modal -->
+<div id="tutorialModal" class="tutorial-modal">
+    <div class="tutorial-content">
+        <div class="tutorial-header">
+            <h2 class="tutorial-title">❓ TUTORIAL</h2>
+            <button id="closeTutorial" class="close-tutorial-btn">✕</button>
+        </div>
+        <div class="tutorial-steps">
+            <div class="tutorial-step active">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h3>Scegli la Griglia</h3>
+                    <p>Seleziona la dimensione della griglia: 3×3, 4×4 o 5×5. Griglie più grandi = più rischio e più vincita!</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h3>Imposta le Bombe</h3>
+                    <p>Scegli quante bombe nascondere. Più bombe = moltiplicatore più alto ma maggior rischio!</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h3>Fai la Puntata</h3>
+                    <p>Decidi quanto scommettere. Usa i pulsanti rapidi o inserisci un importo personalizzato.</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h3>Inizia a Giocare</h3>
+                    <p>Clicca su "INIZIA PARTITA" e scopri le celle. Trova i diamanti 💎 ed evita le bombe 💣!</p>
+                </div>
+            </div>
+            <div class="tutorial-step">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <h3>Ritira o Continua</h3>
+                    <p>Puoi ritirare la vincita in qualsiasi momento o continuare per aumentare il moltiplicatore!</p>
+                </div>
+            </div>
+        </div>
+        <div class="tutorial-actions">
+            <button id="nextTutorialStep" class="tutorial-btn">Avanti</button>
+            <button id="skipTutorial" class="tutorial-btn secondary">Salta Tutorial</button>
+        </div>
+    </div>
+</div>
+
+<!-- Daily Bonus Popup -->
+<div id="dailyBonusPopup" class="overlay" style="display: none;">
+    <div class="popup popup-bonus">
+        <div class="popup-icon">🎁</div>
+        <h2 class="popup-title">BONUS GIORNALIERO!</h2>
+        <p class="popup-message">Benvenuto! Ecco il tuo bonus giornaliero:</p>
+        <p class="popup-stats"><span id="dailyBonusAmount">100</span> 💵</p>
+        <button onclick="closeDailyBonus()" class="popup-btn">Grazie! 🎉</button>
+    </div>
+</div>
+
+<!-- Achievement Unlocked Notification -->
+<div id="achievementUnlocked" class="achievement-notification">
+    <div class="achievement-content">
+        <span class="achievement-icon">🏆</span>
+        <div class="achievement-text">
+            <div class="achievement-unlocked">OBIETTIVO SBLOCCATO!</div>
+            <div id="achievementName" class="achievement-name"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Level Up Notification -->
+<div id="levelUpNotification" class="level-up-notification">
+    <div class="level-up-content">
+        <div class="level-up-icon">⭐</div>
+        <div class="level-up-text">
+            <div class="level-up-title">LEVEL UP!</div>
+            <div class="level-up-details">
+                <div id="levelUpName" class="level-up-name">Esperto</div>
+                <div id="levelUpBonus" class="level-up-bonus">Bonus Moltiplicatore: +10%</div>
+            </div>
         </div>
     </div>
 </div>
