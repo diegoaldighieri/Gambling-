@@ -11,12 +11,12 @@ import { aggiornaStatistiche, aggiornaUIStatistiche, resetStatistiche } from './
 import { updateStreak } from './modules/streak.js';
 import { applyTheme, setupThemeListeners, getThemeImage, getCurrentTheme } from './modules/themes.js';
 import { getMoltiplicatorePerDiamanti, aggiornaMoltiplicatore } from './modules/multipliers.js';
-import { 
-    validateBet, 
-    getTotaleCelle, 
-    aggiornaRischio, 
+import {
+    validateBet,
+    getTotaleCelle,
+    aggiornaRischio,
     debounce,
-    shareResult 
+    shareResult
 } from './modules/utils.js';
 import {
     salvaUltimaScommessa,
@@ -30,7 +30,8 @@ import {
     caricaStatoGioco,
     resetStatoGioco,
     isTutorialCompleted,
-    setTutorialCompleted
+    setTutorialCompleted,
+    getLastLogin
 } from './modules/storage.js';
 import { levels } from './modules/config.js';
 
@@ -164,8 +165,8 @@ function generacelle() {
     // Imposta layout griglia
     grid.style.gridTemplateColumns =
         versione === 1 ? "repeat(3, 1fr)" :
-        versione === 2 ? "repeat(4, 1fr)" :
-        "repeat(5, 1fr)";
+            versione === 2 ? "repeat(4, 1fr)" :
+                "repeat(5, 1fr)";
 
     // Crea celle
     for (let i = 0; i < totaleCelle; i++) {
@@ -214,7 +215,7 @@ function handleCellaClick(index, cella, totaleCelle) {
             handleDiamondClick(cella, totaleCelle);
         }
     }, 300);
-    
+
     salvaStatoGioco();
 }
 
@@ -270,7 +271,7 @@ function handleDiamondClick(cella, totaleCelle) {
 
     cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati, totaleCelle, numBombe);
     aggiornaMoltiplicatoreCorrente();
-    
+
     const gameState = { trovati, inGioco, versione, numBombe };
     checkAchievements(gameState);
 
@@ -304,7 +305,7 @@ function handleVictory() {
 
         aggiornaStatistiche('vinta', premio, totalescommessa);
         updateStreak(true);
-        
+
         const gameState = { trovati, inGioco: false, versione, numBombe };
         checkAchievements(gameState);
 
@@ -344,7 +345,7 @@ function handleCashout() {
 
     aggiornaStatistiche('cashout', premio, totalescommessa);
     updateStreak(true);
-    
+
     const gameState = { trovati, inGioco: false, versione, numBombe };
     checkAchievements(gameState);
 
@@ -382,8 +383,7 @@ function closePopup() {
 window.closePopup = closePopup;
 window.closeDailyBonus = closeDailyBonus;
 window.shareResult = () => {
-    const stats = require('./modules/storage.js').caricaStatistiche();
-    shareResult(stats.ultimaVincita, versione, numBombe);
+    shareResult(totalescommessa * cmoltiplicatore, versione, numBombe);
 };
 
 // ===== EVENT LISTENERS =====
@@ -515,7 +515,7 @@ import('./modules/tutorial.js').then(tutorial => {
 // Inizializza al caricamento pagina
 window.addEventListener('DOMContentLoaded', () => {
     console.log('📊 Caricamento dati salvati...');
-    
+
     // Setup temi
     setupThemeListeners();
     const temaSalvato = caricaTema();
@@ -552,42 +552,84 @@ window.addEventListener('DOMContentLoaded', () => {
 
     // Tutorial per nuovi utenti
     const tutorialCompleted = isTutorialCompleted();
-    const hasLastLogin = require('./modules/storage.js').getLastLogin() !== '';
-    
+    const hasLastLogin = getLastLogin() !== '';
+
     if (!tutorialCompleted && !hasLastLogin) {
         setTimeout(() => {
             const tutorialModal = document.getElementById('tutorialModal');
             if (tutorialModal) {
                 tutorialModal.style.display = 'flex';
-                require('./modules/tutorial.js').then(t => t.showTutorialStep(0));
+                import('./modules/tutorial.js').then(t => t.showTutorialStep(0));
             }
         }, 1000);
     }
 
-    // Ripristina partita in corso
-    import('./modules/gameRestore.js').then(restore => {
-        restore.ripristinaPartita({
-            celle, bombe, cliccata, trovati, versione, numBombe,
-            totalescommessa, cmoltiplicatore, inGioco,
-            getCurrentTheme, getThemeImage, getMoltiplicatorePerDiamanti,
-            aggiornaMoltiplicatoreCorrente, salvaStatoGioco,
-            aggiornaStatistiche, updateStreak, checkAchievements,
-            resetStatoGioco, setCaramelle, getCaramelle, playSound,
-            showNotification, levels, getPlayerLevel
-        }).then(stato => {
-            if (stato) {
-                inGioco = stato.inGioco;
-                versione = stato.versione;
-                numBombe = stato.numBombe;
-                totalescommessa = stato.totalescommessa;
-                cmoltiplicatore = stato.cmoltiplicatore;
-                trovati = stato.trovati;
-                bombe = stato.bombe;
-                cliccata = stato.cliccata;
-                celle = stato.celle;
+    // ===== RIPRISTINO PARTITA IN CORSO =====
+    const stato = caricaStatoGioco();
+    if (stato && stato.inGioco) {
+        console.log('🔄 Ripristino partita in corso...');
+
+        // IMPORTANTE: Aggiorna le variabili globali
+        inGioco = true;
+        versione = stato.versione;
+        numBombe = stato.numBombe;
+        totalescommessa = stato.totalescommessa;
+        cmoltiplicatore = stato.cmoltiplicatore;
+        trovati = stato.trovati;
+        bombe = stato.bombe;
+        cliccata = stato.cliccata;
+
+        // Aggiorna UI
+        scommessa.value = totalescommessa;
+        numBombeInput.value = numBombe;
+
+        versioni.forEach(b => b.classList.remove("active"));
+        document.getElementById(`Versione${versione}`)?.classList.add("active");
+
+        aggiornaMaxBombe();
+        aggiornaMoltiplicatoreCorrente();
+
+        // Ricrea griglia
+        const grid = document.getElementById("grid");
+        const totaleCelle = getTotaleCelleCorrente();
+
+        grid.style.gridTemplateColumns =
+            versione === 1 ? "repeat(3, 1fr)" :
+                versione === 2 ? "repeat(4, 1fr)" :
+                    "repeat(5, 1fr)";
+
+        celle = []; // Reset array celle
+
+        for (let i = 0; i < totaleCelle; i++) {
+            const cella = document.createElement("button");
+            cella.id = "cella_" + i;
+            grid.appendChild(cella);
+            celle.push(cella);
+
+            if (cliccata[i]) {
+                // Cella già scoperta
+                cella.innerHTML = "";
+                if (bombe.includes(i)) {
+                    cella.classList.add("bomb-reveal");
+                    cella.innerHTML = "💣";
+                } else {
+                    cella.classList.add("diamond-reveal");
+                    cella.innerHTML = "💎";
+                }
+            } else {
+                // Cella da scoprire
+                const img = document.createElement("img");
+                img.src = getThemeImage(getCurrentTheme());
+                img.classList.add("cella-img");
+                cella.appendChild(img);
+
+                // Event listener
+                cella.addEventListener("click", () => handleCellaClick(i, cella, totaleCelle));
             }
-        });
-    });
+        }
+
+        showNotification('🔄 Partita ripristinata!', 'info');
+    }
 
     console.log('✅ Gioco inizializzato!');
 });

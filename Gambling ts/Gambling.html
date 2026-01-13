@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>💎 Caccia al Tesoro 💣</title>
-    <script src="code/Gambling.js" defer></script>
+    <script type="module" src="code/main.js" defer></script>
     <link rel="website icon" href="images/slot-machine.png" />
     <link rel="stylesheet" href="styles/style.css">
 </head>
@@ -64,33 +64,26 @@
         </button>
     </div>
 </div>
-
 <!-- Stats Button -->
 <button id="statsButton" class="stats-button" aria-label="Statistiche">📊</button>
-
 <!-- Achievements Button -->
 <button id="achievementsButton" class="achievements-button" aria-label="Obiettivi">🏆</button>
-
 <!-- Tutorial Button -->
 <button id="tutorialButton" class="tutorial-button" aria-label="Tutorial">❓</button>
-
 <div class="game-container">
     <!-- Header -->
     <header class="game-header">
         <div class="balance-display">
             <span class="balance-label">💰 Saldo</span>
             <span class="balance-amount">
-                <span id="caramelle"></span> 💵
-            </span>
+            <span id="caramelle"></span> 💵 </span>
         </div>
-
         <!-- Enhanced Level Display -->
         <div class="level-display-enhanced">
             <div class="level-badge">
                 <div class="level-icon" id="levelIcon">🎮</div>
                 <div class="level-info">
-                    <div class="level-number">
-                        Livello <span id="playerLevel">1</span>
+                    <div class="level-number"> Livello <span id="playerLevel">1</span>
                     </div>
                     <div class="level-name" id="playerLevelName">Principiante</div>
                 </div>
@@ -99,12 +92,10 @@
                 <div class="level-progress-fill" id="levelProgressFill"></div>
                 <div class="level-progress-text" id="levelProgressText">0 / 10 partite</div>
             </div>
-            <div class="level-bonus">
-                Bonus: <span id="levelBonusMultiplier">+0%</span>
+            <div class="level-bonus"> Bonus: <span id="levelBonusMultiplier">+0%</span>
             </div>
         </div>
     </header>
-
     <!-- Game Layout -->
     <div class="game-layout">
         <!-- Controls Panel -->
@@ -127,7 +118,6 @@
                     </button>
                 </div>
             </section>
-
             <!-- Bomb Selection -->
             <section class="control-section">
                 <h3 class="section-title">Numero di Bombe 💣</h3>
@@ -143,7 +133,6 @@
                     </div>
                 </div>
             </section>
-
             <!-- Bet Amount -->
             <section class="control-section">
                 <h3 class="section-title">Imposta Puntata</h3>
@@ -158,38 +147,31 @@
                 </div>
                 <button id="maxbet" class="max-bet-btn">MAX BET</button>
             </section>
-
             <!-- Stats -->
             <section class="control-section info-section">
                 <div class="info-row">
                     <span class="info-label">Moltiplicatore</span>
-                    <span class="info-value">× <span id="moltiplicatore"></span></span>
+                    <span class="info-value">× <span id="moltiplicatore"></span>
+              </span>
                 </div>
                 <div class="info-row">
                     <span class="info-label">Celle Sicure</span>
                     <span class="info-value">
-                        <span id="celleSicure">0</span>/<span id="totaleCelle">0</span>
-                    </span>
+                <span id="celleSicure">0</span>/ <span id="totaleCelle">0</span>
+              </span>
                 </div>
                 <div class="info-row highlight">
                     <span class="info-label">Vincita Potenziale</span>
                     <span class="info-value">
-                        <span id="vincita"></span> 💵
-                    </span>
+                <span id="vincita"></span> 💵 </span>
                 </div>
             </section>
-
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <button id="start" class="action-btn primary-btn">
-                    🎮 INIZIA PARTITA
-                </button>
-                <button id="accontentati" class="action-btn secondary-btn">
-                    💰 RITIRA VINCITA
-                </button>
+                <button id="start" class="action-btn primary-btn"> 🎮 INIZIA PARTITA </button>
+                <button id="accontentati" class="action-btn secondary-btn"> 💰 RITIRA VINCITA </button>
             </div>
         </aside>
-
         <!-- Game Grid -->
         <main class="game-area">
             <div class="grid-wrapper">
@@ -198,45 +180,41 @@
         </main>
     </div>
 </div>
-
 <!-- Notifications Container -->
 <div id="notifications-container"></div>
-
 <!-- Lose Overlay -->
 <div id="overlay" class="overlay">
     <div id="popup" class="popup popup-lose">
         <div class="popup-icon">💣</div>
         <h2 class="popup-title">HAI PERSO!</h2>
         <p class="popup-message">La bomba ti ha fatto saltare in aria!</p>
-        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span></p>
+        <p class="popup-stats">Celle trovate: <span id="statCelleTrovate"></span>
+        </p>
         <button onclick="closePopup()" class="popup-btn">💵 Riprova 💵</button>
     </div>
 </div>
-
 <!-- Win Overlay -->
 <div id="overlay2" class="overlay">
     <div id="popup2" class="popup popup-win">
         <div class="popup-icon">💎</div>
         <h2 class="popup-title">HAI VINTO!</h2>
         <p class="popup-message">Hai trovato tutti i tesori!</p>
-        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵</p>
+        <p class="popup-stats">Vincita: <span id="statVincita"></span> 💵 </p>
         <button onclick="closePopup()" class="popup-btn">Incredibile!</button>
         <button onclick="shareResult()" class="popup-btn secondary-share">📤 Condividi</button>
     </div>
 </div>
-
 <!-- Cashout Overlay -->
 <div id="overlay3" class="overlay">
     <div id="popup3" class="popup popup-cashout">
         <div class="popup-icon">💰</div>
         <h2 class="popup-title">VINCITA RITIRATA!</h2>
         <p class="popup-message">Hai incassato la tua vincita!</p>
-        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵</p>
+        <p class="popup-stats">Importo: <span id="statCashout"></span> 💵 </p>
         <button onclick="closePopup()" class="popup-btn">Perfetto!</button>
         <button onclick="shareResult()" class="popup-btn secondary-share">📤 Condividi</button>
     </div>
 </div>
-
 <!-- Statistics Modal -->
 <div id="statsModal" class="stats-modal">
     <div class="stats-content">
@@ -244,106 +222,114 @@
             <h2 class="stats-title">📊 STATISTICHE</h2>
             <button id="closeStats" class="close-stats-btn">✕</button>
         </div>
-
         <div class="stats-grid">
             <!-- Partite -->
             <div class="stat-card">
                 <div class="stat-icon">🎮</div>
                 <div class="stat-info">
                     <div class="stat-label">Partite Giocate</div>
-                    <div class="stat-value"><span id="partiteGiocate">0</span></div>
+                    <div class="stat-value">
+                        <span id="partiteGiocate">0</span>
+                    </div>
                 </div>
             </div>
-
             <!-- Vinte -->
             <div class="stat-card stat-success">
                 <div class="stat-icon">🏆</div>
                 <div class="stat-info">
                     <div class="stat-label">Partite Vinte</div>
-                    <div class="stat-value"><span id="partiteVinte">0</span></div>
+                    <div class="stat-value">
+                        <span id="partiteVinte">0</span>
+                    </div>
                 </div>
             </div>
-
             <!-- Perse -->
             <div class="stat-card stat-danger">
                 <div class="stat-icon">💣</div>
                 <div class="stat-info">
                     <div class="stat-label">Partite Perse</div>
-                    <div class="stat-value"><span id="partitePerse">0</span></div>
+                    <div class="stat-value">
+                        <span id="partitePerse">0</span>
+                    </div>
                 </div>
             </div>
-
             <!-- Percentuale Vittorie -->
             <div class="stat-card stat-info">
                 <div class="stat-icon">📈</div>
                 <div class="stat-info">
                     <div class="stat-label">% Vittorie</div>
-                    <div class="stat-value"><span id="percVittorie">0</span>%</div>
+                    <div class="stat-value">
+                        <span id="percVittorie">0</span>%
+                    </div>
                 </div>
             </div>
-
             <!-- Ultima Vincita -->
             <div class="stat-card stat-highlight">
                 <div class="stat-icon">💰</div>
                 <div class="stat-info">
                     <div class="stat-label">Ultima Vincita</div>
-                    <div class="stat-value"><span id="ultimaVincita">0</span> 💵</div>
+                    <div class="stat-value">
+                        <span id="ultimaVincita">0</span> 💵
+                    </div>
                 </div>
             </div>
-
             <!-- Totale Scommesso -->
             <div class="stat-card">
                 <div class="stat-icon">💸</div>
                 <div class="stat-info">
                     <div class="stat-label">Totale Scommesso</div>
-                    <div class="stat-value"><span id="totaleScommesso">0</span> 💵</div>
+                    <div class="stat-value">
+                        <span id="totaleScommesso">0</span> 💵
+                    </div>
                 </div>
             </div>
-
             <!-- Totale Vinto -->
             <div class="stat-card stat-success">
                 <div class="stat-icon">💎</div>
                 <div class="stat-info">
                     <div class="stat-label">Totale Vinto</div>
-                    <div class="stat-value"><span id="totaleVinto">0</span> 💵</div>
+                    <div class="stat-value">
+                        <span id="totaleVinto">0</span> 💵
+                    </div>
                 </div>
             </div>
-
             <!-- Profitto Netto -->
             <div class="stat-card stat-highlight">
                 <div class="stat-icon">📊</div>
                 <div class="stat-info">
                     <div class="stat-label">Profitto Netto</div>
-                    <div class="stat-value"><span id="profittoNetto">0</span> 💵</div>
+                    <div class="stat-value">
+                        <span id="profittoNetto">0</span> 💵
+                    </div>
                 </div>
             </div>
-
             <!-- Vincita Massima -->
             <div class="stat-card stat-success">
                 <div class="stat-icon">🌟</div>
                 <div class="stat-info">
                     <div class="stat-label">Vincita Massima</div>
-                    <div class="stat-value"><span id="vincitaMassima">0</span> 💵</div>
+                    <div class="stat-value">
+                        <span id="vincitaMassima">0</span> 💵
+                    </div>
                 </div>
             </div>
-
             <!-- Perdita Massima -->
             <div class="stat-card stat-danger">
                 <div class="stat-icon">⚠️</div>
                 <div class="stat-info">
                     <div class="stat-label">Perdita Massima</div>
-                    <div class="stat-value"><span id="perditaMassima">0</span> 💵</div>
+                    <div class="stat-value">
+                        <span id="perditaMassima">0</span> 💵
+                    </div>
                 </div>
             </div>
         </div>
-
         <div class="stats-actions">
             <button id="exportStats" class="export-stats-btn">💾 Esporta Dati</button>
             <button id="resetStats" class="reset-stats-btn">🔄 Resetta Statistiche</button>
         </div>
     </div>
 </div>
-
 <!-- Enhanced Achievements Modal -->
 <div id="achievementsModal" class="achievements-modal">
     <div class="achievements-content">
@@ -351,7 +337,6 @@
             <h2 class="achievements-title">🏆 OBIETTIVI</h2>
             <button id="closeAchievements" class="close-achievements-btn">✕</button>
         </div>
-
         <!-- Achievement Progress Overview -->
         <div class="achievements-overview">
             <div class="achievements-progress-card">
@@ -367,11 +352,9 @@
                 </div>
             </div>
         </div>
-
         <div id="achievementsList" class="achievements-list"></div>
     </div>
 </div>
-
 <!-- Tutorial Modal -->
 <div id="tutorialModal" class="tutorial-modal">
     <div class="tutorial-content">
@@ -422,18 +405,18 @@
         </div>
     </div>
 </div>
-
 <!-- Daily Bonus Popup -->
 <div id="dailyBonusPopup" class="overlay" style="display: none;">
     <div class="popup popup-bonus">
         <div class="popup-icon">🎁</div>
         <h2 class="popup-title">BONUS GIORNALIERO!</h2>
         <p class="popup-message">Benvenuto! Ecco il tuo bonus giornaliero:</p>
-        <p class="popup-stats"><span id="dailyBonusAmount">100</span> 💵</p>
+        <p class="popup-stats">
+            <span id="dailyBonusAmount">100</span> 💵
+        </p>
         <button onclick="closeDailyBonus()" class="popup-btn">Grazie! 🎉</button>
     </div>
 </div>
-
 <!-- Achievement Unlocked Notification -->
 <div id="achievementUnlocked" class="achievement-notification">
     <div class="achievement-content">
@@ -444,7 +427,6 @@
         </div>
     </div>
 </div>
-
 <!-- Level Up Notification -->
 <div id="levelUpNotification" class="level-up-notification">
     <div class="level-up-content">
@@ -458,6 +440,5 @@
         </div>
     </div>
 </div>
-
 </body>
 </html>
