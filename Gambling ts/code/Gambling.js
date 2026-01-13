@@ -265,11 +265,11 @@ function resetStatistiche() {
         };
         salvaStatistiche(statsVuote);
         aggiornaUIStatistiche();
-
+        
         // Reset anche livello
         storage.set('lastKnownLevel', 1);
         updateLevelDisplay();
-
+        
         showNotification('Statistiche resettate!', 'success');
     }
 }
@@ -297,13 +297,13 @@ function getPlayerLevel() {
 function getNextLevelInfo() {
     const currentLevel = getPlayerLevel();
     if (currentLevel >= 5) return null;
-
+    
     const nextLevel = currentLevel + 1;
     const stats = caricaStatistiche();
     const gamesPlayed = stats.partiteGiocate;
     const gamesNeeded = levels[nextLevel].minGames;
     const gamesRemaining = gamesNeeded - gamesPlayed;
-
+    
     return {
         nextLevel,
         gamesNeeded,
@@ -316,26 +316,26 @@ function getNextLevelInfo() {
 function updateLevelDisplay() {
     const level = getPlayerLevel();
     const levelData = levels[level];
-
+    
     // Aggiorna numero livello e nome
     document.getElementById('playerLevel').textContent = level;
     document.getElementById('playerLevelName').textContent = levelData.name;
-
+    
     // Aggiorna icona
     const levelIcon = document.getElementById('levelIcon');
     if (levelIcon) {
         levelIcon.textContent = levelData.icon;
     }
-
+    
     // Aggiorna bonus moltiplicatore
     const bonusPercentage = ((levelData.multiplier - 1) * 100).toFixed(0);
     document.getElementById('levelBonusMultiplier').textContent = `+${bonusPercentage}%`;
-
+    
     // Aggiorna barra di progresso
     const nextLevelInfo = getNextLevelInfo();
     const progressFill = document.getElementById('levelProgressFill');
     const progressText = document.getElementById('levelProgressText');
-
+    
     if (nextLevelInfo) {
         const progressPercent = Math.min(100, nextLevelInfo.progress);
         progressFill.style.width = `${progressPercent}%`;
@@ -345,7 +345,7 @@ function updateLevelDisplay() {
         progressFill.style.width = '100%';
         progressText.textContent = 'LIVELLO MASSIMO!';
     }
-
+    
     // Aggiorna colore barra in base al livello
     if (progressFill) {
         progressFill.style.setProperty('--level-color', levelData.color);
@@ -370,15 +370,15 @@ function showLevelUpNotification(newLevel) {
     const levelUpName = document.getElementById('levelUpName');
     const levelUpBonus = document.getElementById('levelUpBonus');
     const levelUpIcon = notification.querySelector('.level-up-icon');
-
+    
     levelUpIcon.textContent = levelData.icon;
     levelUpName.textContent = `${levelData.name} - Livello ${newLevel}`;
-
+    
     const bonusPercentage = ((levelData.multiplier - 1) * 100).toFixed(0);
     levelUpBonus.textContent = `Bonus Moltiplicatore: +${bonusPercentage}%`;
-
+    
     notification.classList.add('show');
-
+    
     setTimeout(() => {
         notification.classList.remove('show');
     }, 5000);
@@ -502,7 +502,7 @@ function showAchievementUnlocked(achievement) {
 function updateAchievementsButton() {
     const unlocked = caricaAchievements();
     const button = document.getElementById('achievementsButton');
-
+    
     // Aggiorna il contatore sul pulsante
     button.setAttribute('data-count', unlocked.length);
 }
@@ -511,12 +511,12 @@ function renderAchievements() {
     const unlocked = caricaAchievements();
     const stats = caricaStatistiche();
     const list = document.getElementById('achievementsList');
-
+    
     // Aggiorna overview progresso
     const totalAchievements = achievements.length;
     const unlockedCount = unlocked.length;
     const progressPercent = (unlockedCount / totalAchievements) * 100;
-
+    
     document.getElementById('achievementsUnlocked').textContent = unlockedCount;
     document.getElementById('achievementsTotal').textContent = totalAchievements;
     document.getElementById('achievementsProgressBar').style.width = `${progressPercent}%`;
