@@ -108,6 +108,7 @@ import {
     getBonusMoltiplicatoreEvento,
     aggiornaProgressoEvento,
     renderPannelloEvento
+
 } from './modules/events.js';
 
 // PWA
