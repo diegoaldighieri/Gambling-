@@ -72,6 +72,18 @@
 <button id="achievementsButton" class="achievements-button" aria-label="Obiettivi">🏆</button>
 <!-- Tutorial Button -->
 <button id="tutorialButton" class="tutorial-button" aria-label="Tutorial">❓</button>
+
+<!-- Game Modes Button -->
+<button id="modalitaButton" class="gamemode-button" aria-label="Modalità">🎮</button>
+<!-- Shop Button -->
+<button id="shopButton" class="shop-button" aria-label="Negozio">🛒</button>
+<!-- Inventory Button -->
+<button id="inventoryButton" class="inventory-button" aria-label="Inventario">🎒</button>
+<!-- Leaderboard Button -->
+<button id="leaderboardButton" class="leaderboard-button" aria-label="Classifica">🏅</button>
+<!-- Profile Button -->
+<button id="profileButton" class="profile-button" aria-label="Profilo">👤</button>
+
 <div class="game-container">
     <!-- Header -->
     <header class="game-header">
@@ -439,6 +451,144 @@
                 <div id="levelUpName" class="level-up-name">Esperto</div>
                 <div id="levelUpBonus" class="level-up-bonus">Bonus Moltiplicatore: +10%</div>
             </div>
+        </div>
+    </div>
+</div>
+<!-- ========== GAME MODES MODAL ========== -->
+<div id="modalitaModal" class="modal-overlay">
+    <div class="modal-content modal-gamemodes">
+        <div class="modal-header">
+            <h2 class="modal-title">🎮 MODALITÀ DI GIOCO</h2>
+            <button id="closeModalita" class="modal-close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="modalitaSelector" class="gamemodes-grid"></div>
+
+            <!-- Indicatori modalità attive -->
+            <div id="gamemodeIndicators" class="gamemode-indicators">
+                <!-- Time Attack Indicator -->
+                <div id="timeAttackIndicator" class="indicator-bar" style="display: none;">
+                    <span id="timeAttackTimer" class="indicator-timer">⏱️ 60s</span>
+                    <span id="timeAttackDiamanti" class="indicator-score">💎 0</span>
+                </div>
+                <!-- Survival Indicator -->
+                <div id="survivalIndicator" class="indicator-bar" style="display: none;">
+                    <span id="survivalVite" class="indicator-lives">❤️❤️❤️</span>
+                    <span id="survivalVittorie" class="indicator-score">🏆 0</span>
+                </div>
+                <!-- Endless Indicator -->
+                <div id="endlessIndicator" class="indicator-bar" style="display: none;">
+                    <span id="endlessDiamanti" class="indicator-score">💎 0</span>
+                    <span id="endlessMoltiplicatore" class="indicator-multiplier">⚡ 1.0x</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== SHOP MODAL ========== -->
+<div id="shopModal" class="modal-overlay">
+    <div class="modal-content modal-shop">
+        <div class="modal-header">
+            <h2 class="modal-title">🛒 NEGOZIO</h2>
+            <button id="closeShop" class="modal-close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Shop Tabs -->
+            <div class="shop-tabs">
+                <button class="shop-tab active" data-tab="powerups">⚡ Power-ups</button>
+                <button class="shop-tab" data-tab="temi">🎨 Temi</button>
+                <button class="shop-tab" data-tab="animazioni">✨ Animazioni</button>
+            </div>
+
+            <!-- Shop Contents -->
+            <div id="shop-powerups" class="shop-content active">
+                <div id="shopPowerups" class="shop-items-grid"></div>
+            </div>
+            <div id="shop-temi" class="shop-content">
+                <div id="shopTemi" class="shop-items-grid"></div>
+            </div>
+            <div id="shop-animazioni" class="shop-content">
+                <div id="shopAnimazioni" class="shop-items-grid"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== INVENTORY MODAL ========== -->
+<div id="inventoryModal" class="modal-overlay">
+    <div class="modal-content modal-inventory">
+        <div class="modal-header">
+            <h2 class="modal-title">🎒 INVENTARIO</h2>
+            <button id="closeInventory" class="modal-close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="inventoryItems" class="inventory-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== LEADERBOARD MODAL ========== -->
+<div id="leaderboardModal" class="modal-overlay">
+    <div class="modal-content modal-leaderboard">
+        <div class="modal-header">
+            <h2 class="modal-title">🏅 CLASSIFICA</h2>
+            <button id="closeLeaderboard" class="modal-close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <!-- Leaderboard Type Tabs -->
+            <div class="leaderboard-tipo-tabs">
+                <button class="leaderboard-tipo-tab active" data-tipo="vincita_massima">💎 Vincita Max</button>
+                <button class="leaderboard-tipo-tab" data-tipo="profitto_netto">💰 Profitto</button>
+                <button class="leaderboard-tipo-tab" data-tipo="partite_vinte">🏆 Vittorie</button>
+                <button class="leaderboard-tipo-tab" data-tipo="serie_vittorie">🔥 Serie</button>
+            </div>
+
+            <!-- Leaderboard Period Tabs -->
+            <div class="leaderboard-periodo-tabs">
+                <button class="leaderboard-periodo-tab active" data-periodo="all">Sempre</button>
+                <button class="leaderboard-periodo-tab" data-periodo="month">Mese</button>
+                <button class="leaderboard-periodo-tab" data-periodo="week">Settimana</button>
+            </div>
+
+            <!-- Leaderboard List -->
+            <div id="leaderboardList" class="leaderboard-list"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ========== PROFILE MODAL ========== -->
+<div id="profileModal" class="modal-overlay">
+    <div class="modal-content modal-profile">
+        <div class="modal-header">
+            <h2 class="modal-title">👤 PROFILO</h2>
+            <button id="closeProfile" class="modal-close-btn">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="profile-section">
+                <label class="profile-label">Nickname</label>
+                <input type="text" id="profileNickname" class="profile-input" maxlength="20" placeholder="Il tuo nickname">
+            </div>
+
+            <div class="profile-section">
+                <label class="profile-label">Avatar</label>
+                <div class="avatar-grid">
+                    <button class="avatar-option" data-avatar="😊">😊</button>
+                    <button class="avatar-option" data-avatar="😎">😎</button>
+                    <button class="avatar-option" data-avatar="🤑">🤑</button>
+                    <button class="avatar-option" data-avatar="🎮">🎮</button>
+                    <button class="avatar-option" data-avatar="💎">💎</button>
+                    <button class="avatar-option" data-avatar="🏆">🏆</button>
+                    <button class="avatar-option" data-avatar="⚡">⚡</button>
+                    <button class="avatar-option" data-avatar="🔥">🔥</button>
+                    <button class="avatar-option" data-avatar="🌟">🌟</button>
+                    <button class="avatar-option" data-avatar="👑">👑</button>
+                    <button class="avatar-option" data-avatar="🎯">🎯</button>
+                    <button class="avatar-option" data-avatar="🚀">🚀</button>
+                </div>
+            </div>
+
+            <button id="saveProfile" class="profile-save-btn">💾 Salva Profilo</button>
         </div>
     </div>
 </div>
