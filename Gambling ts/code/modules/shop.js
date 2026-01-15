@@ -190,14 +190,14 @@ function salvaInventario(inventario) {
 // Acquista item
 export function acquistaItem(itemId, categoria) {
     const item = shopItems[categoria].find(i => i.id === itemId);
-    
+
     if (!item) {
         showNotification('❌ Item non trovato!', 'error');
         return false;
     }
 
     const saldo = getCaramelle();
-    
+
     if (saldo < item.prezzo) {
         showNotification('❌ Saldo insufficiente!', 'error');
         return false;
@@ -205,7 +205,7 @@ export function acquistaItem(itemId, categoria) {
 
     // Verifica se già posseduto (per items non consumabili)
     const inventario = getInventario();
-    
+
     if (categoria === 'temi' && inventario.temi.includes(itemId)) {
         showNotification('⚠️ Hai già questo tema!', 'warning');
         return false;
@@ -227,19 +227,87 @@ export function acquistaItem(itemId, categoria) {
         inventario.powerups[itemId]++;
     } else if (categoria === 'temi') {
         inventario.temi.push(itemId);
+
+        // ===== FIX: Aggiungi tema al menu =====
+        aggiungiTemaAlMenu(itemId, item);
+        // ======================================
+
     } else if (categoria === 'animazioni') {
         inventario.animazioni.push(itemId);
     }
 
     salvaInventario(inventario);
-    
+
     playSound('cashout');
     showNotification(`✅ ${item.nome} acquistato!`, 'success');
-    
+
     renderShop();
     renderInventario();
-    
+
     return true;
+}
+
+// Funzione helper per aggiungere tema al menu
+function aggiungiTemaAlMenu(temaId, temaItem) {
+    const themeMenu = document.getElementById('theme-menu');
+    if (!themeMenu) return;
+
+    // Controlla se il tema esiste già
+    if (themeMenu.querySelector(`[data-theme="${temaId}"]`)) {
+        showNotification(`✨ Tema "${temaItem.nome}" già disponibile nel menu!`, 'info');
+        return;
+    }
+
+    // Crea il pulsante
+    const button = document.createElement('button');
+    button.className = 'theme-option';
+    button.setAttribute('data-theme', temaId);
+
+    // Anteprima colore
+    const preview = document.createElement('span');
+    preview.className = 'theme-preview';
+    const theme = temaItem.theme;
+    preview.style.background = `linear-gradient(135deg, ${theme.primary}, ${theme.secondary})`;
+
+    // Nome
+    const name = document.createElement('span');
+    name.textContent = temaItem.nome;
+
+    button.appendChild(preview);
+    button.appendChild(name);
+
+    // Event listener
+    button.addEventListener('click', () => {
+        playSound('click');
+
+        // Applica il tema manualmente
+        const t = temaItem.theme;
+        document.documentElement.style.setProperty('--color-primary', t.primary);
+        document.documentElement.style.setProperty('--color-primary-hover', t.primaryHover);
+        document.documentElement.style.setProperty('--color-secondary', t.secondary);
+        document.documentElement.style.setProperty('--color-background', t.background);
+        document.documentElement.style.setProperty('--color-card-bg', t.cardBg);
+        document.documentElement.style.setProperty('--color-cell-bg', t.cellBg);
+        document.documentElement.style.setProperty('--color-text', t.text);
+        document.documentElement.style.setProperty('--color-text-dark', t.textDark);
+
+        // Aggiorna selezione
+        document.querySelectorAll('.theme-option').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        button.classList.add('active');
+
+        // Salva tema
+        storage.set('selectedTheme', temaId);
+
+        themeMenu.classList.add('hidden');
+
+        showNotification(`✨ Tema "${temaItem.nome}" applicato!`, 'success');
+    });
+
+    themeMenu.appendChild(button);
+
+    showNotification(`🎨 Tema "${temaItem.nome}" aggiunto al menu! Clicca il pulsante 🎨 per applicarlo.`, 'success', 6000);
 }
 
 // Usa power-up

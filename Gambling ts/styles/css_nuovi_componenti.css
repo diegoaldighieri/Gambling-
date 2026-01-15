@@ -1,40 +1,68 @@
 /* ============================================
-   CSS PER NUOVI COMPONENTI - GAMEMODES, SHOP, LEADERBOARD
-   Da aggiungere a styles/style.css o creare come file separato
+   CSS PER NUOVI COMPONENTI - VERSIONE FINALE CORRETTA
+   SISTEMATI: Posizioni pulsanti + z-index
    ============================================ */
 
-/* ========== NUOVI PULSANTI TOP ========== */
+/* ========== NUOVI PULSANTI - POSIZIONI CORRETTE ========== */
 .gamemode-button,
 .shop-button,
 .inventory-button,
 .leaderboard-button,
 .profile-button {
     position: fixed;
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #ffc400, #00cc66);
     border: none;
     border-radius: 50%;
     font-size: 24px;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     transition: all 0.3s ease;
-    z-index: 999;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.gamemode-button { top: 140px; right: 20px; }
-.shop-button { top: 200px; right: 20px; }
-.inventory-button { top: 260px; right: 20px; }
-.leaderboard-button { top: 320px; right: 20px; }
-.profile-button { top: 380px; right: 20px; }
+/* Posizioni NON sovrapposte con i pulsanti esistenti:
+   - stats-button: top: 90px, right: 20px
+   - achievements-button: top: 90px, right: 90px
+   - tutorial-button: top: 160px, right: 20px
+*/
+
+.gamemode-button {
+    top: 230px;
+    right: 20px;
+}
+
+.shop-button {
+    top: 300px;
+    right: 20px;
+}
+
+.inventory-button {
+    top: 370px;
+    right: 20px;
+}
+
+.leaderboard-button {
+    top: 440px;
+    right: 20px;
+}
+
+.profile-button {
+    top: 510px;
+    right: 20px;
+}
 
 .gamemode-button:hover,
 .shop-button:hover,
 .inventory-button:hover,
 .leaderboard-button:hover,
 .profile-button:hover {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
 }
 
 /* ========== MODAL BASE ========== */
@@ -46,14 +74,14 @@
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    z-index: 10000;
+    z-index: 10001;
     justify-content: center;
     align-items: center;
     animation: fadeIn 0.3s ease;
 }
 
 .modal-content {
-    background: var(--card-bg, #1a1a2e);
+    background: #1a1a2e;
     border-radius: 20px;
     padding: 30px;
     max-width: 90%;
@@ -63,11 +91,25 @@
     animation: slideUp 0.4s ease;
 }
 
-.modal-gamemodes { max-width: 900px; }
-.modal-shop { max-width: 1000px; }
-.modal-inventory { max-width: 800px; }
-.modal-leaderboard { max-width: 700px; }
-.modal-profile { max-width: 500px; }
+.modal-gamemodes {
+    max-width: 900px;
+}
+
+.modal-shop {
+    max-width: 1000px;
+}
+
+.modal-inventory {
+    max-width: 800px;
+}
+
+.modal-leaderboard {
+    max-width: 700px;
+}
+
+.modal-profile {
+    max-width: 500px;
+}
 
 .modal-header {
     display: flex;
@@ -75,13 +117,13 @@
     align-items: center;
     margin-bottom: 20px;
     padding-bottom: 15px;
-    border-bottom: 2px solid var(--primary-color);
+    border-bottom: 2px solid #ffc400;
 }
 
 .modal-title {
     font-size: 28px;
     font-weight: bold;
-    color: var(--primary-color);
+    color: #ffc400;
     margin: 0;
 }
 
@@ -102,6 +144,10 @@
     transform: rotate(90deg);
 }
 
+.modal-body {
+    color: #ffffff;
+}
+
 /* ========== GAMEMODES ========== */
 .gamemodes-grid {
     display: grid;
@@ -111,7 +157,7 @@
 }
 
 .modalita-card {
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border-radius: 15px;
     padding: 20px;
     cursor: pointer;
@@ -121,13 +167,13 @@
 
 .modalita-card:hover {
     transform: translateY(-5px);
-    border-color: var(--primary-color);
+    border-color: #ffc400;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
 .modalita-card.active {
-    border-color: var(--secondary-color);
-    background: linear-gradient(135deg, var(--cell-bg), var(--primary-color) 50%);
+    border-color: #00cc66;
+    background: linear-gradient(135deg, #2d1b4e, rgba(255, 196, 0, 0.3));
 }
 
 .modalita-card.locked {
@@ -146,7 +192,7 @@
     font-weight: bold;
     text-align: center;
     margin-bottom: 8px;
-    color: var(--text-color, #fff);
+    color: #ffffff;
 }
 
 .modalita-description {
@@ -178,6 +224,13 @@
     margin-bottom: 10px;
 }
 
+.indicator-timer,
+.indicator-score,
+.indicator-lives,
+.indicator-multiplier {
+    color: #ffffff;
+}
+
 .indicator-timer.urgent {
     color: #ff4444;
     animation: pulse 1s infinite;
@@ -193,23 +246,24 @@
 .shop-tab {
     flex: 1;
     padding: 12px 20px;
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border: 2px solid transparent;
     border-radius: 10px;
     font-size: 16px;
     font-weight: bold;
-    color: var(--text-color, #fff);
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .shop-tab:hover {
-    border-color: var(--primary-color);
+    border-color: #ffc400;
 }
 
 .shop-tab.active {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-color: var(--secondary-color);
+    background: linear-gradient(135deg, #ffc400, #00cc66);
+    border-color: #00cc66;
+    color: #000000;
 }
 
 .shop-content {
@@ -226,7 +280,7 @@
 }
 
 .shop-item {
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border-radius: 12px;
     padding: 15px;
     display: flex;
@@ -237,7 +291,7 @@
 }
 
 .shop-item:hover {
-    border-color: var(--primary-color);
+    border-color: #ffc400;
     transform: translateX(5px);
 }
 
@@ -259,7 +313,7 @@
     font-size: 18px;
     font-weight: bold;
     margin-bottom: 5px;
-    color: var(--text-color, #fff);
+    color: #ffffff;
 }
 
 .shop-item-description {
@@ -270,18 +324,18 @@
 
 .shop-item-owned {
     font-size: 12px;
-    color: var(--secondary-color);
+    color: #00cc66;
     font-weight: bold;
 }
 
 .shop-item-buy {
     padding: 10px 20px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #ffc400, #00cc66);
     border: none;
     border-radius: 8px;
     font-size: 16px;
     font-weight: bold;
-    color: var(--text-dark, #000);
+    color: #000000;
     cursor: pointer;
     transition: all 0.3s ease;
     min-width: 100px;
@@ -304,7 +358,7 @@
 }
 
 .inventory-item {
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border-radius: 12px;
     padding: 15px;
     display: flex;
@@ -315,8 +369,8 @@
 }
 
 .inventory-item.active {
-    border-color: var(--secondary-color);
-    background: linear-gradient(135deg, var(--cell-bg), rgba(0, 204, 102, 0.2));
+    border-color: #00cc66;
+    background: linear-gradient(135deg, #2d1b4e, rgba(0, 204, 102, 0.2));
 }
 
 .inventory-item-icon {
@@ -330,7 +384,7 @@
 .inventory-item-name {
     font-size: 16px;
     font-weight: bold;
-    color: var(--text-color, #fff);
+    color: #ffffff;
 }
 
 .inventory-item-quantity {
@@ -340,19 +394,19 @@
 
 .inventory-item-active {
     font-size: 12px;
-    color: var(--secondary-color);
+    color: #00cc66;
     font-weight: bold;
     margin-top: 5px;
 }
 
 .inventory-item-use {
     padding: 8px 16px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #ffc400, #00cc66);
     border: none;
     border-radius: 8px;
     font-size: 14px;
     font-weight: bold;
-    color: var(--text-dark, #000);
+    color: #000000;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -380,25 +434,26 @@
 .leaderboard-tipo-tab,
 .leaderboard-periodo-tab {
     padding: 10px 15px;
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border: 2px solid transparent;
     border-radius: 8px;
     font-size: 14px;
     font-weight: bold;
-    color: var(--text-color, #fff);
+    color: #ffffff;
     cursor: pointer;
     transition: all 0.3s ease;
 }
 
 .leaderboard-tipo-tab:hover,
 .leaderboard-periodo-tab:hover {
-    border-color: var(--primary-color);
+    border-color: #ffc400;
 }
 
 .leaderboard-tipo-tab.active,
 .leaderboard-periodo-tab.active {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    border-color: var(--secondary-color);
+    background: linear-gradient(135deg, #ffc400, #00cc66);
+    border-color: #00cc66;
+    color: #000000;
 }
 
 .leaderboard-list {
@@ -407,7 +462,7 @@
 }
 
 .leaderboard-item {
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border-radius: 10px;
     padding: 12px;
     margin-bottom: 8px;
@@ -418,8 +473,8 @@
 }
 
 .leaderboard-item.me {
-    border: 2px solid var(--secondary-color);
-    background: linear-gradient(135deg, var(--cell-bg), rgba(0, 204, 102, 0.2));
+    border: 2px solid #00cc66;
+    background: linear-gradient(135deg, #2d1b4e, rgba(0, 204, 102, 0.2));
 }
 
 .leaderboard-rank {
@@ -427,7 +482,7 @@
     font-weight: bold;
     min-width: 40px;
     text-align: center;
-    color: var(--primary-color);
+    color: #ffc400;
 }
 
 .leaderboard-avatar {
@@ -441,7 +496,7 @@
 .leaderboard-nickname {
     font-size: 16px;
     font-weight: bold;
-    color: var(--text-color, #fff);
+    color: #ffffff;
 }
 
 .leaderboard-stats {
@@ -452,7 +507,7 @@
 .leaderboard-score {
     font-size: 18px;
     font-weight: bold;
-    color: var(--secondary-color);
+    color: #00cc66;
 }
 
 .leaderboard-divider {
@@ -484,22 +539,22 @@
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 10px;
-    color: var(--text-color, #fff);
+    color: #ffffff;
 }
 
 .profile-input {
     width: 100%;
     padding: 12px;
-    background: var(--cell-bg, #2d1b4e);
-    border: 2px solid var(--primary-color);
+    background: #2d1b4e;
+    border: 2px solid #ffc400;
     border-radius: 8px;
     font-size: 16px;
-    color: var(--text-color, #fff);
+    color: #ffffff;
 }
 
 .profile-input:focus {
     outline: none;
-    border-color: var(--secondary-color);
+    border-color: #00cc66;
 }
 
 .avatar-grid {
@@ -511,33 +566,36 @@
 .avatar-option {
     width: 60px;
     height: 60px;
-    background: var(--cell-bg, #2d1b4e);
+    background: #2d1b4e;
     border: 2px solid transparent;
     border-radius: 10px;
     font-size: 32px;
     cursor: pointer;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .avatar-option:hover {
-    border-color: var(--primary-color);
+    border-color: #ffc400;
     transform: scale(1.1);
 }
 
 .avatar-option.active {
-    border-color: var(--secondary-color);
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    border-color: #00cc66;
+    background: linear-gradient(135deg, rgba(255, 196, 0, 0.3), rgba(0, 204, 102, 0.3));
 }
 
 .profile-save-btn {
     width: 100%;
     padding: 15px;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    background: linear-gradient(135deg, #ffc400, #00cc66);
     border: none;
     border-radius: 10px;
     font-size: 18px;
     font-weight: bold;
-    color: var(--text-dark, #000);
+    color: #000000;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -549,8 +607,12 @@
 
 /* ========== ANIMATIONS ========== */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideUp {
@@ -565,8 +627,12 @@
 }
 
 @keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
 }
 
 /* ========== RESPONSIVE ========== */
@@ -576,36 +642,51 @@
     .inventory-button,
     .leaderboard-button,
     .profile-button {
-        width: 45px;
-        height: 45px;
+        width: 50px;
+        height: 50px;
         font-size: 20px;
         right: 10px;
     }
-    
-    .gamemode-button { top: 120px; }
-    .shop-button { top: 175px; }
-    .inventory-button { top: 230px; }
-    .leaderboard-button { top: 285px; }
-    .profile-button { top: 340px; }
-    
+
+    .gamemode-button {
+        top: 230px;
+    }
+
+    .shop-button {
+        top: 290px;
+    }
+
+    .inventory-button {
+        top: 350px;
+    }
+
+    .leaderboard-button {
+        top: 410px;
+    }
+
+    .profile-button {
+        top: 470px;
+    }
+
     .modal-content {
         max-width: 95%;
         padding: 20px;
     }
-    
+
     .gamemodes-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .avatar-grid {
         grid-template-columns: repeat(4, 1fr);
     }
-    
+
     .shop-tabs {
         flex-direction: column;
     }
-    
+
     .leaderboard-tipo-tabs {
+        display: grid;
         grid-template-columns: repeat(2, 1fr);
     }
 }
