@@ -1,4 +1,4 @@
-// ===== SISTEMA SHOP E POWER-UPS =====
+// ===== SISTEMA SHOP E POWER-UPS - FIXED =====
 
 import { storage } from './storage.js';
 import { getCaramelle, setCaramelle } from './balance.js';
@@ -15,10 +15,9 @@ const shopItems = {
             prezzo: 50,
             tipo: 'consumabile',
             usa: (gameState) => {
-                // Trova una cella sicura non cliccata
                 const { celle, cliccata, bombe } = gameState;
                 const celleSicure = [];
-                
+
                 celle.forEach((cella, i) => {
                     if (!cliccata[i] && !bombe.includes(i)) {
                         celleSicure.push(i);
@@ -28,14 +27,13 @@ const shopItems = {
                 if (celleSicure.length > 0) {
                     const randomIndex = Math.floor(Math.random() * celleSicure.length);
                     const cellaIndex = celleSicure[randomIndex];
-                    
-                    // Simula click sulla cella
+
                     celle[cellaIndex].click();
-                    
+
                     showNotification('🔍 Cella sicura rivelata!', 'success');
                     return true;
                 }
-                
+
                 showNotification('❌ Nessuna cella sicura disponibile!', 'error');
                 return false;
             }
@@ -172,27 +170,31 @@ const shopItems = {
     ]
 };
 
-// Ottieni inventario giocatore
+// FIX: Ottieni inventario giocatore con valori di default corretti
 export function getInventario() {
-    return storage.get('inventario', {
+    const defaultInventory = {
         powerups: {},
         temi: [],
         animazioni: [],
         attivi: {}
-    });
+    };
+
+    return storage.get('inventario', defaultInventory);
 }
 
 // Salva inventario
 function salvaInventario(inventario) {
     storage.set('inventario', inventario);
+    console.log('💾 Inventario salvato:', inventario);
 }
 
-// Acquista item
+// FIX: Acquista item con gestione corretta
 export function acquistaItem(itemId, categoria) {
-    const item = shopItems[categoria].find(i => i.id === itemId);
+    const item = shopItems[categoria]?.find(i => i.id === itemId);
 
     if (!item) {
         showNotification('❌ Item non trovato!', 'error');
+        console.error('Item non trovato:', itemId, categoria);
         return false;
     }
 
@@ -203,9 +205,9 @@ export function acquistaItem(itemId, categoria) {
         return false;
     }
 
-    // Verifica se già posseduto (per items non consumabili)
     const inventario = getInventario();
 
+    // Verifica se già posseduto (per items non consumabili)
     if (categoria === 'temi' && inventario.temi.includes(itemId)) {
         showNotification('⚠️ Hai già questo tema!', 'warning');
         return false;
@@ -216,33 +218,44 @@ export function acquistaItem(itemId, categoria) {
         return false;
     }
 
-    // Acquista
-    setCaramelle(saldo - item.prezzo);
+    // FIX: Acquista e sottrai correttamente il prezzo
+    const nuovoSaldo = saldo - item.prezzo;
+    setCaramelle(nuovoSaldo);
+    console.log(`💰 Saldo aggiornato: ${saldo} -> ${nuovoSaldo}`);
 
-    // Aggiungi all'inventario
+    // FIX: Aggiungi all'inventario
     if (categoria === 'powerups') {
         if (!inventario.powerups[itemId]) {
             inventario.powerups[itemId] = 0;
         }
         inventario.powerups[itemId]++;
+        console.log(`✅ Powerup ${itemId} aggiunto. Quantità: ${inventario.powerups[itemId]}`);
     } else if (categoria === 'temi') {
-        inventario.temi.push(itemId);
+        if (!inventario.temi.includes(itemId)) {
+            inventario.temi.push(itemId);
+            console.log(`✅ Tema ${itemId} aggiunto`);
 
-        // ===== FIX: Aggiungi tema al menu =====
-        aggiungiTemaAlMenu(itemId, item);
-        // ======================================
-
+            // Aggiungi tema al menu
+            aggiungiTemaAlMenu(itemId, item);
+        }
     } else if (categoria === 'animazioni') {
-        inventario.animazioni.push(itemId);
+        if (!inventario.animazioni.includes(itemId)) {
+            inventario.animazioni.push(itemId);
+            console.log(`✅ Animazione ${itemId} aggiunta`);
+        }
     }
 
+    // FIX: Salva inventario dopo ogni acquisto
     salvaInventario(inventario);
 
     playSound('cashout');
     showNotification(`✅ ${item.nome} acquistato!`, 'success');
 
-    renderShop();
-    renderInventario();
+    // FIX: Aggiorna UI
+    setTimeout(() => {
+        renderShop();
+        renderInventario();
+    }, 100);
 
     return true;
 }
@@ -250,11 +263,14 @@ export function acquistaItem(itemId, categoria) {
 // Funzione helper per aggiungere tema al menu
 function aggiungiTemaAlMenu(temaId, temaItem) {
     const themeMenu = document.getElementById('theme-menu');
-    if (!themeMenu) return;
+    if (!themeMenu) {
+        console.warn('Menu temi non trovato');
+        return;
+    }
 
     // Controlla se il tema esiste già
     if (themeMenu.querySelector(`[data-theme="${temaId}"]`)) {
-        showNotification(`✨ Tema "${temaItem.nome}" già disponibile nel menu!`, 'info');
+        console.log(`Tema "${temaItem.nome}" già presente nel menu`);
         return;
     }
 
@@ -306,22 +322,24 @@ function aggiungiTemaAlMenu(temaId, temaItem) {
     });
 
     themeMenu.appendChild(button);
-
-    showNotification(`🎨 Tema "${temaItem.nome}" aggiunto al menu! Clicca il pulsante 🎨 per applicarlo.`, 'success', 6000);
+    console.log(`🎨 Tema "${temaItem.nome}" aggiunto al menu`);
 }
 
-// Usa power-up
+// FIX: Usa power-up
 export function usaPowerup(itemId, gameState) {
     const inventario = getInventario();
-    
+
     if (!inventario.powerups[itemId] || inventario.powerups[itemId] <= 0) {
         showNotification('❌ Non hai questo power-up!', 'error');
         return false;
     }
 
     const item = shopItems.powerups.find(i => i.id === itemId);
-    
-    if (!item) return false;
+
+    if (!item) {
+        console.error('Power-up non trovato:', itemId);
+        return false;
+    }
 
     // Usa il power-up
     if (item.tipo === 'consumabile' && item.usa) {
@@ -334,7 +352,7 @@ export function usaPowerup(itemId, gameState) {
         return success;
     }
 
-    // Attiva power-up
+    // Attiva power-up consumabile
     if (item.tipo === 'consumabile' && !item.usa) {
         inventario.attivi[itemId] = true;
         inventario.powerups[itemId]--;
@@ -344,6 +362,7 @@ export function usaPowerup(itemId, gameState) {
         return true;
     }
 
+    // Attiva power-up temporaneo
     if (item.tipo === 'temporaneo') {
         inventario.attivi[itemId] = {
             partiteRimaste: item.durata,
@@ -362,22 +381,29 @@ export function usaPowerup(itemId, gameState) {
 // Controlla power-up attivi
 export function hasPowerupAttivo(itemId) {
     const inventario = getInventario();
-    return inventario.attivi[itemId] === true || 
-           (inventario.attivi[itemId] && inventario.attivi[itemId].partiteRimaste > 0);
+    return inventario.attivi[itemId] === true ||
+        (inventario.attivi[itemId] && inventario.attivi[itemId].partiteRimaste > 0);
 }
 
-// Consuma power-up temporaneo (chiamato a fine partita)
+// FIX: Consuma power-up temporaneo (chiamato a fine partita)
 export function consumaPowerupTemporaneo(itemId) {
     const inventario = getInventario();
-    
+
+    if (!inventario.attivi) {
+        inventario.attivi = {};
+        return;
+    }
+
     if (inventario.attivi[itemId] && inventario.attivi[itemId].partiteRimaste) {
         inventario.attivi[itemId].partiteRimaste--;
-        
+
         if (inventario.attivi[itemId].partiteRimaste <= 0) {
+            const item = shopItems.powerups.find(i => i.id === itemId);
+            const nomeItem = item ? item.nome : itemId;
             delete inventario.attivi[itemId];
-            showNotification(`⚠️ ${itemId} terminato!`, 'warning');
+            showNotification(`⚠️ ${nomeItem} terminato!`, 'warning');
         }
-        
+
         salvaInventario(inventario);
     }
 }
@@ -389,14 +415,16 @@ export function disattivaPowerup(itemId) {
     salvaInventario(inventario);
 }
 
-// Ottieni bonus moltiplicatore attivo
+// FIX: Ottieni bonus moltiplicatore attivo
 export function getBonusMoltiplicatoreAttivo() {
     const inventario = getInventario();
     let bonus = 0;
 
+    if (!inventario.attivi) return 0;
+
     Object.keys(inventario.attivi).forEach(itemId => {
         const attivo = inventario.attivi[itemId];
-        if (attivo && attivo.bonus) {
+        if (attivo && attivo.bonus !== undefined) {
             bonus += attivo.bonus;
         }
     });
@@ -409,17 +437,20 @@ export function getBonusMoltiplicatoreAttivo() {
     return bonus;
 }
 
-// Renderizza shop
+// FIX: Renderizza shop
 export function renderShop() {
     const powerupsContainer = document.getElementById('shopPowerups');
     const temiContainer = document.getElementById('shopTemi');
     const animazioniContainer = document.getElementById('shopAnimazioni');
-    
+
     const inventario = getInventario();
+    const saldoCorrente = getCaramelle();
 
     if (powerupsContainer) {
         powerupsContainer.innerHTML = shopItems.powerups.map(item => {
             const quantita = inventario.powerups[item.id] || 0;
+            const puoAcquistare = saldoCorrente >= item.prezzo;
+
             return `
                 <div class="shop-item">
                     <div class="shop-item-icon">${item.icona}</div>
@@ -428,8 +459,10 @@ export function renderShop() {
                         <div class="shop-item-description">${item.descrizione}</div>
                         ${quantita > 0 ? `<div class="shop-item-owned">Posseduti: ${quantita}</div>` : ''}
                     </div>
-                    <button class="shop-item-buy" onclick="window.shopBuy('${item.id}', 'powerups')">
-                        ${item.prezzo}💵
+                    <button class="shop-item-buy" 
+                            onclick="window.shopBuy('${item.id}', 'powerups')"
+                            ${!puoAcquistare ? 'disabled' : ''}>
+                        ${item.prezzo} 💵
                     </button>
                 </div>
             `;
@@ -439,6 +472,8 @@ export function renderShop() {
     if (temiContainer) {
         temiContainer.innerHTML = shopItems.temi.map(item => {
             const posseduto = inventario.temi.includes(item.id);
+            const puoAcquistare = saldoCorrente >= item.prezzo;
+
             return `
                 <div class="shop-item ${posseduto ? 'owned' : ''}">
                     <div class="shop-item-icon">${item.icona}</div>
@@ -449,8 +484,8 @@ export function renderShop() {
                     </div>
                     <button class="shop-item-buy" 
                             onclick="window.shopBuy('${item.id}', 'temi')"
-                            ${posseduto ? 'disabled' : ''}>
-                        ${posseduto ? '✓' : item.prezzo + '💵'}
+                            ${posseduto || !puoAcquistare ? 'disabled' : ''}>
+                        ${posseduto ? '✓' : item.prezzo + ' 💵'}
                     </button>
                 </div>
             `;
@@ -460,6 +495,8 @@ export function renderShop() {
     if (animazioniContainer) {
         animazioniContainer.innerHTML = shopItems.animazioni.map(item => {
             const posseduto = inventario.animazioni.includes(item.id);
+            const puoAcquistare = saldoCorrente >= item.prezzo;
+
             return `
                 <div class="shop-item ${posseduto ? 'owned' : ''}">
                     <div class="shop-item-icon">${item.icona}</div>
@@ -470,8 +507,8 @@ export function renderShop() {
                     </div>
                     <button class="shop-item-buy" 
                             onclick="window.shopBuy('${item.id}', 'animazioni')"
-                            ${posseduto ? 'disabled' : ''}>
-                        ${posseduto ? '✓' : item.prezzo + '💵'}
+                            ${posseduto || !puoAcquistare ? 'disabled' : ''}>
+                        ${posseduto ? '✓' : item.prezzo + ' 💵'}
                     </button>
                 </div>
             `;
@@ -488,7 +525,7 @@ export function renderInventario() {
     const items = [];
 
     // Power-ups
-    Object.keys(inventario.powerups).forEach(itemId => {
+    Object.keys(inventario.powerups || {}).forEach(itemId => {
         const quantita = inventario.powerups[itemId];
         if (quantita > 0) {
             const item = shopItems.powerups.find(i => i.id === itemId);
@@ -504,6 +541,11 @@ export function renderInventario() {
         }
     });
 
+    if (items.length === 0) {
+        container.innerHTML = '<div class="inventory-empty">Nessun power-up nell\'inventario</div>';
+        return;
+    }
+
     container.innerHTML = items.map(item => `
         <div class="inventory-item ${item.attivo ? 'active' : ''}">
             <div class="inventory-item-icon">${item.icona}</div>
@@ -512,16 +554,12 @@ export function renderInventario() {
                 <div class="inventory-item-quantity">×${item.quantita}</div>
                 ${item.attivo ? '<div class="inventory-item-active">ATTIVO</div>' : ''}
             </div>
-            ${!item.attivo && item.categoria === 'powerup' ? 
-                `<button class="inventory-item-use" onclick="window.usePowerup('${item.id}')">USA</button>` : 
-                ''
-            }
+            ${!item.attivo && item.categoria === 'powerup' ?
+        `<button class="inventory-item-use" onclick="window.usePowerup('${item.id}')">USA</button>` :
+        ''
+    }
         </div>
     `).join('');
-
-    if (items.length === 0) {
-        container.innerHTML = '<div class="inventory-empty">Nessun power-up nell\'inventario</div>';
-    }
 }
 
 // Setup modal shop
@@ -548,10 +586,10 @@ export function setupShopModal() {
         tab.addEventListener('click', () => {
             playSound('click');
             const target = tab.dataset.tab;
-            
+
             tabs.forEach(t => t.classList.remove('active'));
             contents.forEach(c => c.classList.remove('active'));
-            
+
             tab.classList.add('active');
             document.getElementById(`shop-${target}`).classList.add('active');
         });

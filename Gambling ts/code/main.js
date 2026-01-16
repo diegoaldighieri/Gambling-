@@ -1,4 +1,4 @@
-// ===== CACCIA AL TESORO v4.1 - FILE PRINCIPALE CON ANTI-CHEAT =====
+// ===== CACCIA AL TESORO v4.2 - FILE PRINCIPALE CON FIX =====
 
 // ===== IMPORT ANTI-CHEAT (PRIMO!) =====
 import { AntiCheat } from './modules/antiCheat.js';
@@ -146,14 +146,14 @@ let inGioco = false;
 let numBombe = 1;
 let totalescommessa = 0;
 let cmoltiplicatore = 1;
-let gameStartTime = 0; // NUOVO: per anti-cheat
+let gameStartTime = 0;
 
 // ===== ESPORTA FUNZIONI GLOBALI =====
 window.updateLevelDisplay = updateLevelDisplay;
 window.closePopup = closePopup;
 window.closeDailyBonus = closeDailyBonus;
 window.shareResult = () => shareResult(totalescommessa * cmoltiplicatore, versione, numBombe);
-window.AntiCheat = AntiCheat; // Esporta per debug
+window.AntiCheat = AntiCheat;
 
 window.shopBuy = (id, categoria) => {
     acquistaItem(id, categoria);
@@ -182,11 +182,24 @@ function getTotaleCelleCorrente() {
 }
 
 function aggiornaMoltiplicatoreCorrente() {
+    const totaleCelle = getTotaleCelleCorrente();
+
+    // FIX: Calcola il moltiplicatore corretto basato su diamanti trovati
+    const moltiplicatoreBase = getMoltiplicatorePerDiamanti(trovati, totaleCelle, numBombe);
+
+    // Applica bonus
+    const levelMultiplier = levels[getPlayerLevel()].multiplier;
+    const bonusEvento = getBonusMoltiplicatoreEvento();
+    const bonusModalita = getBonusModalita();
+    const bonusPowerup = getBonusMoltiplicatoreAttivo();
+
+    const moltiplicatoreTotale = moltiplicatoreBase * levelMultiplier * bonusEvento * bonusModalita * (1 + bonusPowerup);
+
     aggiornaMoltiplicatore(
-        cmoltiplicatore,
+        moltiplicatoreTotale,
         totalescommessa,
         trovati,
-        getTotaleCelleCorrente(),
+        totaleCelle,
         numBombe,
         inGioco
     );
@@ -244,7 +257,7 @@ function salvaStatoGioco() {
         trovati,
         bombe,
         cliccata,
-        gameStartTime // NUOVO: salva timestamp
+        gameStartTime
     };
     salvaStato(stato);
 }
@@ -435,7 +448,8 @@ function handleDiamondClick(cella, totaleCelle, icone) {
     cella.innerHTML = icone.diamante;
     trovati++;
 
-    cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati);
+    // FIX: Calcola il moltiplicatore corretto
+    cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati, totaleCelle, numBombe);
     aggiornaMoltiplicatoreCorrente();
     checkAchievements();
 
@@ -460,7 +474,7 @@ function handleGameWin(totaleCelle, icone) {
     const bonusModalita = getBonusModalita();
     const bonusPowerup = getBonusMoltiplicatoreAttivo();
 
-    const moltiplicatoreTotale = cmoltiplicatore * levelMultiplier * bonusEvento * bonusModalita * bonusPowerup;
+    const moltiplicatoreTotale = cmoltiplicatore * levelMultiplier * bonusEvento * bonusModalita * (1 + bonusPowerup);
     const premio = Math.floor(totalescommessa * moltiplicatoreTotale);
 
     // ANTI-CHEAT: Valida vincita
@@ -504,8 +518,11 @@ function handleGameWin(totaleCelle, icone) {
         // Leaderboard
         inviaScore(premio);
 
-        // Powerups
-        consumaPowerupTemporaneo();
+        // Powerups - FIX: consuma tutti i powerup temporanei attivi
+        const inventario = JSON.parse(localStorage.getItem('inventario') || '{"attivi":{}}');
+        Object.keys(inventario.attivi || {}).forEach(powerupId => {
+            consumaPowerupTemporaneo(powerupId);
+        });
 
         resetStatoGioco();
         document.getElementById("overlay2").style.display = "flex";
@@ -534,7 +551,7 @@ function handleCashout() {
     const bonusModalita = getBonusModalita();
     const bonusPowerup = getBonusMoltiplicatoreAttivo();
 
-    const moltiplicatoreTotale = cmoltiplicatore * levelMultiplier * bonusEvento * bonusModalita * bonusPowerup;
+    const moltiplicatoreTotale = cmoltiplicatore * levelMultiplier * bonusEvento * bonusModalita * (1 + bonusPowerup);
     const premio = Math.floor(totalescommessa * moltiplicatoreTotale);
     const profitto = premio - totalescommessa;
 
@@ -547,6 +564,7 @@ function handleCashout() {
 
     const icone = getIconeEvento();
 
+    // FIX: Ritira correttamente il profitto
     setCaramelle(getCaramelle() + profitto);
     document.getElementById("statCashout").textContent = premio;
 
@@ -569,7 +587,12 @@ function handleCashout() {
     aggiornaProgressoMissione('cashout_partite', 1);
     aggiornaProgressoEvento(1, premio);
     inviaScore(premio);
-    consumaPowerupTemporaneo();
+
+    // FIX: consuma tutti i powerup temporanei attivi
+    const inventario = JSON.parse(localStorage.getItem('inventario') || '{"attivi":{}}');
+    Object.keys(inventario.attivi || {}).forEach(powerupId => {
+        consumaPowerupTemporaneo(powerupId);
+    });
 
     resetStatoGioco();
     inGioco = false;
@@ -737,7 +760,7 @@ setInterval(() => {
 }, 60000);
 
 // ===== INIZIALIZZAZIONE =====
-console.log('🎮 Caccia al Tesoro v4.1 (Anti-Cheat Edition) - Inizializzazione...');
+console.log('🎮 Caccia al Tesoro v4.2 (Fixed Edition) - Inizializzazione...');
 
 // Import dinamici
 import('./modules/modals.js').then(modals => {
@@ -823,7 +846,7 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // Ripristino partita in corso
+    // FIX: Ripristino partita in corso con gestione corretta
     const stato = caricaStatoGioco();
     if (stato && stato.inGioco) {
         console.log('🔄 Ripristino partita in corso...');
@@ -832,10 +855,10 @@ window.addEventListener('DOMContentLoaded', () => {
         versione = stato.versione;
         numBombe = stato.numBombe;
         totalescommessa = stato.totalescommessa;
-        cmoltiplicatore = stato.cmoltiplicatore;
+        cmoltiplicatore = stato.cmoltiplicatore || 1;
         trovati = stato.trovati;
-        bombe = stato.bombe;
-        cliccata = stato.cliccata;
+        bombe = stato.bombe || [];
+        cliccata = stato.cliccata || [];
         gameStartTime = stato.gameStartTime || Date.now();
 
         scommessa.value = totalescommessa;
@@ -845,6 +868,9 @@ window.addEventListener('DOMContentLoaded', () => {
         document.getElementById(`Versione${versione}`)?.classList.add("active");
 
         aggiornaMaxBombe();
+
+        // FIX: Ricalcola il moltiplicatore corretto dopo il ripristino
+        cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati, getTotaleCelleCorrente(), numBombe);
         aggiornaMoltiplicatoreCorrente();
 
         const grid = document.getElementById("grid");
@@ -875,7 +901,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 }
             } else {
                 const img = document.createElement("img");
-                img.src = getThemeImage(getCurrentTheme());                img.classList.add("cella-img");
+                img.src = getThemeImage(getCurrentTheme());
+                img.classList.add("cella-img");
                 cella.appendChild(img);
 
                 cella.addEventListener("click", () => handleCellaClick(i, cella, totaleCelle, icone));
@@ -887,7 +914,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
     trackScreen('Home');
 
-    console.log('✅ Gioco v4.1 inizializzato con successo!');
+    console.log('✅ Gioco v4.2 inizializzato con successo!');
     console.log(`👤 Giocatore: ${getNickname()} ${getAvatar()}`);
     console.log(`🛡️ Anti-cheat: ${AntiCheat.getDebugInfo().version}`);
 
