@@ -1,4 +1,10 @@
-// ===== CACCIA AL TESORO v4.0 - FILE PRINCIPALE COMPLETO =====
+// ===== CACCIA AL TESORO v4.1 - FILE PRINCIPALE CON ANTI-CHEAT =====
+
+// ===== IMPORT ANTI-CHEAT (PRIMO!) =====
+import { AntiCheat } from './modules/antiCheat.js';
+
+// Inizializza anti-cheat immediatamente
+AntiCheat.initialize();
 
 // ===== IMPORT MODULI BASE =====
 import { playSound, showNotification } from './modules/audio.js';
@@ -33,9 +39,7 @@ import {
 } from './modules/storage.js';
 import { levels } from './modules/config.js';
 
-// ===== IMPORT NUOVI MODULI =====
-
-// Missioni giornaliere
+// ===== IMPORT MODULI AVANZATI =====
 import {
     getMissioniGiornaliere,
     aggiornaProgressoMissione,
@@ -45,7 +49,6 @@ import {
     renderMissioni
 } from './modules/missions.js';
 
-// Shop e Power-ups
 import {
     setupShopModal,
     setupInventoryModal,
@@ -59,17 +62,14 @@ import {
     acquistaItem
 } from './modules/shop.js';
 
-// Leaderboard e Profilo
 import {
     setupLeaderboardModal,
     setupProfileModal,
     inviaScore,
     getNickname,
     getAvatar
-    // generaLeaderboardFake // Decommenta per testing
 } from './modules/leaderboard.js';
 
-// Modalità di gioco alternative
 import {
     setModalita,
     getModalitaCorrente,
@@ -87,7 +87,6 @@ import {
     getBonusModalita
 } from './modules/gamemodes.js';
 
-// Animazioni e effetti
 import {
     setupAnimazioni,
     creaParticelle,
@@ -99,7 +98,6 @@ import {
     pulsaElemento
 } from './modules/animations.js';
 
-// Eventi speciali
 import {
     checkEventoSpeciale,
     setupEventiSpeciali,
@@ -108,10 +106,8 @@ import {
     getBonusMoltiplicatoreEvento,
     aggiornaProgressoEvento,
     renderPannelloEvento
-
 } from './modules/events.js';
 
-// PWA
 import {
     inizializzaPWA,
     richiediPermessiNotifiche,
@@ -119,7 +115,6 @@ import {
     trackScreen
 } from './modules/pwa.js';
 
-// Sfide e Multiplayer
 import {
     setupSfideModal,
     creaSfida,
@@ -151,14 +146,15 @@ let inGioco = false;
 let numBombe = 1;
 let totalescommessa = 0;
 let cmoltiplicatore = 1;
+let gameStartTime = 0; // NUOVO: per anti-cheat
 
 // ===== ESPORTA FUNZIONI GLOBALI =====
 window.updateLevelDisplay = updateLevelDisplay;
 window.closePopup = closePopup;
 window.closeDailyBonus = closeDailyBonus;
 window.shareResult = () => shareResult(totalescommessa * cmoltiplicatore, versione, numBombe);
+window.AntiCheat = AntiCheat; // Esporta per debug
 
-// Funzioni shop per HTML
 window.shopBuy = (id, categoria) => {
     acquistaItem(id, categoria);
 };
@@ -247,13 +243,31 @@ function salvaStatoGioco() {
         cmoltiplicatore,
         trovati,
         bombe,
-        cliccata
+        cliccata,
+        gameStartTime // NUOVO: salva timestamp
     };
     salvaStato(stato);
 }
 
+// ===== GENERAZIONE CELLE CON ANTI-CHEAT =====
 function generacelle() {
-    if (!validateBet(totalescommessa, getCaramelle())) {
+    const totaleCelle = getTotaleCelleCorrente();
+    const balance = getCaramelle();
+
+    // ANTI-CHEAT: Validazione completa
+    const startTime = AntiCheat.validateGameStart(
+        totalescommessa,
+        balance,
+        numBombe,
+        totaleCelle
+    );
+
+    if (!startTime) {
+        showNotification('❌ Impossibile avviare il gioco: parametri non validi', 'error');
+        return;
+    }
+
+    if (!validateBet(totalescommessa, balance)) {
         return;
     }
 
@@ -263,6 +277,9 @@ function generacelle() {
     }
 
     playSound('click');
+
+    // Salva timestamp
+    gameStartTime = startTime;
 
     // Reset gioco
     celle.forEach(c => c.remove());
@@ -274,22 +291,16 @@ function generacelle() {
     aggiornaMoltiplicatoreCorrente();
 
     const grid = document.getElementById("grid");
-    const totaleCelle = getTotaleCelleCorrente();
 
     if (totaleCelle === 0) return;
 
     inGioco = true;
 
-    // Imposta layout griglia
     grid.style.gridTemplateColumns =
         versione === 1 ? "repeat(3, 1fr)" :
             versione === 2 ? "repeat(4, 1fr)" :
                 "repeat(5, 1fr)";
 
-    // Ottieni icone evento (se attivo)
-    const icone = getIconeEvento();
-
-    // Crea celle
     for (let i = 0; i < totaleCelle; i++) {
         const cella = document.createElement("button");
         const img = document.createElement("img");
@@ -306,36 +317,39 @@ function generacelle() {
         cliccata.push(false);
     }
 
-    // Genera bombe
-    bombe = [];
-    while (bombe.length < numBombe) {
-        const indiceBomba = Math.floor(Math.random() * totaleCelle);
-        if (!bombe.includes(indiceBomba)) {
-            bombe.push(indiceBomba);
-        }
+    // ANTI-CHEAT: Genera bombe in modo sicuro
+    bombe = AntiCheat.generateSecureBombs(totaleCelle, numBombe);
+
+    if (bombe.length === 0) {
+        showNotification('❌ Errore nella generazione del gioco', 'error');
+        inGioco = false;
+        return;
     }
 
-    // Aggiungi event listeners
+    // Ottieni icone evento
+    const icone = getIconeEvento();
+
     celle.forEach((cella, index) => {
-        cella.addEventListener("click", () => handleCellaClick(index, cella, totaleCelle));
+        cella.addEventListener("click", () => handleCellaClick(index, cella, totaleCelle, icone));
     });
 
-    // Inizializza modalità speciali
-    const modalita = getModalitaCorrente();
-    if (modalita === 'timeAttack') {
-        iniziaTimeAttack();
-    } else if (modalita === 'survival') {
-        iniziaSurvival();
-    } else if (modalita === 'endless') {
-        iniziaEndless();
-    }
-
-    // Tracking
-    trackEvent('Game', 'Start', `Grid${versione}x${versione}`, totalescommessa);
+    trackEvent('game_started', {
+        version: versione,
+        bombs: numBombe,
+        bet: totalescommessa
+    });
 }
 
-function handleCellaClick(index, cella, totaleCelle) {
+// ===== GESTIONE CLICK CELLA CON ANTI-CHEAT =====
+function handleCellaClick(index, cella, totaleCelle, icone) {
     if (cliccata[index] || !inGioco) return;
+
+    // ANTI-CHEAT: Valida velocità click
+    if (!AntiCheat.validateClick()) {
+        showNotification('⚠️ Rallenta i click!', 'warning');
+        return;
+    }
+
     cliccata[index] = true;
 
     cella.classList.add('revealing');
@@ -344,57 +358,30 @@ function handleCellaClick(index, cella, totaleCelle) {
         cella.innerHTML = "";
 
         if (bombe.includes(index)) {
-            handleBombClick(cella);
+            // BOMBA
+            handleBombClick(cella, totaleCelle, icone);
         } else {
-            handleDiamondClick(cella, totaleCelle);
+            // DIAMANTE
+            handleDiamondClick(cella, totaleCelle, icone);
         }
     }, 300);
 
     salvaStatoGioco();
 }
 
-function handleBombClick(cella) {
+function handleBombClick(cella, totaleCelle, icone) {
     inGioco = false;
-
-    // ===== EFFETTI VISIVI =====
-    esplodiBomba(cella);
-
     playSound('bomb');
-
-    // Ottieni icona bomba evento
-    const icone = getIconeEvento();
     cella.classList.remove('revealing');
     cella.classList.add('bomb-reveal');
     cella.innerHTML = icone.bomba;
 
+    // Animazione esplosione
+    esplodiBomba(cella);
+
     const gridWrapper = document.querySelector('.grid-wrapper');
-    if (gridWrapper) {
-        gridWrapper.classList.add('shake');
-        setTimeout(() => gridWrapper.classList.remove('shake'), 500);
-    }
-
-    // ===== GESTIONE MODALITÀ SPECIALI =====
-    const modalita = getModalitaCorrente();
-
-    // Survival: perde vita ma continua
-    if (modalita === 'survival') {
-        sconfittaSurvival();
-        // Se ha ancora vite, non mostra tutto
-        return;
-    }
-
-    // Time Attack: ferma timer
-    if (modalita === 'timeAttack') {
-        stopTimeAttack();
-    }
-
-    // Protezione bomba power-up
-    if (hasPowerupAttivo('bomb_protection')) {
-        disattivaPowerup('bomb_protection');
-        showNotification('🛡️ Protezione usata! Sei salvo!', 'success');
-        inGioco = true;
-        return;
-    }
+    gridWrapper.classList.add('shake');
+    setTimeout(() => gridWrapper.classList.remove('shake'), 500);
 
     setTimeout(() => {
         celle.forEach((c, i) => {
@@ -412,96 +399,78 @@ function handleBombClick(cella) {
     }, 300);
 
     setTimeout(() => {
-        setCaramelle(getCaramelle() - totalescommessa);
+        const newBalance = getCaramelle() - totalescommessa;
+        setCaramelle(Math.max(0, newBalance));
+
         document.getElementById("statCelleTrovate").textContent = trovati;
+
         aggiornaStatistiche('persa', 0, totalescommessa);
         updateStreak(false);
-
-        // Consuma power-up temporanei
-        consumaPowerupTemporaneo('multiplier_boost');
-        consumaPowerupTemporaneo('xp_boost');
+        aggiornaProgressoMissione('gioca_partite', 1);
+        sconfittaSurvival();
 
         resetStatoGioco();
-
-        // Tracking
-        trackEvent('Game', 'Lose', `Grid${versione}x${versione}`, totalescommessa);
-
         document.getElementById("overlay").style.display = "flex";
+
+        trackEvent('game_lost', {
+            diamonds_found: trovati,
+            bet: totalescommessa
+        });
     }, 1000);
 }
 
-function handleDiamondClick(cella, totaleCelle) {
+function handleDiamondClick(cella, totaleCelle, icone) {
     playSound('diamond');
-
-    // Ottieni icona diamante evento
-    const icone = getIconeEvento();
-
     cella.classList.remove('revealing');
     cella.classList.add('diamond-reveal');
 
+    // Effetti particelle
+    creaParticelle(cella, icone.diamante);
+
     if (trovati >= 2) {
         cella.classList.add('combo-hit');
+        mostraCombo(trovati);
     }
 
     cella.innerHTML = icone.diamante;
     trovati++;
 
-    // ===== EFFETTI VISIVI =====
-    creaParticelle(cella, 'diamante', 15);
-    mostraNumeroGalleggiante(cella, '+1 💎', 'success');
-    pulsaElemento(cella);
-
-    // Sistema combo
-    if (trovati >= 3) {
-        mostraCombo(trovati);
-    }
-
-    cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati, totaleCelle, numBombe);
+    cmoltiplicatore = getMoltiplicatorePerDiamanti(trovati);
     aggiornaMoltiplicatoreCorrente();
+    checkAchievements();
 
-    // ===== TRACKING MISSIONI =====
-    aggiornaProgressoMissione('diamantiSingolaPartita', trovati);
-
-    // Eventi
-    const evento = getEventoAttivo();
-    if (evento) {
-        aggiornaProgressoEvento('diamanti', 1);
-    }
-
-    // ===== MODALITÀ SPECIALI =====
-    const modalita = getModalitaCorrente();
-    if (modalita === 'timeAttack') {
-        diamanteTrovatoTimeAttack();
-    } else if (modalita === 'endless') {
-        diamanteTrovatoEndless();
-    }
-
-    // Sfide
-    aggiornaPunteggioSfida(1);
-
-    const gameState = { trovati, inGioco, versione, numBombe };
-    checkAchievements(gameState);
+    // Progresso missioni
+    aggiornaProgressoMissione('trova_diamanti', 1);
+    diamanteTrovatoTimeAttack();
+    diamanteTrovatoEndless();
 
     const celleSicureTotali = totaleCelle - numBombe;
+
     if (trovati === celleSicureTotali) {
-        handleVictory();
+        handleGameWin(totaleCelle, icone);
     }
 }
 
-function handleVictory() {
+// ===== GESTIONE VITTORIA CON ANTI-CHEAT =====
+function handleGameWin(totaleCelle, icone) {
     inGioco = false;
 
-    // Calcola moltiplicatore finale con tutti i bonus
     const levelMultiplier = levels[getPlayerLevel()].multiplier;
-    const shopBonus = getBonusMoltiplicatoreAttivo();
-    const eventoBonus = getBonusMoltiplicatoreEvento();
-    const gamemodeBonus = getBonusModalita();
+    const bonusEvento = getBonusMoltiplicatoreEvento();
+    const bonusModalita = getBonusModalita();
+    const bonusPowerup = getBonusMoltiplicatoreAttivo();
 
-    const finalMultiplier = cmoltiplicatore * levelMultiplier * (1 + shopBonus) * (1 + eventoBonus) * (1 + gamemodeBonus);
-    const premio = Math.floor(totalescommessa * finalMultiplier);
+    const moltiplicatoreTotale = cmoltiplicatore * levelMultiplier * bonusEvento * bonusModalita * bonusPowerup;
+    const premio = Math.floor(totalescommessa * moltiplicatoreTotale);
 
-    // Ottieni icone evento
-    const icone = getIconeEvento();
+    // ANTI-CHEAT: Valida vincita
+    if (!AntiCheat.validateGameEnd(totalescommessa, moltiplicatoreTotale, premio, true, gameStartTime)) {
+        console.error('⚠️ Vincita non valida rilevata');
+        showNotification('❌ Errore nella validazione della vincita', 'error');
+        resetStatoGioco();
+        inGioco = false;
+        return;
+    }
 
     setTimeout(() => {
         celle.forEach((c, i) => {
@@ -516,69 +485,40 @@ function handleVictory() {
     }, 300);
 
     setTimeout(() => {
-        // ===== EFFETTI VITTORIA =====
+        playSound('win');
         celebraVittoria();
 
-        playSound('win');
         setCaramelle(getCaramelle() + premio);
         document.getElementById("statVincita").textContent = premio;
 
         aggiornaStatistiche('vinta', premio, totalescommessa);
         updateStreak(true);
+        checkAchievements();
 
-        // ===== TRACKING MISSIONI =====
-        if (versione === 3) {
-            aggiornaProgressoMissione('vittorie5x5', 1);
-        }
-        aggiornaProgressoMissione('vittoriaSenzaCashout', true);
+        // Progresso missioni ed eventi
+        aggiornaProgressoMissione('vinci_partite', 1);
+        aggiornaProgressoMissione('vinci_monete', premio);
+        aggiornaProgressoEvento(1, premio);
+        vittoriaSurvival();
 
-        // Eventi
-        const evento = getEventoAttivo();
-        if (evento) {
-            aggiornaProgressoEvento('vittorie', 1);
-        }
+        // Leaderboard
+        inviaScore(premio);
 
-        // ===== LEADERBOARD =====
-        inviaScore('vincita_massima', premio);
-        inviaScore('profitto_netto', premio - totalescommessa);
-
-        // ===== MODALITÀ SPECIALI =====
-        const modalita = getModalitaCorrente();
-        if (modalita === 'survival') {
-            vittoriaSurvival();
-        } else if (modalita === 'endless') {
-            terminaEndless(premio);
-        }
-
-        // Sfide
-        aggiornaPunteggioSfida(premio);
-        controllaSfidaGiornaliera('vincita_massima', premio);
-
-        const gameState = { trovati, inGioco: false, versione, numBombe };
-        checkAchievements(gameState);
-
-        // Sblocco modalità
-        checkSbloccoModalita({partiteGiocate: 1, partiteVinte: 1});
-
-        // Check level up
-        checkLevelUp();
-
-        // Consuma power-up temporanei
-        consumaPowerupTemporaneo('multiplier_boost');
-        consumaPowerupTemporaneo('xp_boost');
-        if (hasPowerupAttivo('double_win')) {
-            disattivaPowerup('double_win');
-        }
+        // Powerups
+        consumaPowerupTemporaneo();
 
         resetStatoGioco();
-
-        // Tracking
-        trackEvent('Game', 'Win', `Grid${versione}x${versione}`, premio);
-
         document.getElementById("overlay2").style.display = "flex";
+
+        trackEvent('game_won', {
+            prize: premio,
+            multiplier: moltiplicatoreTotale,
+            diamonds: trovati
+        });
     }, 1200);
 }
 
+// ===== CASHOUT CON ANTI-CHEAT =====
 function handleCashout() {
     if (!inGioco) return;
 
@@ -589,21 +529,26 @@ function handleCashout() {
 
     playSound('cashout');
 
-    // Calcola moltiplicatore finale
     const levelMultiplier = levels[getPlayerLevel()].multiplier;
-    const shopBonus = getBonusMoltiplicatoreAttivo();
-    const eventoBonus = getBonusMoltiplicatoreEvento();
-    const gamemodeBonus = getBonusModalita();
+    const bonusEvento = getBonusMoltiplicatoreEvento();
+    const bonusModalita = getBonusModalita();
+    const bonusPowerup = getBonusMoltiplicatoreAttivo();
 
-    const finalMultiplier = cmoltiplicatore * levelMultiplier * (1 + shopBonus) * (1 + eventoBonus) * (1 + gamemodeBonus);
-    const premio = Math.floor(totalescommessa * finalMultiplier);
+    const moltiplicatoreTotale = cmoltiplicatore * levelMultiplier * bonusEvento * bonusModalita * bonusPowerup;
+    const premio = Math.floor(totalescommessa * moltiplicatoreTotale);
+    const profitto = premio - totalescommessa;
 
-    setCaramelle(getCaramelle() + premio - totalescommessa);
+    // ANTI-CHEAT: Valida cashout
+    if (!AntiCheat.validateGameEnd(totalescommessa, moltiplicatoreTotale, premio, true, gameStartTime)) {
+        console.error('⚠️ Cashout non valido');
+        showNotification('❌ Errore nella validazione del cashout', 'error');
+        return;
+    }
 
-    document.getElementById("statCashout").textContent = premio;
-
-    // Ottieni icone evento
     const icone = getIconeEvento();
+
+    setCaramelle(getCaramelle() + profitto);
+    document.getElementById("statCashout").textContent = premio;
 
     celle.forEach((c, i) => {
         if (!cliccata[i]) {
@@ -620,40 +565,27 @@ function handleCashout() {
 
     aggiornaStatistiche('cashout', premio, totalescommessa);
     updateStreak(true);
-
-    // Missioni
-    const cashoutMult = premio / totalescommessa;
-    if (Math.abs(cashoutMult - 2.50) < 0.05) {
-        aggiornaProgressoMissione('cashout250x', true);
-    }
-    if (trovati === 1) {
-        aggiornaProgressoMissione('cashout_veloce', true);
-    }
-
-    // Leaderboard
-    inviaScore('vincita_massima', premio);
-
-    // Sfide
-    controllaSfidaGiornaliera('vincita_massima', premio);
-
-    const gameState = { trovati, inGioco: false, versione, numBombe };
-    checkAchievements(gameState);
-
-    // Consuma power-up
-    consumaPowerupTemporaneo('multiplier_boost');
-    consumaPowerupTemporaneo('xp_boost');
+    checkAchievements();
+    aggiornaProgressoMissione('cashout_partite', 1);
+    aggiornaProgressoEvento(1, premio);
+    inviaScore(premio);
+    consumaPowerupTemporaneo();
 
     resetStatoGioco();
     inGioco = false;
 
-    // Tracking
-    trackEvent('Game', 'Cashout', `Grid${versione}x${versione}`, premio);
-
     setTimeout(() => {
         document.getElementById("overlay3").style.display = "flex";
     }, 500);
+
+    trackEvent('game_cashout', {
+        prize: premio,
+        multiplier: moltiplicatoreTotale,
+        diamonds: trovati
+    });
 }
 
+// ===== CHIUSURA POPUP =====
 function closePopup() {
     document.getElementById("overlay").style.display = "none";
     document.getElementById("overlay2").style.display = "none";
@@ -667,6 +599,7 @@ function closePopup() {
     trovati = 0;
     cmoltiplicatore = 1;
     inGioco = false;
+    gameStartTime = 0;
 
     if (totalescommessa > getCaramelle()) {
         totalescommessa = 0;
@@ -674,11 +607,12 @@ function closePopup() {
     }
 
     aggiornaMoltiplicatoreCorrente();
+    stopTimeAttack();
 }
 
 // ===== EVENT LISTENERS =====
 
-// Versioni griglia
+// Selezione versione
 versioni.forEach((btn, index) => {
     btn.addEventListener("click", () => {
         if (inGioco) return;
@@ -691,7 +625,7 @@ versioni.forEach((btn, index) => {
     });
 });
 
-// Bombe
+// Controlli bombe
 decreaseBombs.addEventListener("click", () => {
     if (inGioco) return;
     playSound('click');
@@ -794,10 +728,18 @@ setInterval(() => {
     if (inGioco) salvaStatoGioco();
 }, 30000);
 
-// ===== INIZIALIZZAZIONE =====
-console.log('🎮 Caccia al Tesoro v4.0 - Inizializzazione...');
+// Verifica integrità periodica
+setInterval(() => {
+    if (!AntiCheat.verifyIntegrity()) {
+        console.warn('⚠️ Data integrity check failed');
+        showNotification('⚠️ Rilevata possibile manomissione dei dati', 'warning');
+    }
+}, 60000);
 
-// Import dinamici modali base
+// ===== INIZIALIZZAZIONE =====
+console.log('🎮 Caccia al Tesoro v4.1 (Anti-Cheat Edition) - Inizializzazione...');
+
+// Import dinamici
 import('./modules/modals.js').then(modals => {
     modals.setupModals();
 });
@@ -806,11 +748,11 @@ import('./modules/tutorial.js').then(tutorial => {
     tutorial.setupTutorial();
 });
 
-// Inizializza al caricamento pagina
+// Inizializza al caricamento
 window.addEventListener('DOMContentLoaded', () => {
     console.log('📊 Caricamento dati salvati...');
 
-    // ===== SETUP NUOVI MODALI =====
+    // Setup moduli
     setupMissionsModal();
     setupShopModal();
     setupInventoryModal();
@@ -818,31 +760,26 @@ window.addEventListener('DOMContentLoaded', () => {
     setupProfileModal();
     setupModalitaModal();
     setupSfideModal();
-
-    // ===== SETUP ANIMAZIONI =====
     setupAnimazioni();
-
-    // ===== SETUP EVENTI SPECIALI =====
     setupEventiSpeciali();
+
     const evento = checkEventoSpeciale();
     if (evento) {
         renderPannelloEvento();
     }
 
-    // ===== SETUP PWA =====
     inizializzaPWA();
 
-    // Richiedi permessi notifiche dopo 5 secondi
     setTimeout(() => {
         richiediPermessiNotifiche();
     }, 5000);
 
-    // ===== SETUP TEMI =====
+    // Setup temi
     setupThemeListeners();
     const temaSalvato = caricaTema();
     applyTheme(temaSalvato);
 
-    // ===== CARICA STATO SALVATO =====
+    // Carica stato salvato
     const versioneSalvata = caricaUltimaVersione();
     if (versioneSalvata > 0) {
         versione = versioneSalvata;
@@ -860,7 +797,7 @@ window.addEventListener('DOMContentLoaded', () => {
     totalescommessa = caricaUltimaScommessa();
     scommessa.value = totalescommessa;
 
-    // ===== INIZIALIZZA UI =====
+    // Inizializza UI
     inizializzaSaldo();
     aggiornaRischio(numBombe, getTotaleCelleCorrente());
     aggiornaMoltiplicatoreCorrente();
@@ -868,14 +805,11 @@ window.addEventListener('DOMContentLoaded', () => {
     updateLevelDisplay();
     updateAchievementsButton();
 
-    // ===== MISSIONI E BADGE =====
     checkResetMissioni();
     aggiornaBadgeMissioni();
-
-    // Daily bonus
     checkDailyBonus();
 
-    // Tutorial per nuovi utenti
+    // Tutorial
     const tutorialCompleted = isTutorialCompleted();
     const hasLastLogin = getLastLogin() !== '';
 
@@ -889,12 +823,11 @@ window.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    // ===== RIPRISTINO PARTITA IN CORSO =====
+    // Ripristino partita in corso
     const stato = caricaStatoGioco();
     if (stato && stato.inGioco) {
         console.log('🔄 Ripristino partita in corso...');
 
-        // IMPORTANTE: Aggiorna le variabili globali
         inGioco = true;
         versione = stato.versione;
         numBombe = stato.numBombe;
@@ -903,8 +836,8 @@ window.addEventListener('DOMContentLoaded', () => {
         trovati = stato.trovati;
         bombe = stato.bombe;
         cliccata = stato.cliccata;
+        gameStartTime = stato.gameStartTime || Date.now();
 
-        // Aggiorna UI
         scommessa.value = totalescommessa;
         numBombeInput.value = numBombe;
 
@@ -914,7 +847,6 @@ window.addEventListener('DOMContentLoaded', () => {
         aggiornaMaxBombe();
         aggiornaMoltiplicatoreCorrente();
 
-        // Ricrea griglia
         const grid = document.getElementById("grid");
         const totaleCelle = getTotaleCelleCorrente();
 
@@ -923,10 +855,8 @@ window.addEventListener('DOMContentLoaded', () => {
                 versione === 2 ? "repeat(4, 1fr)" :
                     "repeat(5, 1fr)";
 
-        // Ottieni icone evento
         const icone = getIconeEvento();
-
-        celle = []; // Reset array celle
+        celle = [];
 
         for (let i = 0; i < totaleCelle; i++) {
             const cella = document.createElement("button");
@@ -935,7 +865,6 @@ window.addEventListener('DOMContentLoaded', () => {
             celle.push(cella);
 
             if (cliccata[i]) {
-                // Cella già scoperta
                 cella.innerHTML = "";
                 if (bombe.includes(i)) {
                     cella.classList.add("bomb-reveal");
@@ -945,26 +874,23 @@ window.addEventListener('DOMContentLoaded', () => {
                     cella.innerHTML = icone.diamante;
                 }
             } else {
-                // Cella da scoprire
                 const img = document.createElement("img");
-                img.src = getThemeImage(getCurrentTheme());
-                img.classList.add("cella-img");
+                img.src = getThemeImage(getCurrentTheme());                img.classList.add("cella-img");
                 cella.appendChild(img);
 
-                // Event listener
-                cella.addEventListener("click", () => handleCellaClick(i, cella, totaleCelle));
+                cella.addEventListener("click", () => handleCellaClick(i, cella, totaleCelle, icone));
             }
         }
 
         showNotification('🔄 Partita ripristinata!', 'info');
     }
 
-    // ===== TRACKING =====
     trackScreen('Home');
 
-    // (Opzionale) Genera leaderboard fake per testing
-    // generaLeaderboardFake();
-
-    console.log('✅ Gioco v4.0 inizializzato con successo!');
+    console.log('✅ Gioco v4.1 inizializzato con successo!');
     console.log(`👤 Giocatore: ${getNickname()} ${getAvatar()}`);
+    console.log(`🛡️ Anti-cheat: ${AntiCheat.getDebugInfo().version}`);
+
+    // Debug console helper
+    console.log('💡 Usa showAntiCheatInfo() per vedere info anti-cheat');
 });
