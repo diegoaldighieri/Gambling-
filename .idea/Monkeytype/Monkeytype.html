@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>typefury</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&family=Bebas+Neue&family=Fira+Code:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* ═══════════════════════════════════════════
+           THEME VARIABLES
+        ═══════════════════════════════════════════ */
+        :root {
+            --bg:#0f0f0f; --surface:#161616; --surface2:#1c1c1c;
+            --border:#242424; --text-muted:#3a3a3a; --text-dim:#555;
+            --text-base:#aaa; --text-bright:#e8e8e8;
+            --accent:#e2b714; --accent-dim:rgba(226,183,20,.12);
+            --correct:#9acd64; --wrong:#e05252; --wrong-bg:rgba(224,82,82,.18);
+            --pb:#64b5f6; --pb-dim:rgba(100,181,246,.12);
+            --font-mono:'Roboto Mono',monospace;
+            --font-display:'Bebas Neue',sans-serif;
+        }
+
+        /* ── THEMES ── */
+        [data-theme="serika"] {
+            --bg:#323437; --surface:#2c2e31; --surface2:#27292c;
+            --border:#404244; --text-muted:#55575a; --text-dim:#646669;
+            --text-base:#d1d0c5; --text-bright:#e2e2d9;
+            --accent:#e2b714; --accent-dim:rgba(226,183,20,.15);
+            --correct:#e2b714; --wrong:#ca4754;
+        }
+        [data-theme="dracula"] {
+            --bg:#282a36; --surface:#21222c; --surface2:#1e1f29;
+            --border:#44475a; --text-muted:#3a3c4e; --text-dim:#6272a4;
+            --text-base:#cdd6f4; --text-bright:#f8f8f2;
+            --accent:#bd93f9; --accent-dim:rgba(189,147,249,.15);
+            --correct:#50fa7b; --wrong:#ff5555;
+        }
+        [data-theme="nord"] {
+            --bg:#2e3440; --surface:#3b4252; --surface2:#434c5e;
+            --border:#4c566a; --text-muted:#3b4252; --text-dim:#4c566a;
+            --text-base:#d8dee9; --text-bright:#eceff4;
+            --accent:#88c0d0; --accent-dim:rgba(136,192,208,.15);
+            --correct:#a3be8c; --wrong:#bf616a;
+        }
+        [data-theme="solarized"] {
+            --bg:#002b36; --surface:#073642; --surface2:#0d3d4a;
+            --border:#0d4655; --text-muted:#1d4e5c; --text-dim:#586e75;
+            --text-base:#839496; --text-bright:#eee8d5;
+            --accent:#b58900; --accent-dim:rgba(181,137,0,.15);
+            --correct:#859900; --wrong:#dc322f;
+        }
+        [data-theme="miami"] {
+            --bg:#15131c; --surface:#1d1b27; --surface2:#232030;
+            --border:#2e2b40; --text-muted:#2e2b40; --text-dim:#584e72;
+            --text-base:#d4bfff; --text-bright:#f8f0ff;
+            --accent:#ff7edb; --accent-dim:rgba(255,126,219,.15);
+            --correct:#05d9e8; --wrong:#ff2079;
+        }
+        [data-theme="paper"] {
+            --bg:#f5f0e8; --surface:#ede7d9; --surface2:#e5ddc8;
+            --border:#d4cabc; --text-muted:#d4cabc; --text-dim:#a89880;
+            --text-base:#5c4a38; --text-bright:#2a1f12;
+            --accent:#c0392b; --accent-dim:rgba(192,57,43,.12);
+            --correct:#27ae60; --wrong:#e74c3c;
+            --wrong-bg:rgba(231,76,60,.15);
+        }
+
+        /* ── FONTS ── */
+        [data-font="fira"]  { --font-mono:'Fira Code',monospace; }
+        [data-font="space"] { --font-mono:'Space Mono',monospace; }
+        [data-font="system"]{ --font-mono:'Courier New',monospace; }
+
+        *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+        html,body { height:100%; background:var(--bg); color:var(--text-base); font-family:var(--font-mono); -webkit-font-smoothing:antialiased; transition:background .3s, color .3s; }
+        body { display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:0 1rem; }
+
+        /* ── HEADER ── */
+        header {
+            width:100%; max-width:980px;
+            display:flex; align-items:center; justify-content:space-between;
+            padding:1.6rem 0 1.3rem;
+            border-bottom:1px solid var(--border); margin-bottom:1.8rem;
+        }
+        .logo { font-family:var(--font-display); font-size:2.2rem; letter-spacing:3px; color:var(--accent); user-select:none; }
+        .logo span { color:var(--text-dim); }
+        nav { display:flex; gap:.35rem; flex-wrap:wrap; }
+        .nav-btn {
+            background:none; border:none; color:var(--text-dim);
+            font-family:var(--font-mono); font-size:.7rem; letter-spacing:.07em;
+            cursor:pointer; padding:.38rem .7rem; border-radius:6px;
+            transition:color .15s,background .15s;
+            display:flex; align-items:center; gap:.32rem;
+        }
+        .nav-btn:hover,.nav-btn.active { color:var(--accent); background:var(--accent-dim); }
+
+        main { width:100%; max-width:980px; flex:1; display:flex; flex-direction:column; align-items:center; gap:1.5rem; }
+
+        /* ── PB STRIP ── */
+        #pb-strip { width:100%; display:flex; gap:.45rem; flex-wrap:wrap; justify-content:center; min-height:1.6rem; }
+        .pb-pill {
+            background:var(--surface); border:1px solid var(--border); border-radius:20px;
+            padding:.18rem .7rem; font-size:.63rem; letter-spacing:.08em; color:var(--text-dim);
+            display:flex; align-items:center; gap:.38rem; transition:border-color .2s;
+        }
+        .pb-pill .pb-val { color:var(--accent); font-size:.8rem; font-family:var(--font-display); letter-spacing:1px; }
+        .pb-pill.active-mode { border-color:var(--pb); }
+        .pb-pill.active-mode .pb-val { color:var(--pb); }
+
+        /* ── MODE BAR ── */
+        .mode-bar {
+            display:flex; gap:.22rem;
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:10px; padding:.32rem;
+        }
+        .mode-btn {
+            background:none; border:none; color:var(--text-dim);
+            font-family:var(--font-mono); font-size:.67rem; letter-spacing:.1em;
+            text-transform:uppercase; cursor:pointer;
+            padding:.36rem .82rem; border-radius:7px; transition:all .15s;
+        }
+        .mode-btn:hover { color:var(--text-base); }
+        .mode-btn.active { background:var(--accent-dim); color:var(--accent); }
+
+        /* ── COUNTER ── */
+        .counter-display {
+            font-family:var(--font-display); font-size:3rem; color:var(--accent);
+            letter-spacing:4px; min-height:3.4rem; line-height:1;
+        }
+
+        /* ── TEST AREA ── */
+        #test-wrapper { width:100%; position:relative; }
+        #words-container {
+            font-size:1.45rem; line-height:2.2rem; height:calc(2.2rem * 3);
+            overflow:hidden; position:relative; cursor:text; user-select:none;
+        }
+        #words-inner { position:absolute; top:0; left:0; width:100%; transition:top .12s ease; }
+        .word { display:inline-block; margin-right:.55rem; margin-bottom:.2rem; white-space:nowrap; position:relative; }
+        .letter { color:var(--text-muted); transition:color .05s; position:relative; }
+        .letter.correct { color:var(--correct); }
+        .letter.wrong   { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
+        .letter.extra   { color:var(--wrong); font-size:.85em; }
+        .cursor-line {
+            display:inline-block; width:2px; height:1.5rem;
+            background:var(--accent); position:absolute;
+            top:50%; transform:translateY(-50%); border-radius:2px;
+            animation:blink 1s step-end infinite; pointer-events:none;
+        }
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        #hidden-input { position:absolute; opacity:0; pointer-events:none; width:1px; height:1px; top:0; left:0; }
+
+        /* ── CONTROLS ── */
+        .controls { display:flex; gap:1rem; align-items:center; }
+        .btn-icon {
+            background:none; border:1px solid var(--border); color:var(--text-dim);
+            cursor:pointer; padding:.48rem .82rem; border-radius:8px;
+            font-size:.73rem; font-family:var(--font-mono); letter-spacing:.05em;
+            transition:all .15s; display:flex; align-items:center; gap:.36rem;
+        }
+        .btn-icon:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-dim); }
+        .hint { font-size:.63rem; color:var(--text-dim); letter-spacing:.05em; }
+
+        /* ── RESULT PANEL ── */
+        #result-panel {
+            display:none; width:100%;
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:16px; padding:1.8rem 2.2rem;
+            animation:fadeUp .3s ease;
+        }
+        @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:none} }
+        #result-panel.visible { display:block; }
+
+        .result-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:1.3rem; flex-wrap:wrap; gap:.5rem; }
+        .result-title { font-family:var(--font-display); font-size:1.1rem; letter-spacing:3px; color:var(--text-dim); }
+        .pb-badge {
+            display:none; align-items:center; gap:.38rem;
+            background:var(--pb-dim); border:1px solid var(--pb); border-radius:20px;
+            padding:.28rem .85rem; font-size:.68rem; letter-spacing:.1em; color:var(--pb);
+            animation:popIn .4s cubic-bezier(.34,1.56,.64,1);
+        }
+        @keyframes popIn { from{opacity:0;transform:scale(.7)} to{opacity:1;transform:scale(1)} }
+        .pb-badge.show { display:flex; }
+
+        .result-grid {
+            display:grid; grid-template-columns:repeat(4,1fr);
+            gap:1.1rem; margin-bottom:1.3rem;
+        }
+        .stat-block { display:flex; flex-direction:column; gap:.22rem; }
+        .stat-label { font-size:.58rem; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); }
+        .stat-value { font-family:var(--font-display); font-size:2.7rem; color:var(--accent); letter-spacing:2px; line-height:1; transition:color .3s; }
+        .stat-value.new-pb { color:var(--pb); }
+        .stat-unit { font-size:.62rem; color:var(--text-dim); margin-top:.04rem; }
+        .compare-row { display:flex; align-items:center; gap:.45rem; font-size:.64rem; color:var(--text-dim); min-height:.95rem; }
+        .compare-row .delta.pos { color:var(--correct); font-weight:500; }
+        .compare-row .delta.neg { color:var(--wrong); font-weight:500; }
+
+        .chart-wrap { margin-bottom:1.1rem; }
+        .chart-legend { display:flex; gap:1.1rem; margin-bottom:.38rem; justify-content:flex-end; }
+        .legend-item { display:flex; align-items:center; gap:.32rem; font-size:.6rem; letter-spacing:.06em; color:var(--text-dim); }
+        .legend-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+        .legend-dash { width:16px; height:0; border-top:2px dashed #4a4a4a; flex-shrink:0; }
+        .wpm-chart { width:100%; height:88px; display:block; }
+
+        .result-actions { display:flex; gap:.7rem; justify-content:center; margin-top:1.4rem; flex-wrap:wrap; }
+        .btn-primary {
+            background:var(--accent); color:#111;
+            border:none; font-family:var(--font-mono); font-size:.76rem;
+            font-weight:500; letter-spacing:.08em;
+            padding:.62rem 1.5rem; border-radius:8px; cursor:pointer; transition:opacity .15s;
+        }
+        .btn-primary:hover { opacity:.85; }
+        .btn-replay {
+            background:none; border:1px solid var(--accent); color:var(--accent);
+            font-family:var(--font-mono); font-size:.73rem; letter-spacing:.06em;
+            padding:.58rem 1.2rem; border-radius:8px; cursor:pointer;
+            transition:all .15s; display:flex; align-items:center; gap:.38rem;
+        }
+        .btn-replay:hover { background:var(--accent-dim); }
+
+        /* ════════════════════════════════════════════
+           REPLAY OVERLAY
+        ════════════════════════════════════════════ */
+        #replay-overlay {
+            display:none; position:fixed; inset:0;
+            background:var(--bg); z-index:200;
+            flex-direction:column; align-items:center; padding:2rem 1rem;
+            overflow-y:auto;
+        }
+        #replay-overlay.open { display:flex; animation:fadeOverlay .25s ease; }
+        @keyframes fadeOverlay { from{opacity:0} to{opacity:1} }
+
+        .replay-header {
+            width:100%; max-width:980px;
+            display:flex; align-items:center; justify-content:space-between;
+            margin-bottom:2rem;
+        }
+        .replay-title { font-family:var(--font-display); font-size:1.8rem; letter-spacing:5px; color:var(--accent); }
+        .replay-close {
+            background:none; border:1px solid var(--border); color:var(--text-dim);
+            font-family:var(--font-mono); font-size:.72rem; letter-spacing:.06em;
+            padding:.45rem .9rem; border-radius:8px; cursor:pointer; transition:all .15s;
+            display:flex; align-items:center; gap:.35rem;
+        }
+        .replay-close:hover { border-color:var(--accent); color:var(--accent); }
+
+        /* replay words area */
+        #replay-words-wrap {
+            width:100%; max-width:980px;
+            font-size:1.45rem; line-height:2.5rem;
+            position:relative; margin-bottom:2.5rem;
+        }
+        #replay-words-inner { width:100%; }
+        .rword {
+            display:inline-block; margin-right:.55rem; margin-bottom:.25rem;
+            white-space:nowrap; position:relative;
+        }
+        .rword .rletter {
+            position:relative; display:inline-block;
+            transition:none;
+        }
+        /* speed heat colors painted by JS */
+        .rletter.rc { color:var(--correct); }
+        .rletter.rw { color:var(--wrong); background:var(--wrong-bg); border-radius:2px; }
+        .rletter.rx { color:var(--wrong); font-size:.85em; }
+
+        /* floating speed badge */
+        .speed-badge {
+            position:absolute; bottom:calc(100% + 4px); left:50%; transform:translateX(-50%);
+            font-family:var(--font-display); font-size:.75rem; letter-spacing:2px;
+            padding:.1rem .4rem; border-radius:5px; white-space:nowrap;
+            pointer-events:none; opacity:0; transition:opacity .15s;
+            z-index:10;
+        }
+        .speed-badge.visible { opacity:1; }
+
+        /* replay cursor */
+        .replay-cursor {
+            display:inline-block; width:2px; height:1.5rem;
+            background:var(--accent); position:absolute;
+            top:50%; transform:translateY(-50%); border-radius:2px;
+            pointer-events:none; z-index:5;
+            box-shadow:0 0 8px var(--accent);
+            transition:left .05s, top .05s;
+        }
+
+        /* heatmap bar */
+        #replay-heatmap {
+            width:100%; max-width:980px;
+            margin-bottom:1.5rem;
+        }
+        .heatmap-title { font-size:.6rem; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.5rem; }
+        #heatmap-svg { width:100%; height:40px; display:block; }
+
+        /* replay controls */
+        #replay-controls {
+            width:100%; max-width:980px;
+            display:flex; flex-direction:column; align-items:center; gap:1rem;
+        }
+        .replay-speed-wrap { display:flex; align-items:center; gap:.8rem; }
+        .speed-label { font-size:.65rem; letter-spacing:.1em; color:var(--text-dim); }
+        .speed-btns { display:flex; gap:.3rem; }
+        .spd-btn {
+            background:var(--surface); border:1px solid var(--border); color:var(--text-dim);
+            font-family:var(--font-mono); font-size:.65rem; letter-spacing:.06em;
+            padding:.3rem .65rem; border-radius:6px; cursor:pointer; transition:all .14s;
+        }
+        .spd-btn:hover { border-color:var(--accent); color:var(--accent); }
+        .spd-btn.active { background:var(--accent-dim); border-color:var(--accent); color:var(--accent); }
+        .replay-progress {
+            width:100%; height:4px; background:var(--border); border-radius:4px;
+            position:relative; cursor:pointer;
+        }
+        .replay-progress-fill {
+            height:100%; background:var(--accent); border-radius:4px; width:0%;
+            transition:width .1s linear;
+        }
+        .replay-btn-row { display:flex; gap:.7rem; }
+        .replay-play-btn {
+            background:var(--accent); color:#111; border:none;
+            font-family:var(--font-mono); font-size:.78rem; font-weight:500; letter-spacing:.08em;
+            padding:.6rem 1.6rem; border-radius:8px; cursor:pointer;
+            transition:opacity .15s; display:flex; align-items:center; gap:.4rem;
+        }
+        .replay-play-btn:hover { opacity:.85; }
+
+        /* ════════════════════════════════════════════
+           SETTINGS MODAL
+        ════════════════════════════════════════════ */
+        .modal-overlay {
+            display:none; position:fixed; inset:0;
+            background:rgba(0,0,0,.8); backdrop-filter:blur(6px);
+            z-index:100; align-items:center; justify-content:center; padding:1rem;
+        }
+        .modal-overlay.open { display:flex; animation:fadeOverlayM .2s ease; }
+        @keyframes fadeOverlayM { from{opacity:0} to{opacity:1} }
+        .modal {
+            background:var(--surface); border:1px solid var(--border);
+            border-radius:18px; width:100%; max-width:720px;
+            max-height:88vh; overflow-y:auto;
+            padding:1.8rem 2rem; animation:slideUp .22s ease;
+            scrollbar-width:thin; scrollbar-color:var(--border) transparent;
+        }
+        @keyframes slideUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:none} }
+        .modal-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.6rem; }
+        .modal-title { font-family:var(--font-display); font-size:1.5rem; letter-spacing:4px; color:var(--text-bright); }
+        .modal-close {
+            background:none; border:none; color:var(--text-dim);
+            font-size:1.2rem; cursor:pointer; padding:.28rem .55rem; border-radius:6px; transition:color .15s; line-height:1;
+        }
+        .modal-close:hover { color:var(--text-bright); }
+
+        .settings-section { margin-bottom:1.8rem; }
+        .settings-section-title { font-size:.58rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.9rem; }
+
+        /* theme grid */
+        .theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.6rem; }
+        .theme-card {
+            border:2px solid var(--border); border-radius:10px; padding:.8rem .9rem;
+            cursor:pointer; transition:border-color .15s, transform .1s;
+            position:relative;
+        }
+        .theme-card:hover { border-color:var(--text-dim); transform:translateY(-1px); }
+        .theme-card.active { border-color:var(--accent); }
+        .theme-card .tc-name { font-size:.68rem; letter-spacing:.07em; margin-bottom:.45rem; }
+        .theme-preview { display:flex; gap:.3rem; }
+        .tc-dot { width:14px; height:14px; border-radius:50%; }
+        .theme-card .tc-check {
+            position:absolute; top:.5rem; right:.55rem;
+            width:14px; height:14px; border-radius:50%;
+            background:var(--accent); display:none; align-items:center; justify-content:center;
+        }
+        .theme-card.active .tc-check { display:flex; }
+
+        /* language selector */
+        .lang-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; }
+        .lang-card {
+            border:1px solid var(--border); border-radius:8px; padding:.55rem .7rem;
+            cursor:pointer; transition:border-color .15s, background .15s;
+            display:flex; align-items:center; gap:.4rem;
+        }
+        .lang-card:hover { border-color:var(--text-dim); }
+        .lang-card.active { border-color:var(--accent); background:var(--accent-dim); color:var(--accent); }
+        .lang-flag { font-size:1rem; }
+        .lang-name { font-size:.67rem; letter-spacing:.06em; }
+
+        /* font selector */
+        .font-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:.5rem; }
+        .font-card {
+            border:1px solid var(--border); border-radius:8px; padding:.6rem .8rem;
+            cursor:pointer; transition:border-color .15s, background .15s;
+        }
+        .font-card:hover { border-color:var(--text-dim); }
+        .font-card.active { border-color:var(--accent); background:var(--accent-dim); color:var(--accent); }
+        .font-preview { font-size:.7rem; letter-spacing:.05em; margin-bottom:.2rem; }
+        .font-label { font-size:.56rem; letter-spacing:.1em; text-transform:uppercase; color:var(--text-dim); }
+        .font-card.active .font-label { color:var(--accent); }
+
+        /* ── RECORDS MODAL ── */
+        .modal-section-title { font-size:.6rem; letter-spacing:.14em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.75rem; }
+        .modal-pb-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:.65rem; margin-bottom:1.8rem; }
+        .modal-pb-card {
+            background:var(--surface2); border:1px solid var(--border);
+            border-radius:10px; padding:.85rem 1rem; transition:border-color .15s;
+        }
+        .modal-pb-card:hover { border-color:#333; }
+        .modal-pb-card .pb-mode { font-size:.56rem; letter-spacing:.12em; text-transform:uppercase; color:var(--text-dim); margin-bottom:.28rem; }
+        .modal-pb-card .pb-wpm { font-family:var(--font-display); font-size:2rem; color:var(--accent); letter-spacing:2px; line-height:1; }
+        .modal-pb-card .pb-meta { font-size:.58rem; color:var(--text-dim); margin-top:.22rem; }
+        .history-list { display:flex; flex-direction:column; gap:.38rem; }
+        .history-item {
+            background:var(--surface2); border:1px solid var(--border); border-radius:9px;
+            padding:.6rem 1rem; display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr 2.5fr;
+            gap:.5rem; align-items:center; font-size:.68rem; transition:border-color .15s;
+        }
+        .history-item:hover { border-color:#333; }
+        .history-item.is-pb { border-color:rgba(100,181,246,.35); }
+        .hi-wpm { font-family:var(--font-display); font-size:1.45rem; color:var(--accent); letter-spacing:1px; display:flex; align-items:center; gap:.32rem; }
+        .hi-wpm.is-pb-val { color:var(--pb); }
+        .hi-pb-tag { display:none; font-size:.5rem; letter-spacing:.1em; background:var(--pb-dim); color:var(--pb); border-radius:8px; padding:.12rem .42rem; font-family:var(--font-mono); white-space:nowrap; }
+        .history-item.is-pb .hi-pb-tag { display:inline; }
+        .hi-acc { color:var(--correct); } .hi-mode { color:var(--text-dim); font-size:.6rem; } .hi-date { color:var(--text-dim); font-size:.58rem; } .hi-chart { height:28px; }
+        .no-history { color:var(--text-dim); font-size:.73rem; text-align:center; padding:2.2rem; }
+        .danger-btn {
+            background:none; border:1px solid var(--border); color:var(--text-dim);
+            font-family:var(--font-mono); font-size:.63rem; letter-spacing:.08em;
+            padding:.38rem .75rem; border-radius:7px; cursor:pointer; transition:all .15s;
+            margin-top:1.1rem; display:block; margin-left:auto;
+        }
+        .danger-btn:hover { border-color:var(--wrong); color:var(--wrong); }
+
+        footer {
+            width:100%; max-width:980px; border-top:1px solid var(--border);
+            padding:.9rem 0; margin-top:1.4rem;
+            display:flex; justify-content:space-between;
+            font-size:.58rem; color:var(--text-dim); letter-spacing:.05em;
+        }
+
+        @media(max-width:640px){
+            #words-container { font-size:1.1rem; line-height:2rem; height:calc(2rem*3); }
+            .result-grid { grid-template-columns:repeat(2,1fr); }
+            .stat-value { font-size:2.1rem; }
+            .modal-pb-grid { grid-template-columns:repeat(2,1fr); }
+            .history-item { grid-template-columns:1fr 1fr 1fr; }
+            .hi-date,.hi-chart { display:none; }
+            .theme-grid,.lang-grid,.font-grid { grid-template-columns:repeat(2,1fr); }
+            #replay-words-wrap { font-size:1.1rem; line-height:2.2rem; }
+        }
+    </style>
+</head>
+<body data-theme="dark" data-font="roboto">
+
+<header>
+    <div class="logo">type<span>fury</span></div>
+    <nav>
+        <button class="nav-btn" id="btn-settings">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            settings
+        </button>
+        <button class="nav-btn" id="btn-records">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            records
+        </button>
+    </nav>
+</header>
+
+<main>
+    <div id="pb-strip"></div>
+    <div class="mode-bar" id="mode-bar">
+        <button class="mode-btn" data-mode="time" data-val="15">15s</button>
+        <button class="mode-btn active" data-mode="time" data-val="30">30s</button>
+        <button class="mode-btn" data-mode="time" data-val="60">60s</button>
+        <button class="mode-btn" data-mode="time" data-val="120">120s</button>
+        <span style="width:1px;background:var(--border);margin:.1rem .3rem"></span>
+        <button class="mode-btn" data-mode="words" data-val="10">10w</button>
+        <button class="mode-btn" data-mode="words" data-val="25">25w</button>
+        <button class="mode-btn" data-mode="words" data-val="50">50w</button>
+    </div>
+    <div class="counter-display" id="counter-display">30</div>
+    <div id="test-wrapper">
+        <div id="words-container">
+            <div id="words-inner"></div>
+        </div>
+        <input id="hidden-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+    <div class="controls">
+        <button class="btn-icon" id="btn-restart">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+            restart
+        </button>
+        <span class="hint">tab → restart &nbsp;|&nbsp; esc → reset</span>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-panel">
+        <div class="result-header">
+            <div class="result-title">results</div>
+            <div class="pb-badge" id="pb-badge">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                new personal best!
+            </div>
+        </div>
+        <div class="result-grid">
+            <div class="stat-block">
+                <div class="stat-label">wpm</div>
+                <div class="stat-value" id="res-wpm">—</div>
+                <div class="compare-row" id="cmp-wpm"></div>
+                <div class="stat-unit">words / min</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">accuracy</div>
+                <div class="stat-value" id="res-acc">—</div>
+                <div class="compare-row" id="cmp-acc"></div>
+                <div class="stat-unit">percent</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">raw</div>
+                <div class="stat-value" id="res-raw">—</div>
+                <div class="compare-row" id="cmp-raw"></div>
+                <div class="stat-unit">words / min</div>
+            </div>
+            <div class="stat-block">
+                <div class="stat-label">chars</div>
+                <div class="stat-value" id="res-chars">—</div>
+                <div class="compare-row" id="cmp-chars"></div>
+                <div class="stat-unit">correct</div>
+            </div>
+        </div>
+        <div class="chart-wrap">
+            <div class="chart-legend" id="chart-legend"></div>
+            <svg class="wpm-chart" id="wpm-chart"></svg>
+        </div>
+        <div class="result-actions">
+            <button class="btn-primary" id="btn-retry">retry</button>
+            <button class="btn-replay" id="btn-open-replay">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                replay run
+            </button>
+            <button class="btn-icon" id="btn-new">new test</button>
+        </div>
+    </div>
+</main>
+
+<footer>
+    <span>typefury</span>
+    <span id="run-count-label"></span>
+</footer>
+
+<!-- ════ REPLAY OVERLAY ════ -->
+<div id="replay-overlay">
+    <div class="replay-header">
+        <div class="replay-title">run replay</div>
+        <button class="replay-close" id="replay-close">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            close
+        </button>
+    </div>
+    <div id="replay-words-wrap">
+        <div id="replay-words-inner"></div>
+        <div class="replay-cursor" id="replay-cursor" style="display:none"></div>
+    </div>
+    <div id="replay-heatmap">
+        <div class="heatmap-title">keystroke speed heatmap</div>
+        <svg id="heatmap-svg"></svg>
+    </div>
+    <div id="replay-controls">
+        <div class="replay-progress" id="replay-progress">
+            <div class="replay-progress-fill" id="replay-progress-fill"></div>
+        </div>
+        <div class="replay-btn-row">
+            <button class="replay-play-btn" id="replay-play-btn">
+                <svg id="play-icon" width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                <span id="play-label">play</span>
+            </button>
+            <div class="replay-speed-wrap">
+                <span class="speed-label">speed</span>
+                <div class="speed-btns">
+                    <button class="spd-btn" data-spd="0.5">0.5×</button>
+                    <button class="spd-btn active" data-spd="1">1×</button>
+                    <button class="spd-btn" data-spd="2">2×</button>
+                    <button class="spd-btn" data-spd="4">4×</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════ SETTINGS MODAL ════ -->
+<div class="modal-overlay" id="settings-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">settings</div>
+            <button class="modal-close" id="settings-close">✕</button>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">theme</div>
+            <div class="theme-grid" id="theme-grid"></div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">font</div>
+            <div class="font-grid" id="font-grid"></div>
+        </div>
+
+        <div class="settings-section">
+            <div class="settings-section-title">language</div>
+            <div class="lang-grid" id="lang-grid"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ════ RECORDS MODAL ════ -->
+<div class="modal-overlay" id="records-modal">
+    <div class="modal">
+        <div class="modal-header">
+            <div class="modal-title">personal records</div>
+            <button class="modal-close" id="records-close">✕</button>
+        </div>
+        <div class="modal-section-title">best scores by mode</div>
+        <div id="modal-pb-grid" class="modal-pb-grid"></div>
+        <div class="modal-section-title">recent runs</div>
+        <div class="history-list" id="history-list"></div>
+        <button class="danger-btn" id="btn-clear">clear all history</button>
+    </div>
+</div>
+
+<script>
+    /* ════════════════════════════════════════════
+       WORD POOLS (per language)
+    ════════════════════════════════════════════ */
+    const LANGS = {
+        en: {
+            name:'English', flag:'🇬🇧',
+            words:`the be to of and a in that have it for not on with he as you do at this but his by from they we say her she or an will my one all would there their what so up out if about who get which go me when make can like time no just him know take people into year your good some could them see other than then now look only come its over think also back after use two how our work first well way even new want because any these give day most us`.split(' ')
+        },
+        it: {
+            name:'Italiano', flag:'🇮🇹',
+            words:`il la le gli di che è in un una con per non si ha ma su come anche così già suo sua loro più tutto tutti fare bene ora dopo anni vita modo casa giorno cosa mano tempo altro stesso solo tanto poco ogni però allora così mentre ancora questi queste anche molto bello grande primo ultimo avere essere fare stare dire vedere sapere venire dare andare portare trovare`.split(' ')
+        },
+        es: {
+            name:'Español', flag:'🇪🇸',
+            words:`el la los las un una de que en y es se no le da su por con para como sin más mi tu me lo si pero ya hay fue al ni nos hay era muy bien mal todo esto esta eso fue ser estar hacer tener ver dar ir poder querer saber llegar decir pasar creer vivir esperar encontrar partir volver llevar`.split(' ')
+        },
+        de: {
+            name:'Deutsch', flag:'🇩🇪',
+            words:`der die das ein eine ist hat war wird kann man ich du er sie wir ihr sie sich auch noch mit von zu bei aus auf über unter durch vor nach nach bei so wie wenn dann aber weil denn oder und nicht kein mehr sehr gut alt neu groß klein jung lang kurz schnell langsam hoch tief links rechts`.split(' ')
+        },
+        fr: {
+            name:'Français', flag:'🇫🇷',
+            words:`le la les un une de en et est se ne pas il elle nous vous ils avec sur dans pour par qui que ou mais donc car ni car avant après pendant depuis toujours jamais encore souvent parfois bien mal plus moins très peu assez trop aussi comme si même alors puis ensuite enfin surtout peut être avoir faire voir dire aller venir prendre`.split(' ')
+        },
+        pt: {
+            name:'Português', flag:'🇧🇷',
+            words:`o a os as um uma de que em e é se não le da sua por com para como sem mais meu teu me lo si mas já há foi ao ni nos era muito bem mal todo isso esta esse foi ser estar fazer ter ver dar ir poder querer saber chegar dizer passar crer viver esperar encontrar partir voltar levar`.split(' ')
+        },
+        code: {
+            name:'Code', flag:'💻',
+            words:`function return const let var if else for while do break continue class extends import export default async await try catch finally new this typeof instanceof void null undefined true false switch case throw error promise then map filter reduce push pop shift splice join split forEach indexOf includes length toString parseInt parseFloat Object Array String Number Boolean console log`.split(' ')
+        },
+        emoji: {
+            name:'Emoji', flag:'😄',
+            words:`🚀 🌟 💡 🎯 🔥 ⚡ 🌈 🎮 🏆 💎 🎸 🌍 🦊 🐉 🍕 🎨 🎭 🎪 🌙 ☀️ 🌊 🏔️ 🌺 🦋 🎵 🎲 🔮 🎁 🌿 🦁 🐬 🍀 🌸 🎠 🎡 🎢 🌴 🦅 🐺 🌻`.split(' ')
+        }
+    };
+
+    /* ════════════════════════════════════════════
+       THEMES CONFIG
+    ════════════════════════════════════════════ */
+    const THEMES = [
+        { id:'dark',      name:'Dark',      colors:['#0f0f0f','#e2b714','#9acd64','#e05252'] },
+        { id:'serika',    name:'Serika',    colors:['#323437','#e2b714','#e2b714','#ca4754'] },
+        { id:'dracula',   name:'Dracula',   colors:['#282a36','#bd93f9','#50fa7b','#ff5555'] },
+        { id:'nord',      name:'Nord',      colors:['#2e3440','#88c0d0','#a3be8c','#bf616a'] },
+        { id:'solarized', name:'Solarized', colors:['#002b36','#b58900','#859900','#dc322f'] },
+        { id:'miami',     name:'Miami',     colors:['#15131c','#ff7edb','#05d9e8','#ff2079'] },
+        { id:'paper',     name:'Paper',     colors:['#f5f0e8','#c0392b','#27ae60','#e74c3c'] },
+    ];
+
+    const FONTS = [
+        { id:'roboto', name:'Roboto Mono',  preview:'Aa' },
+        { id:'fira',   name:'Fira Code',    preview:'Aa' },
+        { id:'space',  name:'Space Mono',   preview:'Aa' },
+        { id:'system', name:'Courier New',  preview:'Aa' },
+    ];
+
+    /* ════════════════════════════════════════════
+       STORAGE
+    ════════════════════════════════════════════ */
+    const SK = 'typefury_v2';
+    const load = () => { try { return JSON.parse(localStorage.getItem(SK)) || {runs:[],pbs:{},settings:{theme:'dark',font:'roboto',lang:'en'}}; } catch{ return {runs:[],pbs:{},settings:{theme:'dark',font:'roboto',lang:'en'}}; } };
+    const persist = d => localStorage.setItem(SK, JSON.stringify(d));
+    const mkey = (m,v,l) => `${m}_${v}_${l}`;
+
+    function saveRun(run) {
+        const d = load();
+        d.runs.unshift(run);
+        if(d.runs.length>100) d.runs=d.runs.slice(0,100);
+        const k = mkey(run.mode,run.modeVal,run.lang);
+        const isPB = !d.pbs[k] || run.wpm > d.pbs[k].wpm;
+        if(isPB) d.pbs[k]={wpm:run.wpm,acc:run.acc,raw:run.raw,date:run.date};
+        persist(d); return isPB;
+    }
+    function getPrevRun(m,mv,l,excludeId){
+        return load().runs.find(r=>r.mode===m&&r.modeVal===mv&&r.lang===l&&r.id!==excludeId)||null;
+    }
+    function saveSettings(s){ const d=load(); d.settings=s; persist(d); }
+    function getSettings(){ return load().settings || {theme:'dark',font:'roboto',lang:'en'}; }
+
+    /* ════════════════════════════════════════════
+       STATE
+    ════════════════════════════════════════════ */
+    let mode='time', modeVal=30, lang='en';
+    let words=[], wordIdx=0, letterIdx=0;
+    let started=false, finished=false;
+    let timerID=null, timeLeft=30, elapsed=0;
+    let correctChars=0, totalTyped=0;
+    let wpmHistory=[];
+    let runId=null;
+    // Replay data
+    let keyLog=[]; // {time, wordIdx, letterIdx, char, correct, wpm}
+
+    const $wi  = document.getElementById('words-inner');
+    const $wc  = document.getElementById('words-container');
+    const $inp = document.getElementById('hidden-input');
+    const $ctr = document.getElementById('counter-display');
+    const $res = document.getElementById('result-panel');
+
+    /* ════════════════════════════════════════════
+       APPLY SETTINGS
+    ════════════════════════════════════════════ */
+    function applySettings({theme,font,lang:l}) {
+        document.body.dataset.theme = theme;
+        document.body.dataset.font  = font;
+        lang = l;
+    }
+
+    /* ════════════════════════════════════════════
+       INIT
+    ════════════════════════════════════════════ */
+    function init() {
+        clearInterval(timerID);
+        started=finished=false; elapsed=correctChars=totalTyped=0;
+        wpmHistory=[]; keyLog=[]; wordIdx=letterIdx=0;
+        runId = Date.now().toString(36)+Math.random().toString(36).slice(2);
+        const pool = LANGS[lang]?.words || LANGS.en.words;
+        const cnt = mode==='words' ? modeVal : 80;
+        words = Array.from({length:cnt}, ()=>pool[Math.floor(Math.random()*pool.length)]);
+        renderWords(); updateCounter();
+        $res.classList.remove('visible');
+        $inp.value=''; $inp.focus();
+        renderPbStrip(); updateFooter();
+    }
+
+    /* ════════════════════════════════════════════
+       RENDER WORDS
+    ════════════════════════════════════════════ */
+    function renderWords() {
+        $wi.innerHTML=''; $wi.style.top='0';
+        words.forEach((w,wi)=>{
+            const s=document.createElement('span'); s.className='word'; s.dataset.wi=wi;
+            [...w].forEach((ch,li)=>{
+                const l=document.createElement('span'); l.className='letter';
+                l.textContent=ch; l.dataset.wi=wi; l.dataset.li=li;
+                s.appendChild(l);
+            });
+            $wi.appendChild(s);
+        });
+        placeCursor();
+    }
+
+    function placeCursor(){
+        document.querySelectorAll('.cursor-line').forEach(e=>e.remove());
+        const ws=$wi.children[wordIdx]; if(!ws) return;
+        const ls=ws.querySelectorAll('.letter');
+        const c=document.createElement('span'); c.className='cursor-line';
+        if(letterIdx===0) ws.insertBefore(c,ls[0]);
+        else ls[Math.min(letterIdx,ls.length)-1].after(c);
+        const cTop=$wc.getBoundingClientRect().top;
+        const wTop=ws.getBoundingClientRect().top;
+        const lh=parseFloat(getComputedStyle($wc).lineHeight)||35;
+        if(Math.round((wTop-cTop)/lh)>=2)
+            $wi.style.top=(parseInt($wi.style.top||'0')-lh)+'px';
+    }
+
+    /* ════════════════════════════════════════════
+       COUNTER / TIMER
+    ════════════════════════════════════════════ */
+    function updateCounter(){
+        $ctr.textContent = mode==='time'?(started?timeLeft:modeVal):Math.max(0,words.length-wordIdx);
+    }
+    function startTimer(){
+        const t0=performance.now();
+        if(mode==='time'){
+            timeLeft=modeVal;
+            timerID=setInterval(()=>{elapsed++;timeLeft--;sample();updateCounter();if(timeLeft<=0)endTest();},1000);
+        } else {
+            timerID=setInterval(()=>{elapsed++;sample();},1000);
+        }
+    }
+    const sample = ()=>wpmHistory.push({t:elapsed,wpm:calcWpm(correctChars,elapsed)});
+
+    /* ════════════════════════════════════════════
+       INPUT
+    ════════════════════════════════════════════ */
+    let lastKeyTime = 0;
+
+    $inp.addEventListener('input', e=>{
+        if(finished) return;
+        const v=$inp.value; if(!v) return; $inp.value='';
+        const now=performance.now();
+        if(!started){started=true;startTimer();lastKeyTime=now;}
+        const iki=now-lastKeyTime; lastKeyTime=now;
+
+        if(v===' '){if(letterIdx>0) advanceWord(); return;}
+
+        const ws=$wi.children[wordIdx];
+        const ls=ws.querySelectorAll('.letter:not(.extra)');
+        totalTyped++;
+        let correct=false;
+        if(letterIdx<ls.length){
+            const l=ls[letterIdx]; correct=v===l.textContent;
+            l.classList.add(correct?'correct':'wrong'); if(correct) correctChars++;
+        } else {
+            const x=document.createElement('span'); x.className='letter extra'; x.textContent=v;
+            ws.insertBefore(x,ws.querySelector('.cursor-line'));
+        }
+        // log keystroke for replay
+        const iki_s = iki/1000;
+        const curWpm = iki_s>0 ? Math.round((1/5)/(iki_s/60)) : 0; // instantaneous
+        keyLog.push({time:now, wordIdx, letterIdx, char:v, correct, wpm:Math.min(curWpm,300)});
+        letterIdx++; placeCursor();
+    });
+
+    $inp.addEventListener('keydown', e=>{
+        if(finished) return;
+        if(e.key==='Backspace'){e.preventDefault(); backspace(e.ctrlKey||e.metaKey);}
+    });
+    document.addEventListener('keydown', e=>{
+        if(e.key==='Tab'){e.preventDefault(); init();}
+        if(e.key==='Escape') init();
+    });
+    document.addEventListener('keypress', e=>{
+        if(!finished&&!e.ctrlKey&&!e.metaKey&&!e.altKey) $inp.focus();
+    });
+    $wc.addEventListener('click',()=>$inp.focus());
+
+    function backspace(ctrl){
+        if(letterIdx===0&&wordIdx===0) return;
+        const ws=$wi.children[wordIdx];
+        if(ctrl){
+            ws.querySelectorAll('.letter.correct,.letter.wrong,.letter.extra')
+                .forEach(l=>l.classList.contains('extra')?l.remove():l.classList.remove('correct','wrong'));
+            letterIdx=0;
+        } else if(letterIdx>0){
+            letterIdx--;
+            const ls=ws.querySelectorAll('.letter:not(.extra)'), xs=ws.querySelectorAll('.extra');
+            if(letterIdx>=ls.length&&xs.length) xs[xs.length-1].remove();
+            else if(letterIdx<ls.length){
+                const l=ls[letterIdx];
+                if(l.classList.contains('correct')) correctChars--;
+                l.classList.remove('correct','wrong');
+            }
+        } else {
+            wordIdx--; const p=$wi.children[wordIdx];
+            letterIdx=p.querySelectorAll('.letter:not(.extra)').length+p.querySelectorAll('.extra').length;
+        }
+        placeCursor();
+    }
+
+    function advanceWord(){
+        wordIdx++; letterIdx=0;
+        if(mode==='words'&&wordIdx>=words.length){endTest();return;}
+        if(mode==='time'&&wordIdx>words.length-10){
+            const pool=LANGS[lang]?.words||LANGS.en.words;
+            Array.from({length:20},()=>pool[Math.floor(Math.random()*pool.length)]).forEach(w=>{
+                words.push(w);
+                const s=document.createElement('span'); s.className='word';
+                [...w].forEach(ch=>{const l=document.createElement('span');l.className='letter';l.textContent=ch;s.appendChild(l);});
+                $wi.appendChild(s);
+            });
+        }
+        updateCounter(); placeCursor();
+    }
+
+    /* ════════════════════════════════════════════
+       END TEST
+    ════════════════════════════════════════════ */
+    function endTest(){
+        clearInterval(timerID); finished=true; $inp.blur();
+        const dur=mode==='time'?modeVal:(elapsed||1);
+        const wpm=calcWpm(correctChars,dur);
+        const raw=Math.round((totalTyped/5)/(dur/60));
+        const acc=totalTyped>0?Math.round((correctChars/totalTyped)*100):0;
+        const date=new Date().toISOString();
+        const run={id:runId,mode,modeVal,lang,wpm,raw,acc,chars:correctChars,duration:dur,
+            wpmHistory:[...wpmHistory],keyLog:[...keyLog],
+            words:[...words.slice(0,wordIdx+1)],date};
+
+        const isPB=saveRun(run);
+        const prev=getPrevRun(mode,modeVal,lang,runId);
+
+        document.getElementById('res-wpm').textContent=wpm;
+        document.getElementById('res-wpm').classList.toggle('new-pb',isPB);
+        document.getElementById('res-acc').textContent=acc+'%';
+        document.getElementById('res-raw').textContent=raw;
+        document.getElementById('res-chars').textContent=correctChars;
+        document.getElementById('pb-badge').classList.toggle('show',isPB);
+
+        cmp('cmp-wpm',prev?.wpm,wpm,'');
+        cmp('cmp-acc',prev?.acc,acc,'%');
+        cmp('cmp-raw',prev?.raw,raw,'');
+        cmp('cmp-chars',prev?.chars,correctChars,'');
+
+        const leg=document.getElementById('chart-legend');
+        leg.innerHTML=`
+    <div class="legend-item"><div class="legend-dot" style="background:var(--accent)"></div><span>this run</span></div>
+    ${prev?`<div class="legend-item"><div class="legend-dash"></div><span>previous run</span></div>`:''}`;
+        drawChart(wpmHistory,prev?.wpmHistory||null,dur);
+
+        $res.classList.add('visible');
+        $res.scrollIntoView({behavior:'smooth',block:'nearest'});
+        renderPbStrip(); updateFooter();
+    }
+
+    function cmp(id,pv,cv,unit){
+        const el=document.getElementById(id);
+        if(pv==null){el.innerHTML=''; return;}
+        const d=cv-pv,sign=d>0?'+':'',cls=d>0?'pos':d<0?'neg':'';
+        el.innerHTML=`<span class="delta ${cls}">${sign}${d}${unit}</span>&nbsp;<span style="color:var(--text-dim);font-size:.6rem">prev: ${pv}${unit}</span>`;
+    }
+    const calcWpm=(c,s)=>s?Math.round((c/5)/(s/60)):0;
+
+    /* ════════════════════════════════════════════
+       WPM CHART
+    ════════════════════════════════════════════ */
+    function drawChart(hist,prevHist,dur){
+        const svg=document.getElementById('wpm-chart');
+        svg.innerHTML=''; if(!hist||!hist.length) return;
+        const W=svg.clientWidth||800,H=88;
+        const p={l:30,r:8,t:8,b:20};
+        const all=[...hist.map(d=>d.wpm),...(prevHist||[]).map(d=>d.wpm)];
+        const mx=Math.max(...all,1);
+        const cx=t=>p.l+(t/dur)*(W-p.l-p.r);
+        const cy=w=>p.t+(1-w/(mx*1.1))*(H-p.t-p.b);
+        const ns='http://www.w3.org/2000/svg';
+        svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+        [0,.5,1].forEach(f=>{
+            const y=p.t+f*(H-p.t-p.b);
+            const g=document.createElementNS(ns,'line');
+            g.setAttribute('x1',p.l);g.setAttribute('x2',W-p.r);g.setAttribute('y1',y);g.setAttribute('y2',y);
+            g.setAttribute('stroke','#1e1e1e');g.setAttribute('stroke-width','1');svg.appendChild(g);
+            const t=document.createElementNS(ns,'text');
+            t.setAttribute('x',p.l-4);t.setAttribute('y',y+4);t.setAttribute('fill','#3a3a3a');
+            t.setAttribute('font-size','9');t.setAttribute('text-anchor','end');t.setAttribute('font-family','Roboto Mono,monospace');
+            t.textContent=Math.round(mx*1.1*(1-f));svg.appendChild(t);
+        });
+        if(prevHist&&prevHist.length>1){
+            let pp=`M ${cx(prevHist[0].t)} ${cy(prevHist[0].wpm)}`;
+            prevHist.slice(1).forEach(pt=>{pp+=` L ${cx(pt.t)} ${cy(pt.wpm)}`;});
+            const gh=document.createElementNS(ns,'path');
+            gh.setAttribute('d',pp);gh.setAttribute('fill','none');
+            gh.setAttribute('stroke','#4a4a4a');gh.setAttribute('stroke-width','2');
+            gh.setAttribute('stroke-dasharray','5 3');gh.setAttribute('stroke-linejoin','round');
+            svg.appendChild(gh);
+        }
+        let a=`M ${cx(hist[0].t)} ${H-p.b} L ${cx(hist[0].t)} ${cy(hist[0].wpm)}`;
+        hist.forEach(pt=>{a+=` L ${cx(pt.t)} ${cy(pt.wpm)}`;});
+        a+=` L ${cx(hist[hist.length-1].t)} ${H-p.b} Z`;
+        const ar=document.createElementNS(ns,'path');
+        ar.setAttribute('d',a);ar.setAttribute('fill','rgba(226,183,20,0.06)');svg.appendChild(ar);
+        let l2=`M ${cx(hist[0].t)} ${cy(hist[0].wpm)}`;
+        hist.slice(1).forEach(pt=>{l2+=` L ${cx(pt.t)} ${cy(pt.wpm)}`;});
+        const ln=document.createElementNS(ns,'path');
+        ln.setAttribute('d',l2);ln.setAttribute('fill','none');
+        ln.setAttribute('stroke','#e2b714');ln.setAttribute('stroke-width','2.5');ln.setAttribute('stroke-linejoin','round');
+        svg.appendChild(ln);
+        hist.forEach(pt=>{
+            const c=document.createElementNS(ns,'circle');
+            c.setAttribute('cx',cx(pt.t));c.setAttribute('cy',cy(pt.wpm));c.setAttribute('r','3.5');c.setAttribute('fill','#e2b714');svg.appendChild(c);
+        });
+    }
+
+    /* ════════════════════════════════════════════
+       REPLAY ENGINE
+    ════════════════════════════════════════════ */
+    let replayData=null, replayIdx=0, replayPlaying=false;
+    let replayRAF=null, replayStartTime=0, replayBaseTime=0, replaySpeed=1;
+
+    function openReplay(){
+        const d=load();
+        const run=d.runs[0]; if(!run||!run.keyLog||!run.keyLog.length) return;
+        replayData=run;
+        buildReplayWords(run);
+        drawHeatmap(run);
+        replayIdx=0; replayPlaying=false;
+        setProgress(0);
+        document.getElementById('replay-cursor').style.display='none';
+        document.getElementById('play-label').textContent='play';
+        document.getElementById('play-icon').innerHTML='<polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>';
+        document.getElementById('replay-overlay').classList.add('open');
+        window.scrollTo(0,0);
+    }
+
+    function buildReplayWords(run){
+        const wrap=document.getElementById('replay-words-inner');
+        wrap.innerHTML='';
+        run.words.forEach((w,wi)=>{
+            const s=document.createElement('span');s.className='rword';s.dataset.wi=wi;
+            [...w].forEach((ch,li)=>{
+                const l=document.createElement('span');l.className='rletter';
+                l.textContent=ch;l.dataset.wi=wi;l.dataset.li=li;
+                s.appendChild(l);
+            });
+            // check if extra chars needed
+            const wordKeys=run.keyLog.filter(k=>k.wordIdx===wi&&k.correct===false);
+            wrap.appendChild(s);
+        });
+    }
+
+    // Speed color: slow=red, fast=green, medium=yellow
+    function wpmToColor(wpm){
+        // 0-60 = red→yellow, 60-120 = yellow→green, 120+ = cyan
+        if(wpm<=0) return '#666';
+        const t=Math.min(wpm/120,1);
+        if(t<0.5){
+            const r=Math.round(224+(42-224)*(t*2));
+            const g=Math.round(82+(183-82)*(t*2));
+            const b=40;
+            return `rgb(${r},${g},${b})`;
+        } else {
+            const tt=(t-0.5)*2;
+            const r=Math.round(226+(80-226)*tt);
+            const g=Math.round(183+(220-183)*tt);
+            const b=Math.round(20+(180-20)*tt);
+            return `rgb(${r},${g},${b})`;
+        }
+    }
+
+    function drawHeatmap(run){
+        const svg=document.getElementById('heatmap-svg');
+        svg.innerHTML='';
+        if(!run.keyLog.length) return;
+        const W=svg.clientWidth||960,H=40;
+        svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+        const ns='http://www.w3.org/2000/svg';
+        const n=run.keyLog.length;
+        const bw=Math.max(W/Math.max(n,1)-1, 2);
+        run.keyLog.forEach((k,i)=>{
+            const x=(i/n)*W;
+            const col=wpmToColor(k.wpm);
+            const rect=document.createElementNS(ns,'rect');
+            rect.setAttribute('x',x);rect.setAttribute('y',k.correct?8:0);
+            rect.setAttribute('width',bw);rect.setAttribute('height',k.correct?32:H);
+            rect.setAttribute('fill',col);rect.setAttribute('opacity',k.correct?'0.85':'0.5');
+            rect.setAttribute('rx','1');
+            svg.appendChild(rect);
+        });
+        // axis labels
+        ['slow','medium','fast'].forEach((lbl,i)=>{
+            const t=document.createElementNS(ns,'text');
+            const x=[8,(W/2)-20,W-40][i];
+            t.setAttribute('x',x);t.setAttribute('y',H-2);
+            t.setAttribute('fill','#444');t.setAttribute('font-size','8');
+            t.setAttribute('font-family','Roboto Mono,monospace');
+            t.textContent=lbl; svg.appendChild(t);
+        });
+    }
+
+    function startReplay(){
+        if(!replayData||!replayData.keyLog.length) return;
+        replayPlaying=true;
+        document.getElementById('play-label').textContent='pause';
+        document.getElementById('play-icon').innerHTML='<rect x="6" y="4" width="4" height="16" fill="currentColor"/><rect x="14" y="4" width="4" height="16" fill="currentColor"/>';
+        // reset if done
+        if(replayIdx>=replayData.keyLog.length){ replayIdx=0; resetReplayColors(); }
+        replayBaseTime=replayData.keyLog[replayIdx].time;
+        replayStartTime=performance.now();
+        animateReplay();
+    }
+
+    function pauseReplay(){
+        replayPlaying=false;
+        cancelAnimationFrame(replayRAF);
+        document.getElementById('play-label').textContent='play';
+        document.getElementById('play-icon').innerHTML='<polygon points="5 3 19 12 5 21 5 3" fill="currentColor"/>';
+    }
+
+    function resetReplayColors(){
+        document.querySelectorAll('.rletter').forEach(l=>{
+            l.classList.remove('rc','rw','rx');
+            l.style.color=''; l.style.background='';
+        });
+        document.getElementById('replay-cursor').style.display='none';
+    }
+
+    function animateReplay(){
+        if(!replayPlaying) return;
+        const now=performance.now();
+        const elapsed=(now-replayStartTime)*replaySpeed;
+
+        // process all keys up to elapsed time
+        while(replayIdx<replayData.keyLog.length){
+            const k=replayData.keyLog[replayIdx];
+            const kOffset=k.time-replayBaseTime;
+            if(kOffset>elapsed) break;
+            applyKeyToReplay(k);
+            replayIdx++;
+        }
+
+        const total=replayData.keyLog[replayData.keyLog.length-1].time-replayData.keyLog[0].time;
+        const prog=Math.min((replayBaseTime+elapsed-replayData.keyLog[0].time)/total,1);
+        setProgress(prog);
+
+        if(replayIdx>=replayData.keyLog.length){
+            pauseReplay(); setProgress(1); return;
+        }
+        replayRAF=requestAnimationFrame(animateReplay);
+    }
+
+    function applyKeyToReplay(k){
+        const wordSpan=document.querySelector(`#replay-words-inner .rword[data-wi="${k.wordIdx}"]`);
+        if(!wordSpan) return;
+        const letters=wordSpan.querySelectorAll('.rletter');
+        const li=k.letterIdx;
+        if(li<letters.length){
+            const letter=letters[li];
+            letter.style.color=wpmToColor(k.wpm);
+            if(!k.correct) letter.style.background='rgba(224,82,82,.2)';
+            // move cursor
+            const cur=document.getElementById('replay-cursor');
+            const lRect=letter.getBoundingClientRect();
+            const wrapRect=document.getElementById('replay-words-wrap').getBoundingClientRect();
+            cur.style.display='block';
+            cur.style.left=(lRect.left-wrapRect.left)+'px';
+            cur.style.top=(lRect.top-wrapRect.top)+'px';
+            cur.style.height=lRect.height+'px';
+            // speed badge on word
+            showSpeedBadge(wordSpan, k.wpm);
+        }
+    }
+
+    let badgeTimeout=null;
+    function showSpeedBadge(wordSpan,wpm){
+        // remove old badges
+        document.querySelectorAll('.speed-badge').forEach(b=>b.remove());
+        const badge=document.createElement('div');
+        badge.className='speed-badge visible';
+        badge.textContent=wpm+'wpm';
+        badge.style.background=wpmToColor(wpm)+'22';
+        badge.style.color=wpmToColor(wpm);
+        badge.style.border=`1px solid ${wpmToColor(wpm)}55`;
+        wordSpan.style.position='relative';
+        wordSpan.appendChild(badge);
+    }
+
+    function setProgress(p){
+        document.getElementById('replay-progress-fill').style.width=(p*100)+'%';
+    }
+
+    /* ════════════════════════════════════════════
+       PB STRIP
+    ════════════════════════════════════════════ */
+    function renderPbStrip(){
+        const {pbs}=load();
+        const keys=Object.keys(pbs).filter(k=>k.endsWith('_'+lang));
+        const strip=document.getElementById('pb-strip');
+        if(!keys.length){strip.innerHTML='';return;}
+        const ck=mkey(mode,modeVal,lang);
+        strip.innerHTML=keys.map(k=>{
+            const [m,v]=k.split('_');
+            const label=m==='time'?`${v}s`:`${v}w`;
+            const active=k===ck;
+            return `<div class="pb-pill ${active?'active-mode':''}">
+      <span class="pb-key" style="font-size:.6rem">${label}</span>
+      <span class="pb-val">${pbs[k].wpm}</span>
+      <span style="font-size:.52rem;color:var(--text-dim)">wpm</span>
+    </div>`;
+        }).join('');
+    }
+
+    function updateFooter(){
+        const {runs}=load();
+        document.getElementById('run-count-label').textContent=
+            runs.length?`${runs.length} run${runs.length===1?'':'s'} recorded`:'';
+    }
+
+    /* ════════════════════════════════════════════
+       SETTINGS MODAL
+    ════════════════════════════════════════════ */
+    function openSettings(){
+        const s=getSettings();
+        // themes
+        document.getElementById('theme-grid').innerHTML=THEMES.map(t=>`
+    <div class="theme-card ${s.theme===t.id?'active':''}" data-theme-id="${t.id}">
+      <div class="tc-name" style="color:${t.colors[1]}">${t.name}</div>
+      <div class="theme-preview">
+        ${t.colors.map(c=>`<div class="tc-dot" style="background:${c}"></div>`).join('')}
+      </div>
+      <div class="tc-check"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+    </div>`).join('');
+        // fonts
+        document.getElementById('font-grid').innerHTML=FONTS.map(f=>`
+    <div class="font-card ${s.font===f.id?'active':''}" data-font-id="${f.id}">
+      <div class="font-preview" style="font-family:${getFontFamily(f.id)}">${f.preview}</div>
+      <div class="font-label">${f.name}</div>
+    </div>`).join('');
+        // languages
+        document.getElementById('lang-grid').innerHTML=Object.entries(LANGS).map(([id,l])=>`
+    <div class="lang-card ${s.lang===id?'active':''}" data-lang-id="${id}">
+      <span class="lang-flag">${l.flag}</span>
+      <span class="lang-name">${l.name}</span>
+    </div>`).join('');
+        document.getElementById('settings-modal').classList.add('open');
+    }
+
+    function getFontFamily(id){
+        return {roboto:"'Roboto Mono'",fira:"'Fira Code'",space:"'Space Mono'",system:"'Courier New'"}[id]||'monospace';
+    }
+
+    document.getElementById('theme-grid').addEventListener('click',e=>{
+        const card=e.target.closest('.theme-card'); if(!card) return;
+        const tid=card.dataset.themeId;
+        const s=getSettings(); s.theme=tid; saveSettings(s);
+        document.body.dataset.theme=tid;
+        document.querySelectorAll('.theme-card').forEach(c=>c.classList.toggle('active',c.dataset.themeId===tid));
+    });
+    document.getElementById('font-grid').addEventListener('click',e=>{
+        const card=e.target.closest('.font-card'); if(!card) return;
+        const fid=card.dataset.fontId;
+        const s=getSettings(); s.font=fid; saveSettings(s);
+        document.body.dataset.font=fid;
+        document.querySelectorAll('.font-card').forEach(c=>c.classList.toggle('active',c.dataset.fontId===fid));
+    });
+    document.getElementById('lang-grid').addEventListener('click',e=>{
+        const card=e.target.closest('.lang-card'); if(!card) return;
+        const lid=card.dataset.langId;
+        const s=getSettings(); s.lang=lid; saveSettings(s);
+        lang=lid;
+        document.querySelectorAll('.lang-card').forEach(c=>c.classList.toggle('active',c.dataset.langId===lid));
+        document.getElementById('settings-modal').classList.remove('open');
+        init();
+    });
+
+    /* ════════════════════════════════════════════
+       RECORDS MODAL
+    ════════════════════════════════════════════ */
+    function openRecords(){
+        const {runs,pbs}=load();
+        const pbKeys=Object.keys(pbs).sort((a,b)=>{
+            const [ma,va]=a.split('_'),[mb,vb]=b.split('_');
+            if(ma===mb)return parseInt(va)-parseInt(vb);
+            return ma==='time'?-1:1;
+        });
+        document.getElementById('modal-pb-grid').innerHTML=pbKeys.length
+            ? pbKeys.map(k=>{
+                const parts=k.split('_');
+                const [m,v,l]=parts;
+                const lname=LANGS[l]?.name||l;
+                const label=(m==='time'?`${v}s`:`${v}w`)+` · ${lname}`;
+                const pb=pbs[k],d=new Date(pb.date);
+                return `<div class="modal-pb-card">
+          <div class="pb-mode">${label}</div>
+          <div class="pb-wpm">${pb.wpm}</div>
+          <div class="pb-meta">${pb.acc}% acc · ${d.toLocaleDateString()}</div>
+        </div>`;
+            }).join('')
+            : '<p class="no-history">no records yet</p>';
+
+        document.getElementById('history-list').innerHTML=runs.length
+            ? runs.slice(0,40).map(r=>{
+                const k=mkey(r.mode,r.modeVal,r.lang||'en');
+                const isPb=pbs[k]&&pbs[k].wpm===r.wpm;
+                const label=(r.mode==='time'?`${r.modeVal}s`:`${r.modeVal}w`);
+                const d=new Date(r.date);
+                const ts=d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+                const mini=miniChart(r.wpmHistory,r.duration);
+                return `<div class="history-item ${isPb?'is-pb':''}">
+          <div class="hi-wpm ${isPb?'is-pb-val':''}">${r.wpm}<span class="hi-pb-tag">PB</span></div>
+          <div class="hi-acc">${r.acc}%</div>
+          <div class="hi-mode">${label} ${LANGS[r.lang||'en']?.flag||''}</div>
+          <div class="hi-date">${ts}</div>
+          <div class="hi-chart">${mini}</div>
+        </div>`;
+            }).join('')
+            : '<p class="no-history">no runs yet</p>';
+
+        document.getElementById('records-modal').classList.add('open');
+    }
+
+    function miniChart(hist,dur){
+        if(!hist||hist.length<2) return '';
+        const W=120,H=28,p={l:2,r:2,t:2,b:2};
+        const mx=Math.max(...hist.map(d=>d.wpm),1);
+        const cx=t=>p.l+(t/dur)*(W-p.l-p.r);
+        const cy=w=>p.t+(1-w/(mx*1.1))*(H-p.t-p.b);
+        let d=`M ${cx(hist[0].t)} ${cy(hist[0].wpm)}`;
+        hist.slice(1).forEach(pt=>{d+=` L ${cx(pt.t)} ${cy(pt.wpm)}`;});
+        return `<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:100%">
+    <path d="${d}" fill="none" stroke="var(--accent)" stroke-width="1.5" stroke-linejoin="round"/>
+  </svg>`;
+    }
+
+    /* ════════════════════════════════════════════
+       EVENT WIRING
+    ════════════════════════════════════════════ */
+    document.getElementById('mode-bar').addEventListener('click',e=>{
+        const b=e.target.closest('.mode-btn'); if(!b) return;
+        document.querySelectorAll('.mode-btn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active'); mode=b.dataset.mode; modeVal=parseInt(b.dataset.val);
+        init();
+    });
+    document.getElementById('btn-restart').addEventListener('click',init);
+    document.getElementById('btn-retry').addEventListener('click',init);
+    document.getElementById('btn-new').addEventListener('click',init);
+    document.getElementById('btn-open-replay').addEventListener('click',openReplay);
+    document.getElementById('btn-settings').addEventListener('click',openSettings);
+    document.getElementById('btn-records').addEventListener('click',openRecords);
+    document.getElementById('settings-close').addEventListener('click',()=>document.getElementById('settings-modal').classList.remove('open'));
+    document.getElementById('records-close').addEventListener('click',()=>document.getElementById('records-modal').classList.remove('open'));
+    document.getElementById('replay-close').addEventListener('click',()=>{
+        pauseReplay();
+        document.getElementById('replay-overlay').classList.remove('open');
+    });
+    document.getElementById('settings-modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+    document.getElementById('records-modal').addEventListener('click',e=>{ if(e.target===e.currentTarget) e.currentTarget.classList.remove('open'); });
+
+    document.getElementById('replay-play-btn').addEventListener('click',()=>{
+        if(replayPlaying) pauseReplay(); else startReplay();
+    });
+
+    document.querySelectorAll('.spd-btn').forEach(b=>{
+        b.addEventListener('click',()=>{
+            document.querySelectorAll('.spd-btn').forEach(x=>x.classList.remove('active'));
+            b.classList.add('active');
+            replaySpeed=parseFloat(b.dataset.spd);
+            if(replayPlaying){
+                pauseReplay();
+                replayBaseTime=replayIdx>0?replayData.keyLog[replayIdx-1].time:replayData.keyLog[0].time;
+                replayStartTime=performance.now();
+                startReplay();
+            }
+        });
+    });
+
+    document.getElementById('replay-progress').addEventListener('click',e=>{
+        if(!replayData||!replayData.keyLog.length) return;
+        const rect=e.currentTarget.getBoundingClientRect();
+        const frac=(e.clientX-rect.left)/rect.width;
+        const total=replayData.keyLog[replayData.keyLog.length-1].time-replayData.keyLog[0].time;
+        const targetTime=replayData.keyLog[0].time+frac*total;
+        const wasPlaying=replayPlaying;
+        pauseReplay();
+        replayIdx=0; resetReplayColors();
+        // fast-forward to position
+        while(replayIdx<replayData.keyLog.length && replayData.keyLog[replayIdx].time<=targetTime){
+            applyKeyToReplay(replayData.keyLog[replayIdx]);
+            replayIdx++;
+        }
+        setProgress(frac);
+        replayBaseTime=targetTime;
+        replayStartTime=performance.now();
+        if(wasPlaying) startReplay();
+    });
+
+    document.getElementById('btn-clear').addEventListener('click',()=>{
+        if(confirm('Delete all run history and personal records?')){
+            localStorage.removeItem(SK);
+            openRecords(); renderPbStrip(); updateFooter();
+        }
+    });
+
+    /* ════════════════════════════════════════════
+       BOOTSTRAP
+    ════════════════════════════════════════════ */
+    (function bootstrap(){
+        const s=getSettings();
+        lang=s.lang||'en';
+        applySettings(s);
+        init();
+    })();
+</script>
+</body>
+</html>
