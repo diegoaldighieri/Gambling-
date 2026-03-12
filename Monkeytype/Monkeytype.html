@@ -12,7 +12,7 @@
         ══════════════════════════════════════════════ */
         :root {
             --bg:#0a0a0f;--s1:#0f0f18;--s2:#14141f;--s3:#1a1a28;
-            --br:#252535;--td:#4a4a6a;--tb:#9090b8;--tt:#e8e8ff;
+            --br:#252535;--td:#4a4a6a;--tb:#9090b8;--tt:#e8e8ff;--untyped:#5a5a7a;
             --ac:#f0c040;--acd:rgba(240,192,64,.12);--acg:linear-gradient(135deg,#f0c040,#ff8c20);
             --ok:#5de8a0;--er:#ff4d6d;--erbg:rgba(255,77,109,.15);
             --pb:#60b8ff;--pbd:rgba(96,184,255,.12);
@@ -270,7 +270,7 @@
         .word{display:inline-block;margin-right:.52rem;margin-bottom:.18rem;white-space:nowrap;position:relative;}
 
         /* ══ CHAR STATES ══ */
-        .ch{color:var(--br);transition:color .04s;}
+        .ch{color:var(--tb);opacity:.28;transition:color .04s,opacity .04s;}
         .ch.ok {
             color:var(--ok);
             animation:charOk .22s ease forwards;
@@ -294,6 +294,7 @@
             35%{opacity:.3;transform:translateY(-1px);}
             100%{opacity:1;filter:brightness(1);transform:none;}
         }
+
         .word.werr::after{content:'';position:absolute;bottom:-3px;left:0;right:0;height:2px;background:var(--er);border-radius:1px;opacity:.4;}
         .word.dim{opacity:.3;}
 
